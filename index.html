@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Student Attendance</title>
+  <meta name="description" content="Student attendance and absence tracking for an undergraduate department">
+  <meta name="theme-color" content="#0b3d70">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Attendance">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div id="app">
+    <header id="top"></header>
+    <main id="view"></main>
+    <nav id="tabs"></nav>
+  </div>
+  <div id="modal"><div class="box" id="modal-box"></div></div>
+  <div id="toast"></div>
+  <div id="print-area"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/reports.js"></script>
+  <script src="js/excel.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    const nativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+    if ('serviceWorker' in navigator && !nativeApp) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').then((reg) => {
+          reg.addEventListener('updatefound', () => {
+            const w = reg.installing;
+            w && w.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller && window.UI) window.UI.toast(window.UI.t('updateReady')); });
+          });
+        }).catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
