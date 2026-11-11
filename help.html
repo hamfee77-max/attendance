@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>User Guide — دليل الاستخدام</title>
+<meta name="theme-color" content="#0b3d70">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<style>
+  :root { --navy:#0b3d70; --navy2:#0f4f8f; --accent:#1f8fd8; --bg:#f3f6fa; --card:#fff; --ink:#142033; --muted:#5c6b80; --line:#dbe3ee; --chip:#e8f0fa;
+          --ok:#2e9e5b; --warn:#b98a00; --warn2:#e8702a; --fail:#c62828; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0f1722; --card:#182334; --ink:#e9eef5; --muted:#9fb0c6; --line:#2a3850; --chip:#223246; } }
+  * { box-sizing: border-box; }
+  html, body { margin:0; background:var(--bg); color:var(--ink); font-family:"Segoe UI", Tahoma, "Noto Naskh Arabic", "Noto Sans Arabic", Arial, sans-serif; line-height:1.7; font-size:16px; }
+  header.top { position:sticky; top:0; z-index:5; background:var(--navy); color:#fff; padding:calc(8px + env(safe-area-inset-top)) 16px 8px; display:flex; align-items:center; gap:10px; box-shadow:0 2px 8px rgba(0,0,0,.25); }
+  header.top img { width:34px; height:34px; border-radius:50%; background:#fff; padding:1px; }
+  header.top .t { flex:1; min-width:0; font-weight:700; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  header.top a, header.top button { color:#fff; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.35); border-radius:20px; padding:6px 12px; font:inherit; font-size:14px; font-weight:700; text-decoration:none; cursor:pointer; white-space:nowrap; }
+  main { max-width:880px; margin:0 auto; padding:16px; }
+  .cover { text-align:center; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 16px; margin-bottom:16px; }
+  .cover .logos { display:flex; justify-content:center; gap:14px; margin-bottom:8px; }
+  .cover .logos img { width:70px; height:70px; object-fit:contain; }
+  .cover h1 { margin:6px 0 2px; font-size:22px; color:var(--navy2); }
+  .cover p { margin:2px 0; color:var(--muted); }
+  nav.toc { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin-bottom:16px; }
+  nav.toc h2 { margin:0 0 6px; font-size:17px; }
+  nav.toc ol { margin:0; padding-inline-start:22px; columns:2; column-gap:28px; }
+  @media (max-width:640px) { nav.toc ol { columns:1; } }
+  nav.toc a { color:var(--accent); text-decoration:none; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px 18px 14px; margin-bottom:14px; }
+  h2.s { font-size:19px; color:var(--navy2); border-bottom:2px solid var(--line); padding-bottom:6px; margin:14px 0 8px; }
+  h3 { font-size:16px; margin:14px 0 4px; }
+  p { margin:6px 0; }
+  ol.steps, ul { margin:6px 0; padding-inline-start:24px; }
+  ol.steps li, ul li { margin:3px 0; }
+  .ui { display:inline-block; background:var(--chip); border:1px solid var(--line); border-radius:8px; padding:0 7px; font-weight:600; font-size:.93em; white-space:nowrap; }
+  .k { display:inline-block; min-width:26px; text-align:center; border-radius:6px; font-weight:700; color:#fff; padding:0 6px; }
+  .k.P { background:var(--ok); } .k.A { background:var(--fail); } .k.E { background:var(--warn); } .k.L { background:var(--accent); }
+  .note, .tip, .warn { border-radius:10px; padding:8px 12px; margin:10px 0; font-size:.95em; }
+  .tip { background:#e3f4e9; color:#174f2c; border-inline-start:4px solid var(--ok); }
+  .note { background:#e3eefb; color:#123a66; border-inline-start:4px solid var(--accent); }
+  .warn { background:#fdeaea; color:#7a1717; border-inline-start:4px solid var(--fail); }
+  table { border-collapse:collapse; width:100%; margin:8px 0; font-size:.94em; }
+  th, td { border:1px solid var(--line); padding:6px 8px; text-align:start; vertical-align:top; }
+  th { background:var(--chip); }
+  .tbl { overflow-x:auto; }
+  code { background:var(--chip); border-radius:6px; padding:0 5px; font-size:.92em; direction:ltr; unicode-bidi:embed; }
+  footer { text-align:center; color:var(--muted); font-size:13px; padding:10px 0 30px; }
+  [hidden] { display:none !important; }
+  @media print {
+    header.top, .noprint { display:none !important; }
+    html, body { background:#fff; color:#000; font-size:12px; }
+    main { max-width:none; padding:0; }
+    section, nav.toc, .cover { border:0; padding:0 0 6px; margin:0 0 6px; break-inside:auto; }
+    h2.s { break-after:avoid; } h3 { break-after:avoid; } table, .tip, .note, .warn { break-inside:avoid; }
+    nav.toc ol { columns:2; }
+    a { color:inherit; text-decoration:none; }
+    @page { size:A4; margin:14mm; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <img src="logos/university.png" alt="">
+  <div class="t" id="hdr">دليل استخدام نظام تسجيل غيابات الطلبة</div>
+  <button type="button" id="langBtn" class="noprint">English</button>
+  <button type="button" id="printBtn" class="noprint">🖨</button>
+  <a href="index.html" id="backBtn" class="noprint">← التطبيق</a>
+</header>
+
+<main>
+<!-- ======================================================================= -->
+<!--                                ARABIC                                    -->
+<!-- ======================================================================= -->
+<article id="ar" lang="ar" dir="rtl">
+  <div class="cover">
+    <div class="logos"><img src="logos/university.png" alt=""><img src="logos/department.svg" alt=""><img src="logos/college.png" alt=""></div>
+    <h1>دليل استخدام نظام تسجيل غيابات الطلبة</h1>
+    <p>قسم هندسة الموارد المائية — كلية الهندسة — الجامعة المستنصرية</p>
+    <p>الإصدار 1.3 — العام الدراسي 2026-2027</p>
+  </div>
+
+  <nav class="toc">
+    <h2>المحتويات</h2>
+    <ol>
+      <li><a href="#ar-about">نبذة عن التطبيق</a></li>
+      <li><a href="#ar-install">تثبيت التطبيق</a></li>
+      <li><a href="#ar-login">الدخول ورموز الدخول</a></li>
+      <li><a href="#ar-screen">التعرّف على الشاشة</a></li>
+      <li><a href="#ar-first">الإعداد الأول للتدريسي</a></li>
+      <li><a href="#ar-record">تسجيل الغيابات</a></li>
+      <li><a href="#ar-excel">الاستيراد من Excel</a></li>
+      <li><a href="#ar-courses">إدارة المواد</a></li>
+      <li><a href="#ar-students">إدارة الطلبة والمراحل</a></li>
+      <li><a href="#ar-rules">ضوابط الغياب وطريقة الحساب</a></li>
+      <li><a href="#ar-reports">التقارير والمذكرات</a></li>
+      <li><a href="#ar-master">الحساب الرئيسي لرئيس القسم</a></li>
+      <li><a href="#ar-years">الأعوام والفصول الدراسية</a></li>
+      <li><a href="#ar-backup">النسخ الاحتياطي وجمع البيانات</a></li>
+      <li><a href="#ar-updates">التحديثات</a></li>
+      <li><a href="#ar-faq">أسئلة شائعة وحل المشكلات</a></li>
+      <li><a href="#ar-privacy">الخصوصية والأمان</a></li>
+    </ol>
+  </nav>
+
+  <section id="ar-about">
+    <h2 class="s">1. نبذة عن التطبيق</h2>
+    <p>تطبيق لتسجيل حضور وغياب الطلبة في محاضرات القسم، ويحسب نسب الغياب تلقائياً وفق التعليمات الامتحانية، ويُصدر تقارير ومذكرات رسمية إلى رئيس القسم باللغة العربية أو الإنكليزية.</p>
+    <ul>
+      <li>يعمل على <b>أندرويد</b> و<b>آيفون/آيباد</b> و<b>الحاسوب</b>، وبدون إنترنت بعد التثبيت.</li>
+      <li>محمّل مسبقاً بقوائم طلبة القسم وجدول مواد الفصل الأول وتقويم العام الدراسي 2026-2027.</li>
+      <li>يدعم فصلين دراسيين لكل عام، وأي عدد من الأعوام.</li>
+      <li>البيانات تُحفظ <b>على جهازك فقط</b>، ولا تُرسل إلى أي خادم.</li>
+    </ul>
+  </section>
+
+  <section id="ar-install">
+    <h2 class="s">2. تثبيت التطبيق</h2>
+    <p>رابط التطبيق: <code>https://hamfee77-max.github.io/attendance/</code></p>
+    <h3>أندرويد</h3>
+    <ol class="steps">
+      <li>افتح الرابط في Chrome، وأدخل رمز الدخول، ثم اذهب إلى <span class="ui">الإعدادات</span> ← <span class="ui">تنزيل تطبيق أندرويد (APK)</span>. أو استلم ملف <code>WRE-Attendance.apk</code> من رئيس القسم.</li>
+      <li>افتح الملف بعد التنزيل. عند ظهور تنبيه الأمان اختر <b>الإعدادات</b> ثم فعّل <b>السماح من هذا المصدر</b> (يُطلب مرة واحدة فقط).</li>
+      <li>اضغط <b>تثبيت</b>. تظهر أيقونة باسم «غيابات الموارد المائية».</li>
+    </ol>
+    <p>بديل: يمكن أيضاً من قائمة Chrome (⋮) اختيار <b>تثبيت التطبيق</b> أو <b>إضافة إلى الشاشة الرئيسية</b>.</p>
+    <h3>آيفون وآيباد</h3>
+    <ol class="steps">
+      <li>افتح الرابط في متصفح <b>Safari</b> تحديداً (Chrome على الآيفون لا يدعم التثبيت)، أو امسح رمز QR بالكاميرا.</li>
+      <li>اضغط زر <b>المشاركة</b> (مربع فيه سهم للأعلى) أسفل الشاشة.</li>
+      <li>اختر <b>إضافة إلى الشاشة الرئيسية</b> ثم <b>إضافة</b>.</li>
+      <li>افتح التطبيق دائماً من الأيقونة الجديدة، وليس من Safari، لأن بيانات الأيقونة منفصلة عن بيانات المتصفح.</li>
+    </ol>
+    <h3>الحاسوب</h3>
+    <p>افتح الرابط في Chrome أو Edge. يمكن تثبيته كبرنامج من أيقونة التثبيت في شريط العنوان. الحاسوب مناسب للطباعة ولإدخال ملفات Excel.</p>
+  </section>
+
+  <section id="ar-login">
+    <h2 class="s">3. الدخول ورموز الدخول</h2>
+    <p>التطبيق محمي برمز دخول، ولا يُفتح إلا للمخوّلين. يوجد نوعان من الرموز يحصل عليهما المستخدم من رئيس القسم:</p>
+    <div class="tbl"><table>
+      <tr><th>الرمز</th><th>لمن</th><th>ما يتيحه</th></tr>
+      <tr><td>رمز التدريسيين</td><td>جميع التدريسيين المخوّلين</td><td>كل الوظائف: التسجيل، المواد، الطلبة، التقارير، الإعدادات.</td></tr>
+      <tr><td>الرمز الرئيسي</td><td>رئيس القسم فقط</td><td>كل ما سبق، إضافة إلى <span class="ui">إدارة التقارير</span> لتحديد مستلمي التقارير.</td></tr>
+    </table></div>
+    <ol class="steps">
+      <li>اكتب الرمز في حقل <span class="ui">رمز الدخول</span>.</li>
+      <li>اترك خيار <span class="ui">تذكّر هذا الجهاز لمدة 30 يوماً</span> مفعّلاً على هاتفك الشخصي، وألغِه على الأجهزة المشتركة.</li>
+      <li>اضغط <span class="ui">دخول</span>.</li>
+    </ol>
+    <p>لقفل التطبيق فوراً أو للتبديل بين حساب التدريسي والحساب الرئيسي: <span class="ui">الإعدادات</span> ← <span class="ui">الحماية</span> ← <span class="ui">قفل التطبيق الآن</span> أو <span class="ui">تبديل الحساب</span>.</p>
+    <div class="warn">لا تشارك الرموز في المجموعات العامة ولا تكتبها على أوراق معلّقة. إذا تسرّب رمز، يطلب رئيس القسم من مسؤول التطبيق تغييره.</div>
+  </section>
+
+  <section id="ar-screen">
+    <h2 class="s">4. التعرّف على الشاشة</h2>
+    <ul>
+      <li><b>الشريط العلوي:</b> الشعارات واسم القسم، وزر <span class="ui">EN / عربي</span> لتبديل لغة الواجهة، وقائمتا <b>العام الدراسي</b> و<b>الفصل</b>. كل ما تراه في التطبيق يخص العام والفصل المختارين هنا.</li>
+      <li><b>التبويبات السفلية:</b></li>
+    </ul>
+    <div class="tbl"><table>
+      <tr><th>التبويب</th><th>الوظيفة</th></tr>
+      <tr><td><span class="ui">التسجيل</span></td><td>تسجيل الحضور والغياب لكل محاضرة، واستيراد Excel.</td></tr>
+      <tr><td><span class="ui">المواد</span></td><td>إضافة المواد وتعديلها لكل مرحلة وفصل.</td></tr>
+      <tr><td><span class="ui">الطلبة</span></td><td>المراحل والشعب وقوائم الطلبة.</td></tr>
+      <tr><td><span class="ui">التقارير</span></td><td>المذكرات الدورية وتقارير المادة والطالب والسجل.</td></tr>
+      <tr><td><span class="ui">الإعدادات</span></td><td>اسمك، اللغة، حدود الغياب، الأعوام، النسخ الاحتياطي، الحماية، التثبيت.</td></tr>
+    </table></div>
+  </section>
+
+  <section id="ar-first">
+    <h2 class="s">5. الإعداد الأول للتدريسي (دقيقة واحدة)</h2>
+    <ol class="steps">
+      <li>اذهب إلى <span class="ui">الإعدادات</span> واكتب اسمك في حقل <span class="ui">اسم التدريسي</span> كما يظهر في جدول المحاضرات، مثل: <code>صباح حسن</code>.</li>
+      <li>يُطبع اسمك تلقائياً في خانة «إعداد التدريسي» في كل تقرير.</li>
+      <li>يظهر بعدها خيار <span class="ui">موادي فقط</span> في تبويبات التسجيل والمواد والتقارير. عند تفعيله لا ترى إلا المواد التي اسمك فيها.</li>
+      <li>تأكد أن العام الدراسي والفصل الصحيحين مختاران في الشريط العلوي.</li>
+    </ol>
+    <div class="tip">تتم مطابقة الاسم بعد حذف الألقاب (أ.د.، أ.م.د.، م.د.، م.م....)، فيكفي كتابة الاسم دون اللقب.</div>
+  </section>
+
+  <section id="ar-record">
+    <h2 class="s">6. تسجيل الغيابات</h2>
+    <ol class="steps">
+      <li>افتح تبويب <span class="ui">التسجيل</span> واختر <b>المرحلة / الشعبة</b> ثم <b>المادة</b>. أو اضغط على بطاقة المادة في قسم <span class="ui">محاضرات اليوم</span>، إذ يقترح التطبيق محاضرات اليوم حسب الجدول.</li>
+      <li>اضغط <span class="ui">＋ تسجيل محاضرة جديدة</span>.</li>
+      <li>تأكد من <b>التاريخ</b> و<b>عدد الساعات</b> (تُملأ تلقائياً بالساعات الأسبوعية للمادة ويمكن تعديلها)، واكتب الموضوع إن رغبت.</li>
+      <li>يبدأ جميع الطلبة بحالة «حاضر». غيّر حالة الغائبين فقط بأحد الأزرار بجانب كل اسم:</li>
+    </ol>
+    <div class="tbl"><table>
+      <tr><th>الزر</th><th>الحالة</th><th>أثرها</th></tr>
+      <tr><td><span class="k P">✓</span></td><td>حاضر</td><td>لا يُحسب غياباً.</td></tr>
+      <tr><td><span class="k A">غ</span></td><td>غائب</td><td>يُحسب غياباً بدون عذر.</td></tr>
+      <tr><td><span class="k E">ع</span></td><td>غائب بعذر</td><td>يدخل في النسبة الكلية فقط. يظهر زر ✎ لكتابة ملاحظة العذر.</td></tr>
+      <tr><td><span class="k L">ت</span></td><td>متأخر</td><td>يُسجَّل للمتابعة ولا يُحسب غياباً.</td></tr>
+    </table></div>
+    <p>طريقة أسرع: <b>الضغط على اسم الطالب</b> يبدّل الحالة بالترتيب: حاضر ← غائب ← بعذر ← متأخر ← حاضر. وزر <span class="ui">✓ الكل حاضر</span> يعيد جميع الطلبة إلى «حاضر».</p>
+    <ol class="steps" start="5">
+      <li>اضغط <span class="ui">💾 حفظ</span>. يظهر على الزر عدد الغائبين للتأكد قبل الحفظ.</li>
+    </ol>
+    <h3>تعديل محاضرة سابقة أو حذفها</h3>
+    <p>في قائمة <b>المحاضرات</b> أسفل بطاقة المادة: اضغط على المحاضرة لفتحها وتعديلها ثم احفظ، أو اضغط 🗑 لحذفها.</p>
+    <div class="note">إذا كان التاريخ خارج مدة الفصل المختار يظهر تنبيه، وهو غالباً يعني أن الفصل المختار في الشريط العلوي خاطئ.</div>
+  </section>
+
+  <section id="ar-excel">
+    <h2 class="s">7. الاستيراد من Excel</h2>
+    <p>إذا كنت تسجّل الحضور في ملف Excel، يمكنك إدخاله دفعة واحدة بدل التسجيل يدوياً.</p>
+    <h3>أولاً: تنزيل القالب الجاهز (موصى به)</h3>
+    <ol class="steps">
+      <li>في تبويب <span class="ui">التسجيل</span> اختر المرحلة والمادة.</li>
+      <li>اضغط <span class="ui">⬇ قالب Excel للمادة</span>. يُنزَّل ملف فيه أسماء طلبة المرحلة، وعمود لكل محاضرة في الفصل حسب يوم المادة في الجدول، مع استبعاد العطل.</li>
+      <li>املأ الخلايا بالرموز التالية:</li>
+    </ol>
+    <div class="tbl"><table>
+      <tr><th>المعنى</th><th>ما يُكتب في الخلية</th></tr>
+      <tr><td>غائب</td><td><code>غ</code> أو <code>غائب</code> أو <code>A</code> أو <code>x</code> أو <code>0</code></td></tr>
+      <tr><td>غائب بعذر</td><td><code>ع</code> أو <code>عذر</code> أو <code>مجاز</code> أو <code>E</code></td></tr>
+      <tr><td>متأخر</td><td><code>ت</code> أو <code>متأخر</code> أو <code>L</code></td></tr>
+      <tr><td>حاضر</td><td>خلية فارغة، أو <code>✓</code> أو <code>1</code> أو <code>P</code></td></tr>
+    </table></div>
+    <h3>ثانياً: استيراد الملف</h3>
+    <ol class="steps">
+      <li>اختر المرحلة والمادة نفسها، ثم اضغط <span class="ui">📥 استيراد الحضور من Excel</span>.</li>
+      <li>اختر الملف (<code>xlsx</code> أو <code>xls</code> أو <code>csv</code>).</li>
+      <li>راجع <b>المعاينة</b>: عدد تواريخ المحاضرات، والطلبة المطابَقين، والأسماء غير المطابَقة (باللون الأحمر)، وجدول «كيف فُسِّرت قيم الخلايا».</li>
+      <li>إذا كانت في الملف أسماء جديدة غير موجودة في القائمة، فعّل <span class="ui">إضافة الأسماء غير الموجودة كطلبة جدد</span>، وإلا تُتجاهل.</li>
+      <li>اضغط <span class="ui">حفظ</span>.</li>
+    </ol>
+    <h3>شروط الملف الخاص بك (إن لم تستخدم القالب)</h3>
+    <ul>
+      <li>عمود للأسماء عنوانه <code>الاسم</code> أو <code>اسم الطالب</code> أو <code>Name</code>.</li>
+      <li>عمود لكل محاضرة، وعنوانه تاريخ المحاضرة بصيغة يوم/شهر/سنة مثل <code>05/10/2026</code>، أو خلية تاريخ من Excel.</li>
+      <li>يمكن كتابة عدد ساعات المحاضرة بعد التاريخ بين قوسين: <code>05/10/2026 (2)</code>.</li>
+      <li>يمكن أن تكون فوق صف العناوين أسطر عنوان (اسم القسم والمادة)، فالتطبيق يتجاوزها.</li>
+      <li>المطابقة تتم بالاسم (مع التسامح في الهمزات والتاء المربوطة والاسم المختصر) أو بالرقم الجامعي إن وُجد.</li>
+    </ul>
+    <div class="note">إذا كانت هناك محاضرة مسجّلة مسبقاً بنفس التاريخ، تُحدَّث حالات الطلبة الموجودين في الملف فقط، ولا تتكرر المحاضرة.</div>
+  </section>
+
+  <section id="ar-courses">
+    <h2 class="s">8. إدارة المواد</h2>
+    <p>تبويب <span class="ui">المواد</span> يعرض مواد المرحلة المختارة في الفصل المختار.</p>
+    <ul>
+      <li><span class="ui">＋ إضافة مادة</span>: الاسم بالعربية (مطلوب) والإنكليزية، والتدريسي، والنوع (نظري / توتوريال / عملي / أخرى)، و<b>الساعات الأسبوعية</b> (مطلوبة)، والموعد، والقاعة.</li>
+      <li>✎ للتعديل، و🗑 للحذف. حذف المادة يحذف محاضراتها المسجّلة أيضاً.</li>
+      <li><span class="ui">⇄ نسخ مواد هذه المرحلة إلى الفصل الثاني</span>: ينسخ المواد إلى الفصل الآخر دون تكرار الموجود.</li>
+    </ul>
+    <div class="warn">الساعات الأسبوعية هي أساس حساب النسب: <b>الساعات المقررة = الساعات الأسبوعية × عدد أسابيع الفصل (15)</b>. إذا كانت خاطئة تخرج النسب خاطئة.</div>
+    <div class="tip">اكتب في حقل الموعد اسم اليوم (مثل <code>الأحد 8:30-10:30</code>) ليقترح التطبيق المادة في «محاضرات اليوم»، ولتخرج تواريخ قالب Excel صحيحة.</div>
+  </section>
+
+  <section id="ar-students">
+    <h2 class="s">9. إدارة الطلبة والمراحل</h2>
+    <h3>المراحل والشعب</h3>
+    <p>في تبويب <span class="ui">الطلبة</span>: زر ＋ بجانب قائمة المراحل يضيف مرحلة أو شعبة (المرحلة 1-4، النظام بولونيا / السنوي، الشعبة A/B). وزر ✎ يعدّلها، و🗑 يحذفها مع طلبتها وموادها ومحاضراتها.</p>
+    <h3>الطلبة</h3>
+    <ul>
+      <li><span class="ui">＋ إضافة طالب</span>: الاسم، والرقم الجامعي (اختياري)، وملاحظة.</li>
+      <li><span class="ui">📋 استيراد أسماء</span>: الصق الأسماء اسماً في كل سطر (ويمكن إضافة فاصلة ثم الرقم الجامعي)، أو اختر ملف Excel/CSV فيه عمود للأسماء فيُملأ المربع تلقائياً. راجع القائمة ثم اضغط <span class="ui">حفظ</span>.</li>
+      <li>✎ لتعديل اسم أو رقم، و🗑 لحذف طالب وسجلاته.</li>
+    </ul>
+    <div class="note">المرحلة الأولى لا تحتوي طلبة حالياً لعدم توفر قائمتها. أضفها من «استيراد أسماء».</div>
+  </section>
+
+  <section id="ar-rules">
+    <h2 class="s">10. ضوابط الغياب وطريقة الحساب</h2>
+    <p>وفق <b>المادة (9) من التعليمات الامتحانية رقم 134 لسنة 2000</b> المعدلة بالقرار 157 لسنة 2004، يُعدّ الطالب راسباً في المادة إذا تجاوز غيابه <b>10%</b> من الساعات المقررة بدون عذر مشروع، أو <b>15%</b> بعذر مشروع يقرّه مجلس الكلية.</p>
+    <div class="tbl"><table>
+      <tr><th>الحالة</th><th>الشرط (الإعداد الافتراضي)</th><th>الإجراء المقترح في التقارير</th></tr>
+      <tr><td>ضمن الحد</td><td>أقل من 5%</td><td>لا يوجد إجراء</td></tr>
+      <tr><td>إنذار أول</td><td>5% فأكثر بدون عذر</td><td>توجيه إنذار أول للطالب</td></tr>
+      <tr><td>إنذار نهائي</td><td>8% فأكثر بدون عذر</td><td>إنذار نهائي وإشعار ولي الأمر</td></tr>
+      <tr><td>راسب بالغياب</td><td>أكثر من 10% بدون عذر، أو أكثر من 15% غياب كلي</td><td>يُعدّ راسباً في المادة وفق المادة (9)</td></tr>
+    </table></div>
+    <h3>مثال</h3>
+    <p>مادة ساعاتها الأسبوعية 2: الساعات المقررة = 2 × 15 = <b>30 ساعة</b>.</p>
+    <ul>
+      <li>10% = 3 ساعات: الطالب الذي يتجاوز غيابه بدون عذر 3 ساعات (أي محاضرتين من ساعتين) يصبح <b>راسباً بالغياب</b>.</li>
+      <li>15% = 4.5 ساعات: حد الغياب الكلي مع الأعذار.</li>
+    </ul>
+    <p>تُحسب النسب <b>تراكمياً للفصل كله ولكل مادة على حدة</b>. يمكن تعديل حدود الإنذار من <span class="ui">الإعدادات</span> ← <span class="ui">حدود الغياب</span> إذا قرر القسم ذلك.</p>
+  </section>
+
+  <section id="ar-reports">
+    <h2 class="s">11. التقارير والمذكرات</h2>
+    <p>في تبويب <span class="ui">التقارير</span> اختر نوع التقرير من الأزرار العلوية، ثم المرحلة، ثم <b>لغة التقرير</b> (<span class="ui">عربي</span> أو <span class="ui">EN</span>). لغة التقرير مستقلة عن لغة الواجهة.</p>
+    <div class="tbl"><table>
+      <tr><th>التقرير</th><th>المحتوى</th></tr>
+      <tr><td><span class="ui">تقرير دوري / مذكرة</span></td><td>مذكرة رسمية إلى رئيس القسم لفترة <b>يومية أو أسبوعية أو شهرية أو للفصل كاملاً أو مخصصة</b>، لجميع المواد أو لمادة واحدة. لكل طالب: أيام الغياب وساعاته، والنسبة التراكمية، والحالة، والإجراء المقترح، مع خلاصة الأعداد، وتفاصيل الغياب، وقائمة المحاضرات المسجلة في الفترة.</td></tr>
+      <tr><td><span class="ui">تقرير المادة</span></td><td>جميع طلبة المادة مع نسبهم وحالاتهم.</td></tr>
+      <tr><td><span class="ui">تقرير الطالب</span></td><td>غياب طالب واحد في كل مواده، مع المجموع.</td></tr>
+      <tr><td><span class="ui">نظرة عامة</span></td><td>جدول الطلبة × المواد، وكل خلية فيها نسبة الغياب ملوّنة حسب الحالة.</td></tr>
+      <tr><td><span class="ui">سجل الغيابات</span></td><td>مثل الاستمارة الورقية: الطلبة × تواريخ المحاضرات بالرموز.</td></tr>
+    </table></div>
+    <h3>أزرار التقرير</h3>
+    <ul>
+      <li><span class="ui">🖨 طباعة / PDF</span>: على الحاسوب والآيفون يفتح نافذة الطباعة، ومنها <b>حفظ بصيغة PDF</b>. في تطبيق أندرويد يُشارك التقرير كملف يُفتح في Chrome ثم يُطبع أو يُحفظ PDF.</li>
+      <li><span class="ui">⬇ تصدير CSV</span>: ملف يُفتح في Excel.</li>
+      <li><span class="ui">📤 إرسال التقرير</span>: يرسل المذكرة وملف CSV إلى المستلمين الذين حددهم رئيس القسم، عبر واتساب أو البريد أو أي تطبيق مشاركة. على الحاسوب يُنزَّل الملفان ويُفتح البريد بالعناوين والملخص.</li>
+    </ul>
+    <div class="tip">الاستخدام المقترح: كل خميس افتح <span class="ui">تقرير دوري / مذكرة</span> ← <span class="ui">أسبوعي</span> ← <span class="ui">📤 إرسال التقرير</span>.</div>
+  </section>
+
+  <section id="ar-master">
+    <h2 class="s">12. الحساب الرئيسي لرئيس القسم</h2>
+    <ol class="steps">
+      <li>ادخل بالرمز الرئيسي، أو من <span class="ui">الإعدادات</span> ← <span class="ui">تبديل الحساب</span>.</li>
+      <li>في <span class="ui">الإعدادات</span> تظهر بطاقة <span class="ui">إدارة التقارير (الحساب الرئيسي)</span>.</li>
+      <li>اضغط <span class="ui">＋ إضافة مستلم</span> واختر الصفة: <b>رئيس القسم</b> أو <b>لجنة الغيابات</b> أو <b>شخص مخوّل</b>، ثم الاسم والبريد الإلكتروني ورقم الواتساب.</li>
+      <li>خيار <span class="ui">مخوّل باستلام التقارير</span> يوقف أو يفعّل المستلم دون حذفه.</li>
+    </ol>
+    <div class="note">قائمة المستلمين تُحفظ على جهاز من أدخلها. لتظهر القائمة نفسها على هواتف جميع التدريسيين، يضيفها مسؤول التطبيق مرة واحدة في إعدادات التطبيق ثم يعيد النشر.</div>
+  </section>
+
+  <section id="ar-years">
+    <h2 class="s">13. الأعوام والفصول الدراسية</h2>
+    <ul>
+      <li>العام 2026-2027 محمّل حسب التقويم الجامعي: الفصل الأول من 20/9/2026 إلى 31/12/2026، والعطلة الربيعية من 17 إلى 30/1/2027، والفصل الثاني من 31/1/2027 إلى 13/5/2027، ولكل فصل 15 أسبوعاً.</li>
+      <li>لتعديل التواريخ أو عدد الأسابيع أو مواعيد التقويم: <span class="ui">الإعدادات</span> ← <span class="ui">الأعوام الدراسية</span> ← ✎.</li>
+      <li><b>عام جديد:</b> <span class="ui">＋ إضافة عام دراسي</span>، واكتب الاسم والتواريخ، وفعّل <span class="ui">نسخ المراحل والطلبة والمواد من العام الحالي</span>. بعدها حدّث القوائم (ترفيع الطلبة، المواد الجديدة).</li>
+      <li><b>الفصل الثاني:</b> اختره من الشريط العلوي، ثم انسخ المواد من تبويب <span class="ui">المواد</span> وعدّلها حسب جدول الفصل الثاني.</li>
+    </ul>
+  </section>
+
+  <section id="ar-backup">
+    <h2 class="s">14. النسخ الاحتياطي وجمع البيانات</h2>
+    <div class="warn">البيانات محفوظة على الجهاز فقط. حذف التطبيق أو مسح بيانات المتصفح أو فقدان الهاتف يعني ضياعها. صدّر نسخة احتياطية <b>أسبوعياً</b> على الأقل.</div>
+    <h3>تصدير نسخة</h3>
+    <p><span class="ui">الإعدادات</span> ← <span class="ui">⬇ تصدير نسخة احتياطية</span>، ثم احفظ الملف أو أرسله لنفسك عبر البريد أو Drive أو واتساب.</p>
+    <h3>جمع بيانات جميع التدريسيين لدى رئيس القسم أو المقرر</h3>
+    <ol class="steps">
+      <li>يصدّر كل تدريسي نسخة احتياطية ويرسلها إلى رئيس القسم أو المقرر.</li>
+      <li>على جهازه: <span class="ui">الإعدادات</span> ← اختر <span class="ui">دمج مع البيانات الحالية</span> ← <span class="ui">⬆ استيراد نسخة احتياطية</span>، ويكرر ذلك لكل ملف.</li>
+      <li>يُصدر بعدها التقارير الشاملة للقسم.</li>
+    </ol>
+    <p>خيار <span class="ui">استبدال كل البيانات</span> يمسح بيانات الجهاز ويضع بيانات الملف مكانها، ويُستخدم عند نقل البيانات إلى هاتف جديد.</p>
+  </section>
+
+  <section id="ar-updates">
+    <h2 class="s">15. التحديثات</h2>
+    <ul>
+      <li><b>آيفون والحاسوب:</b> يصل التحديث تلقائياً عند فتح التطبيق مع اتصال بالإنترنت.</li>
+      <li><b>أندرويد (APK):</b> نزّل ملف APK الجديد وثبّته فوق القديم. البيانات تبقى كما هي.</li>
+    </ul>
+  </section>
+
+  <section id="ar-faq">
+    <h2 class="s">16. أسئلة شائعة وحل المشكلات</h2>
+    <h3>نسيت رمز الدخول</h3><p>اطلبه من رئيس القسم. لا يمكن استعادته من داخل التطبيق.</p>
+    <h3>لا أجد «إضافة إلى الشاشة الرئيسية» على الآيفون</h3><p>افتح الرابط في Safari وليس في Chrome، ثم مرّر قائمة المشاركة للأسفل.</p>
+    <h3>لا تظهر المادة في قائمتي</h3><p>ألغِ خيار <span class="ui">موادي فقط</span>، أو تأكد أن اسمك في الإعدادات يطابق اسمك في المادة، وأن الفصل الصحيح مختار.</p>
+    <h3>النسب تظهر صفراً أو غير منطقية</h3><p>تحقق من <b>الساعات الأسبوعية</b> للمادة ومن ساعات كل محاضرة.</p>
+    <h3>أسماء غير مطابَقة عند استيراد Excel</h3><p>صحّح الاسم في الملف ليطابق القائمة، أو أضف الطالب في تبويب الطلبة، أو فعّل خيار إضافة الأسماء غير الموجودة.</p>
+    <h3>«لم يُعثر على صف فيه تواريخ محاضرات»</h3><p>اكتب التواريخ في صف العناوين بصيغة يوم/شهر/سنة، أو استخدم القالب الجاهز.</p>
+    <h3>هاتفي يعرض بيانات مختلفة عن هاتف زميلي</h3><p>هذا طبيعي، لأن لكل جهاز بياناته. استخدم التصدير والدمج (القسم 14).</p>
+    <h3>زر الطباعة لا يطبع في تطبيق أندرويد</h3><p>يُشارك التقرير كملف. اختر Chrome لفتحه، ثم من القائمة ⋮ اختر <b>مشاركة ← طباعة</b>.</p>
+  </section>
+
+  <section id="ar-privacy">
+    <h2 class="s">17. الخصوصية والأمان</h2>
+    <ul>
+      <li>لا تُرسل بيانات الطلبة إلى أي خادم. تبقى على الجهاز، ولا تخرج منه إلا عندما تصدّرها أو ترسلها بنفسك.</li>
+      <li>رمز الدخول يمنع الاستخدام غير المخوّل للتطبيق، لكنه لا يشفّر بيانات الهاتف، فاحمِ هاتفك برمز قفل.</li>
+      <li>أرسل التقارير إلى المستلمين المخوّلين فقط.</li>
+    </ul>
+  </section>
+</article>
+
+<!-- ======================================================================= -->
+<!--                                ENGLISH                                   -->
+<!-- ======================================================================= -->
+<article id="en" lang="en" dir="ltr" hidden>
+  <div class="cover">
+    <div class="logos"><img src="logos/university.png" alt=""><img src="logos/department.svg" alt=""><img src="logos/college.png" alt=""></div>
+    <h1>Student Attendance System — User Guide</h1>
+    <p>Department of Water Resources Engineering — College of Engineering — Mustansiriyah University</p>
+    <p>Version 1.3 — Academic year 2026-2027</p>
+  </div>
+
+  <nav class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#en-about">About the app</a></li>
+      <li><a href="#en-install">Installing the app</a></li>
+      <li><a href="#en-login">Signing in and access codes</a></li>
+      <li><a href="#en-screen">Finding your way around</a></li>
+      <li><a href="#en-first">First-time setup for lecturers</a></li>
+      <li><a href="#en-record">Recording attendance</a></li>
+      <li><a href="#en-excel">Importing from Excel</a></li>
+      <li><a href="#en-courses">Managing courses</a></li>
+      <li><a href="#en-students">Managing students and stages</a></li>
+      <li><a href="#en-rules">Absence rules and calculation</a></li>
+      <li><a href="#en-reports">Reports and memos</a></li>
+      <li><a href="#en-master">Master account for the Head of Department</a></li>
+      <li><a href="#en-years">Academic years and terms</a></li>
+      <li><a href="#en-backup">Backup and collecting data</a></li>
+      <li><a href="#en-updates">Updates</a></li>
+      <li><a href="#en-faq">FAQ and troubleshooting</a></li>
+      <li><a href="#en-privacy">Privacy and security</a></li>
+    </ol>
+  </nav>
+
+  <section id="en-about">
+    <h2 class="s">1. About the app</h2>
+    <p>The app records student attendance for the department's lectures, calculates absence percentages automatically according to the examination instructions, and produces official reports and memos to the Head of Department in Arabic or English.</p>
+    <ul>
+      <li>Works on <b>Android</b>, <b>iPhone/iPad</b> and <b>computers</b>, and offline once installed.</li>
+      <li>Preloaded with the department's student lists, the term-1 timetable and the 2026-2027 university calendar.</li>
+      <li>Supports two terms per academic year and any number of years.</li>
+      <li>Data is stored <b>on your device only</b>; nothing is sent to a server.</li>
+    </ul>
+  </section>
+
+  <section id="en-install">
+    <h2 class="s">2. Installing the app</h2>
+    <p>App link: <code>https://hamfee77-max.github.io/attendance/</code></p>
+    <h3>Android</h3>
+    <ol class="steps">
+      <li>Open the link in Chrome, enter the access code, then go to <span class="ui">Settings</span> → <span class="ui">Download the Android app (APK)</span>. Or receive the file <code>WRE-Attendance.apk</code> from the Head of Department.</li>
+      <li>Open the downloaded file. When the security prompt appears, choose <b>Settings</b> and enable <b>Allow from this source</b> (asked only once).</li>
+      <li>Tap <b>Install</b>. An icon named “WRE Attendance” appears.</li>
+    </ol>
+    <p>Alternative: from the Chrome menu (⋮) choose <b>Install app</b> or <b>Add to Home screen</b>.</p>
+    <h3>iPhone and iPad</h3>
+    <ol class="steps">
+      <li>Open the link in <b>Safari</b> specifically (Chrome on iPhone cannot install it), or scan the QR code with the camera.</li>
+      <li>Tap the <b>Share</b> button (a square with an up arrow).</li>
+      <li>Choose <b>Add to Home Screen</b>, then <b>Add</b>.</li>
+      <li>Always open the app from the new icon rather than from Safari, because the icon keeps its data separately from the browser.</li>
+    </ol>
+    <h3>Computer</h3>
+    <p>Open the link in Chrome or Edge. You can install it as a program with the install icon in the address bar. A computer is convenient for printing and for working with Excel files.</p>
+  </section>
+
+  <section id="en-login">
+    <h2 class="s">3. Signing in and access codes</h2>
+    <p>The app is protected by an access code and opens for authorized users only. There are two codes, both obtained from the Head of Department:</p>
+    <div class="tbl"><table>
+      <tr><th>Code</th><th>For</th><th>What it unlocks</th></tr>
+      <tr><td>Lecturer code</td><td>All authorized lecturers</td><td>All functions: Record, Courses, Students, Reports, Settings.</td></tr>
+      <tr><td>Master code</td><td>Head of Department only</td><td>Everything above, plus <span class="ui">Report administration</span> to define report recipients.</td></tr>
+    </table></div>
+    <ol class="steps">
+      <li>Type the code in <span class="ui">Access code</span>.</li>
+      <li>Keep <span class="ui">Remember this device for 30 days</span> ticked on your personal phone; untick it on shared devices.</li>
+      <li>Tap <span class="ui">Enter</span>.</li>
+    </ol>
+    <p>To lock the app immediately, or to switch between the lecturer and master accounts: <span class="ui">Settings</span> → <span class="ui">Security</span> → <span class="ui">Lock the app now</span> or <span class="ui">Switch account</span>.</p>
+    <div class="warn">Do not share the codes in public groups or post them on paper. If a code leaks, the Head of Department asks the app administrator to change it.</div>
+  </section>
+
+  <section id="en-screen">
+    <h2 class="s">4. Finding your way around</h2>
+    <ul>
+      <li><b>Top bar:</b> logos and department name, the <span class="ui">EN / عربي</span> button to switch the interface language, and the <b>Academic year</b> and <b>Term</b> selectors. Everything in the app refers to the year and term selected here.</li>
+      <li><b>Bottom tabs:</b></li>
+    </ul>
+    <div class="tbl"><table>
+      <tr><th>Tab</th><th>Purpose</th></tr>
+      <tr><td><span class="ui">Record</span></td><td>Record attendance for each lecture; Excel import.</td></tr>
+      <tr><td><span class="ui">Courses</span></td><td>Add and edit courses per stage and term.</td></tr>
+      <tr><td><span class="ui">Students</span></td><td>Stages, sections and student lists.</td></tr>
+      <tr><td><span class="ui">Reports</span></td><td>Periodic memos, course and student reports, the register.</td></tr>
+      <tr><td><span class="ui">Settings</span></td><td>Your name, language, absence thresholds, years, backup, security, installation.</td></tr>
+    </table></div>
+  </section>
+
+  <section id="en-first">
+    <h2 class="s">5. First-time setup for lecturers (one minute)</h2>
+    <ol class="steps">
+      <li>Go to <span class="ui">Settings</span> and type your name in <span class="ui">Your name</span> as it appears in the timetable, e.g. <code>صباح حسن</code>.</li>
+      <li>Your name is printed automatically as “Prepared by” on every report.</li>
+      <li>A <span class="ui">My courses only</span> option then appears in Record, Courses and Reports. When ticked, you see only the courses that carry your name.</li>
+      <li>Make sure the correct academic year and term are selected in the top bar.</li>
+    </ol>
+    <div class="tip">Names are matched after removing academic titles (Prof., Dr., Asst. Lect., …), so you can type your name without a title.</div>
+  </section>
+
+  <section id="en-record">
+    <h2 class="s">6. Recording attendance</h2>
+    <ol class="steps">
+      <li>Open the <span class="ui">Record</span> tab and choose the <b>Stage / Section</b> and the <b>Course</b>. Or tap a course card under <span class="ui">Today's lectures</span>; the app suggests today's lectures from the timetable.</li>
+      <li>Tap <span class="ui">＋ Record new lecture</span>.</li>
+      <li>Check the <b>date</b> and <b>hours</b> (pre-filled with the course's weekly hours; editable), and optionally type the topic.</li>
+      <li>Every student starts as “present”. Change only the absent students with the buttons next to each name:</li>
+    </ol>
+    <div class="tbl"><table>
+      <tr><th>Button</th><th>Status</th><th>Effect</th></tr>
+      <tr><td><span class="k P">P</span></td><td>Present</td><td>Not counted as absence.</td></tr>
+      <tr><td><span class="k A">A</span></td><td>Absent</td><td>Counted as unexcused absence.</td></tr>
+      <tr><td><span class="k E">E</span></td><td>Excused</td><td>Counted only in the total percentage. A ✎ button appears for the excuse note.</td></tr>
+      <tr><td><span class="k L">L</span></td><td>Late</td><td>Recorded for follow-up; not counted as absence.</td></tr>
+    </table></div>
+    <p>Faster: <b>tapping a student's name</b> cycles the status: Present → Absent → Excused → Late → Present. The <span class="ui">✓ All present</span> button resets everyone to present.</p>
+    <ol class="steps" start="5">
+      <li>Tap <span class="ui">💾 Save</span>. The button shows the number of absences so you can check before saving.</li>
+    </ol>
+    <h3>Editing or deleting a past lecture</h3>
+    <p>In the <b>Lectures</b> list under the course card, tap a lecture to open, edit and save it, or tap 🗑 to delete it.</p>
+    <div class="note">If the date is outside the selected term, a warning appears; usually it means the wrong term is selected in the top bar.</div>
+  </section>
+
+  <section id="en-excel">
+    <h2 class="s">7. Importing from Excel</h2>
+    <p>If you keep attendance in an Excel file, you can bring it in at once instead of recording by hand.</p>
+    <h3>Step 1: download the ready template (recommended)</h3>
+    <ol class="steps">
+      <li>In <span class="ui">Record</span>, choose the stage and course.</li>
+      <li>Tap <span class="ui">⬇ Excel template</span>. The file lists the stage's students and has one column per lecture of the term, based on the course's timetable day, with holidays skipped.</li>
+      <li>Fill the cells with these codes:</li>
+    </ol>
+    <div class="tbl"><table>
+      <tr><th>Meaning</th><th>What to type in the cell</th></tr>
+      <tr><td>Absent</td><td><code>A</code>, <code>x</code>, <code>0</code>, <code>غ</code> or <code>absent</code></td></tr>
+      <tr><td>Excused</td><td><code>E</code>, <code>ع</code> or <code>excused</code></td></tr>
+      <tr><td>Late</td><td><code>L</code>, <code>ت</code> or <code>late</code></td></tr>
+      <tr><td>Present</td><td>empty cell, <code>✓</code>, <code>1</code> or <code>P</code></td></tr>
+    </table></div>
+    <h3>Step 2: import the file</h3>
+    <ol class="steps">
+      <li>Select the same stage and course, then tap <span class="ui">📥 Import attendance from Excel</span>.</li>
+      <li>Choose the file (<code>xlsx</code>, <code>xls</code> or <code>csv</code>).</li>
+      <li>Check the <b>preview</b>: number of lecture dates, matched students, unmatched names (in red), and the table “How cell values were read”.</li>
+      <li>If the file has new names that are not in the list, tick <span class="ui">Add unmatched names as new students</span>; otherwise they are skipped.</li>
+      <li>Tap <span class="ui">Save</span>.</li>
+    </ol>
+    <h3>Requirements for your own file (if you don't use the template)</h3>
+    <ul>
+      <li>A names column titled <code>Name</code>, <code>الاسم</code> or <code>اسم الطالب</code>.</li>
+      <li>One column per lecture whose header is the lecture date as day/month/year, e.g. <code>05/10/2026</code>, or an Excel date cell.</li>
+      <li>The lecture hours may follow the date in brackets: <code>05/10/2026 (2)</code>.</li>
+      <li>Title rows above the header (department, course name) are fine; the app skips them.</li>
+      <li>Matching uses the name (tolerating hamza, taa-marbuta and shortened names) or the student ID when present.</li>
+    </ul>
+    <div class="note">If a lecture already exists on the same date, only the students in the file are updated; the lecture is not duplicated.</div>
+  </section>
+
+  <section id="en-courses">
+    <h2 class="s">8. Managing courses</h2>
+    <p>The <span class="ui">Courses</span> tab lists the selected stage's courses in the selected term.</p>
+    <ul>
+      <li><span class="ui">＋ Add course</span>: Arabic name (required) and English name, lecturer, type (Theory / Tutorial / Practical / Other), <b>weekly hours</b> (required), schedule and room.</li>
+      <li>✎ to edit, 🗑 to delete. Deleting a course also deletes its recorded lectures.</li>
+      <li><span class="ui">⇄ Copy this stage's courses to Term 2</span>: copies the courses to the other term without duplicating existing ones.</li>
+    </ul>
+    <div class="warn">Weekly hours drive every percentage: <b>planned hours = weekly hours × weeks in the term (15)</b>. Wrong weekly hours give wrong percentages.</div>
+    <div class="tip">Put the day name in the schedule (e.g. <code>Sunday 8:30-10:30</code> or <code>الأحد 8:30-10:30</code>) so the app can suggest the course under “Today's lectures” and generate correct dates in the Excel template.</div>
+  </section>
+
+  <section id="en-students">
+    <h2 class="s">9. Managing students and stages</h2>
+    <h3>Stages and sections</h3>
+    <p>In <span class="ui">Students</span>, the ＋ button beside the stage list adds a stage or section (stage 1-4, Bologna or Annual system, section A/B). ✎ edits it; 🗑 deletes it together with its students, courses and lectures.</p>
+    <h3>Students</h3>
+    <ul>
+      <li><span class="ui">＋ Add student</span>: name, student ID (optional), note.</li>
+      <li><span class="ui">📋 Import names</span>: paste names one per line (optionally followed by a comma and the student ID), or choose an Excel/CSV file with a names column to fill the box automatically. Review the list, then tap <span class="ui">Save</span>.</li>
+      <li>✎ to edit a name or ID; 🗑 to delete a student and their records.</li>
+    </ul>
+    <div class="note">Stage 1 currently has no students because its list was not available. Add them with “Import names”.</div>
+  </section>
+
+  <section id="en-rules">
+    <h2 class="s">10. Absence rules and calculation</h2>
+    <p>Under <b>Article 9 of Examination Instructions No. 134 of 2000</b>, amended by decision 157 of 2004, a student fails a course when absence exceeds <b>10%</b> of its planned hours without an approved excuse, or <b>15%</b> with an excuse approved by the college council.</p>
+    <div class="tbl"><table>
+      <tr><th>Status</th><th>Condition (default settings)</th><th>Recommended action in reports</th></tr>
+      <tr><td>Within limit</td><td>below 5%</td><td>No action</td></tr>
+      <tr><td>1st warning</td><td>5% or more unexcused</td><td>Issue a first warning</td></tr>
+      <tr><td>Final warning</td><td>8% or more unexcused</td><td>Final warning and notify the guardian</td></tr>
+      <tr><td>Failed by absence</td><td>more than 10% unexcused, or more than 15% total</td><td>Considered failed in the course per Article 9</td></tr>
+    </table></div>
+    <h3>Example</h3>
+    <p>A course with 2 weekly hours: planned hours = 2 × 15 = <b>30 hours</b>.</p>
+    <ul>
+      <li>10% = 3 hours: a student whose unexcused absence exceeds 3 hours (two 2-hour lectures) is <b>failed by absence</b>.</li>
+      <li>15% = 4.5 hours: the limit for total absence including excused hours.</li>
+    </ul>
+    <p>Percentages are <b>cumulative for the whole term and per course</b>. Warning thresholds can be changed in <span class="ui">Settings</span> → <span class="ui">Absence thresholds</span> if the department decides so.</p>
+  </section>
+
+  <section id="en-reports">
+    <h2 class="s">11. Reports and memos</h2>
+    <p>In <span class="ui">Reports</span>, choose the report type from the top buttons, then the stage, then the <b>report language</b> (<span class="ui">عربي</span> or <span class="ui">EN</span>). The report language is independent of the interface language.</p>
+    <div class="tbl"><table>
+      <tr><th>Report</th><th>Contents</th></tr>
+      <tr><td><span class="ui">Periodic report / Memo</span></td><td>Official memo to the Head of Department for a <b>daily, weekly, monthly, whole-term or custom</b> period, for all courses or one course. Per student: absence days and hours, cumulative percentage, status and recommended action; plus a summary of counts, absence details, and the lectures recorded in the period.</td></tr>
+      <tr><td><span class="ui">Course report</span></td><td>All students of a course with their percentages and statuses.</td></tr>
+      <tr><td><span class="ui">Student report</span></td><td>One student's absence across all courses, with totals.</td></tr>
+      <tr><td><span class="ui">Overview</span></td><td>Students × courses grid; each cell shows the absence percentage coloured by status.</td></tr>
+      <tr><td><span class="ui">Register</span></td><td>Like the paper form: students × lecture dates with codes.</td></tr>
+    </table></div>
+    <h3>Report buttons</h3>
+    <ul>
+      <li><span class="ui">🖨 Print / PDF</span>: on computers and iPhone it opens the print dialog, where you can choose <b>Save as PDF</b>. In the Android app the report is shared as a file that opens in Chrome for printing or saving as PDF.</li>
+      <li><span class="ui">⬇ Export CSV</span>: a file that opens in Excel.</li>
+      <li><span class="ui">📤 Send report</span>: sends the memo and the CSV file to the recipients defined by the Head of Department through WhatsApp, email or any share app. On a computer both files download and the mail app opens with the addresses and a summary.</li>
+    </ul>
+    <div class="tip">Suggested routine: every Thursday open <span class="ui">Periodic report / Memo</span> → <span class="ui">Weekly</span> → <span class="ui">📤 Send report</span>.</div>
+  </section>
+
+  <section id="en-master">
+    <h2 class="s">12. Master account for the Head of Department</h2>
+    <ol class="steps">
+      <li>Sign in with the master code, or use <span class="ui">Settings</span> → <span class="ui">Switch account</span>.</li>
+      <li>In <span class="ui">Settings</span> the card <span class="ui">Report administration (master account)</span> appears.</li>
+      <li>Tap <span class="ui">＋ Add recipient</span> and choose the role: <b>Head of Department</b>, <b>Absence committee</b> or <b>Authorized person</b>, then the name, email and WhatsApp number.</li>
+      <li><span class="ui">Authorized to receive reports</span> suspends or restores a recipient without deleting them.</li>
+    </ol>
+    <div class="note">The recipients list is saved on the device where it was entered. To give every lecturer's phone the same list, the app administrator adds it once to the app configuration and republishes.</div>
+  </section>
+
+  <section id="en-years">
+    <h2 class="s">13. Academic years and terms</h2>
+    <ul>
+      <li>2026-2027 is preloaded from the university calendar: Term 1 from 20/9/2026 to 31/12/2026, spring break 17-30/1/2027, Term 2 from 31/1/2027 to 13/5/2027, 15 weeks each.</li>
+      <li>To change dates, weeks or calendar events: <span class="ui">Settings</span> → <span class="ui">Academic years</span> → ✎.</li>
+      <li><b>New year:</b> <span class="ui">＋ Add academic year</span>, type the name and dates, and tick <span class="ui">Copy stages, students and courses from the current year</span>. Then update the lists (promoted students, new courses).</li>
+      <li><b>Term 2:</b> select it in the top bar, copy the courses from the <span class="ui">Courses</span> tab, and edit them to match the term-2 timetable.</li>
+    </ul>
+  </section>
+
+  <section id="en-backup">
+    <h2 class="s">14. Backup and collecting data</h2>
+    <div class="warn">Data lives on the device only. Uninstalling the app, clearing browser data or losing the phone loses it. Export a backup at least <b>weekly</b>.</div>
+    <h3>Exporting a backup</h3>
+    <p><span class="ui">Settings</span> → <span class="ui">⬇ Export backup</span>, then save the file or send it to yourself by email, Drive or WhatsApp.</p>
+    <h3>Collecting all lecturers' data at the Head of Department or coordinator</h3>
+    <ol class="steps">
+      <li>Each lecturer exports a backup and sends it to the Head or the coordinator.</li>
+      <li>On their device: <span class="ui">Settings</span> → choose <span class="ui">Merge with current data</span> → <span class="ui">⬆ Import backup</span>, repeated for each file.</li>
+      <li>They can then produce department-wide reports.</li>
+    </ol>
+    <p><span class="ui">Replace all data</span> wipes the device's data and loads the file instead; use it to move to a new phone.</p>
+  </section>
+
+  <section id="en-updates">
+    <h2 class="s">15. Updates</h2>
+    <ul>
+      <li><b>iPhone and computers:</b> updates arrive automatically when the app is opened online.</li>
+      <li><b>Android (APK):</b> download the new APK and install it over the old one; your data is kept.</li>
+    </ul>
+  </section>
+
+  <section id="en-faq">
+    <h2 class="s">16. FAQ and troubleshooting</h2>
+    <h3>I forgot the access code</h3><p>Ask the Head of Department; it cannot be recovered inside the app.</p>
+    <h3>No “Add to Home Screen” on iPhone</h3><p>Open the link in Safari, not Chrome, and scroll down the share menu.</p>
+    <h3>My course does not appear</h3><p>Untick <span class="ui">My courses only</span>, or check that your name in Settings matches the course's lecturer, and that the right term is selected.</p>
+    <h3>Percentages show zero or look wrong</h3><p>Check the course's <b>weekly hours</b> and each lecture's hours.</p>
+    <h3>Unmatched names when importing Excel</h3><p>Correct the name in the file to match the list, add the student in Students, or tick the option to add unmatched names.</p>
+    <h3>“No row with lecture dates was found”</h3><p>Put the dates in the header row as day/month/year, or use the ready template.</p>
+    <h3>My phone shows different data from my colleague's</h3><p>Normal: each device has its own data. Use export and merge (section 14).</p>
+    <h3>Print doesn't print in the Android app</h3><p>The report is shared as a file: choose Chrome to open it, then menu ⋮ → <b>Share → Print</b>.</p>
+  </section>
+
+  <section id="en-privacy">
+    <h2 class="s">17. Privacy and security</h2>
+    <ul>
+      <li>Student data is never sent to a server. It stays on the device and leaves it only when you export or send it yourself.</li>
+      <li>The access code prevents unauthorized use of the app but does not encrypt the phone's data, so protect your phone with a screen lock.</li>
+      <li>Send reports to authorized recipients only.</li>
+    </ul>
+  </section>
+</article>
+
+<footer id="foot">قسم هندسة الموارد المائية — كلية الهندسة — الجامعة المستنصرية</footer>
+</main>
+
+<script>
+(function () {
+  const ar = document.getElementById('ar'), en = document.getElementById('en');
+  const T = {
+    ar: { hdr: 'دليل استخدام نظام تسجيل غيابات الطلبة', btn: 'English', back: '← التطبيق', foot: 'قسم هندسة الموارد المائية — كلية الهندسة — الجامعة المستنصرية', title: 'دليل الاستخدام — غيابات الطلبة' },
+    en: { hdr: 'Student Attendance System — User Guide', btn: 'عربي', back: 'App →', foot: 'Department of Water Resources Engineering — College of Engineering — Mustansiriyah University', title: 'User Guide — Student Attendance' },
+  };
+  function appLang() {
+    try { const s = JSON.parse(localStorage.getItem('wre-attendance:data:v1') || 'null'); return s && s.settings && s.settings.lang; } catch (e) { return null; }
+  }
+  let lang = new URLSearchParams(location.search).get('lang') || appLang() || 'ar';
+  if (lang !== 'en') lang = 'ar';
+  function apply() {
+    const isAr = lang === 'ar';
+    ar.hidden = !isAr; en.hidden = isAr;
+    document.documentElement.lang = lang; document.documentElement.dir = isAr ? 'rtl' : 'ltr';
+    document.getElementById('hdr').textContent = T[lang].hdr;
+    document.getElementById('langBtn').textContent = T[lang].btn;
+    document.getElementById('backBtn').textContent = T[lang].back;
+    document.getElementById('foot').textContent = T[lang].foot;
+    document.title = T[lang].title;
+  }
+  document.getElementById('langBtn').addEventListener('click', () => { lang = lang === 'ar' ? 'en' : 'ar'; apply(); window.scrollTo(0, 0); });
+  document.getElementById('printBtn').addEventListener('click', () => window.print());
+  apply();
+})();
+</script>
+</body>
+</html>

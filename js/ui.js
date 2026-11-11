@@ -242,7 +242,8 @@
     const years = St.S.years.map((y) => `<div class="item"><div class="main"><div class="t">${esc(y.name)} ${y.id === St.S.currentYear ? '<span class="chip ok">✓</span>' : ''}</div><div class="s">${R.dmy(y.start)} – ${R.dmy(y.end)} · ${y.terms.map((tm) => `${termLabel(tm.id)}: ${R.dmy(tm.start)} – ${R.dmy(tm.end)} (${tm.weeks} ${t('weeks')})`).join(' · ')}</div>${(y.events || []).length ? `<div class="s">${y.events.map((e) => `${lang() === 'ar' ? e.nameAr : e.nameEn}: ${R.dmy(e.start)}${e.end && e.end !== e.start ? ' – ' + R.dmy(e.end) : ''}`).join(' · ')}</div>` : ''}</div><div class="acts"><button class="icon" data-act="edit-year" data-id="${y.id}">✎</button><button class="icon" data-act="del-year" data-id="${y.id}">🗑</button></div></div>`).join('');
     return `<div class="card"><h3>${t('tabSettings')}</h3>
       <label class="f">${t('lecturerName')}</label><input type="text" data-set="settings.lecturer" value="${esc(s.lecturer)}">
-      <label class="f">${t('language')}</label><select data-set="settings.lang">${opt('ar', 'العربية', s.lang === 'ar')}${opt('en', 'English', s.lang === 'en')}</select></div>
+      <label class="f">${t('language')}</label><select data-set="settings.lang">${opt('ar', 'العربية', s.lang === 'ar')}${opt('en', 'English', s.lang === 'en')}</select>
+      <div class="sp"></div><a class="btn block" href="help.html?lang=${lang()}">📖 ${t('userGuide')}</a></div>
       <div class="card"><h3>${t('thresholds')}</h3><div class="grid2">${num('warn1', t('warn1'))}${num('warn2', t('warn2'))}${num('failUnexcused', t('failU'))}${num('failTotal', t('failT'))}</div><p class="muted small">${t('regulation')}</p></div>
       <div class="card"><h3><span>${t('years')}</span><button class="btn sm" data-act="add-year">＋ ${t('addYear')}</button></h3><div class="list">${years}</div></div>
       <div class="card"><h3>${t('backup')}</h3><p class="muted small">${t('backupHint')}</p>
@@ -501,7 +502,7 @@
       ${CFG.access.rememberDays > 0 ? `<label class="row" style="gap:8px;margin-top:8px"><input type="checkbox" id="f-remember" class="fix" checked><span class="small">${t('rememberDevice', { n: CFG.access.rememberDays })}</span></label>` : ''}
       ${error ? `<p class="small" style="color:var(--fail)">${t('wrongCode')}</p>` : ''}
       <div class="toolbar"><button class="btn primary block" type="submit">${t('unlock')}</button></div></form>
-      <div class="center"><button class="btn sm ghost" data-act="toggle-lang-lock">${lang() === 'ar' ? 'English' : 'عربي'}</button></div></div></div>`;
+      <div class="center"><button class="btn sm ghost" data-act="toggle-lang-lock">${lang() === 'ar' ? 'English' : 'عربي'}</button> <a class="btn sm ghost" href="help.html?lang=${lang()}">📖 ${t('userGuide')}</a></div></div></div>`;
     setTimeout(() => { const i = $('#f-code'); if (i) i.focus(); }, 50);
   }
   document.addEventListener('submit', async (e) => {

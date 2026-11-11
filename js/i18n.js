@@ -155,6 +155,7 @@ window.I18N = {
   xlsExistingNote: ['المحاضرات الموجودة بنفس التاريخ تُحدَّث للطلبة الموجودين في الملف فقط.', 'Existing lectures on the same date are updated only for the students in the file.'],
   templateDates: ['القالب يحتوي {n} تاريخاً حسب موعد المادة وتقويم الفصل.', 'The template contains {n} dates from the course schedule and the term calendar.'],
   orExcel: ['أو اختر ملف Excel / CSV', 'or choose an Excel / CSV file'],
+  userGuide: ['دليل الاستخدام', 'User guide'],
   downloadApk: ['تنزيل تطبيق أندرويد (APK)', 'Download the Android app (APK)'],
   apkHint: ['بعد التنزيل افتح الملف واسمح بـ "تثبيت التطبيقات غير المعروفة" مرة واحدة.', 'After downloading, open the file and allow "Install unknown apps" once.'],
   nativeApp: ['تطبيق أندرويد مثبّت. البيانات محفوظة على هذا الجهاز.', 'Installed Android app. Data is stored on this device.'],

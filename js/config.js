@@ -6,7 +6,7 @@
 // ============================================================================
 window.APP_CONFIG = {
   appId: 'wre-attendance',              // storage key prefix; change when deploying for another department
-  version: '1.3.0',
+  version: '1.3.1',
 
   institution: {
     university: ['الجامعة المستنصرية', 'Mustansiriyah University'],
