@@ -31,6 +31,11 @@ window.DEPT = {
    "college": "logos/college.png",
    "department": "logos/department.svg"
   },
+  "cloud": {
+   "provider": "gdrive",
+   "url": "https://script.google.com/macros/s/AKfycbxge9TorKbPILJzzjEyVH7nBen-I5Zp6XKYqCQeCqwkeF05piFbI9cQ0i7ZZ3b4umOq/exec",
+   "label": "Google Drive — قسم هندسة الموارد المائية"
+  },
   "rules": {
    "bologna": {
     "warn1": 7,
