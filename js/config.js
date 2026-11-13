@@ -7,7 +7,7 @@
 // ============================================================================
 window.APP_CONFIG = {
   appId: 'wre-attendance',              // storage key prefix; change when deploying for another department
-  version: '2.3.0',
+  version: '2.4.0',
 
   // Owner and designer of the app (shown in About, the lock screen and the guides)
   owner: {
@@ -93,6 +93,11 @@ window.APP_CONFIG = {
   recipients: [
     { id: 'r_head', title: 'head', name: '', email: '', phone: '', authorized: true },
   ],
+
+  // Google Drive storage (Google Apps Script web app installed in the department's Google account; see admin.html).
+  // Empty url = off: reports are then exchanged as files. Usually set from Settings → Department setup.
+  // provider: 'none' | 'gdrive' (Google Apps Script in a Google account) | 'college' (college data centre) | 'server' (another data centre)
+  cloud: { provider: 'none', url: '', label: '' },
 
   // Android app download offered in Settings (relative to index.html; '' hides the link)
   androidApk: 'download/WRE-Attendance.apk',

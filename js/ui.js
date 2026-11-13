@@ -34,7 +34,7 @@
     const today = St.todayStr();
     if (isLecturer()) {
       const due = R.missingData({ upTo: today }).items;
-      const unsent = St.S.sessions.some((s) => { const c = St.course(s.courseId); return c && St.inScope(c) && (s.updatedAt || 0) > (UI.lastSentAt || 0); });
+      const unsent = Cloud.enabled() ? Cloud.pending() > 0 : St.S.sessions.some((s) => { const c = St.course(s.courseId); return c && St.inScope(c) && (s.updatedAt || 0) > (UI.lastSentAt || 0); });
       let h = '';
       if (due.length) {
         const todayN = due.filter((d) => d.date === today).length;
@@ -116,7 +116,7 @@
     const todayIdx = new Date().getDay(); const dayAr = I18N.dayNames[0].split(',')[todayIdx]; const dayEn = I18N.dayNames[1].split(',')[todayIdx];
     const pool = isLecturer() || UI.mine ? St.coursesFor('') : St.coursesFor(UI.groupId);
     const todays = pool.filter((x) => (!UI.mine || St.isMine(x)) && x.schedule && (N.norm(x.schedule).includes(N.norm(dayAr)) || x.schedule.toLowerCase().includes(dayEn.toLowerCase())));
-    let html = alertsCard() + `<div class="card"><label class="f">${t('group')}</label>${groupSelect('data-set="ui.groupId"', UI.groupId)}
+    let html = alertsCard() + cloudCard() + `<div class="card"><label class="f">${t('group')}</label>${groupSelect('data-set="ui.groupId"', UI.groupId)}
       <label class="f">${t('course')}</label><div class="row">${courseSelect('data-set="ui.courseId"', UI.groupId, UI.courseId)}${mineBox()}</div></div>`;
     if (todays.length) html += `<div class="card"><h3>${t('todayCourses')} · ${lang() === 'ar' ? dayAr : dayEn} ${R.dmy(St.todayStr())}</h3><div class="today-strip">${todays.map((x) => `<div class="tc" data-act="pick-course" data-id="${x.id}" data-g="${x.groupId}"><b>${esc(cname(x))}</b>${esc(gname(St.group(x.groupId)))}<br>${esc(x.schedule)} · ${esc(x.room || '')}</div>`).join('')}</div></div>`;
     if (!c) return html + `<div class="card empty">${t('noCourses')}</div>`;
@@ -171,6 +171,7 @@
     const s = { id: draft.id || 's_' + St.uid(), courseId: draft.courseId, date: draft.date, hours: Number(draft.hours) || 0, topic: draft.topic || '', records, notes, by: prev ? (prev.by || '') : (A.current ? A.current.id : ''), byName: prev ? (prev.byName || '') : me, createdAt: draft.createdAt || Date.now(), updatedAt: Date.now() };
     if (prev && A.current && prev.by !== A.current.id) { s.editedBy = me; s.editedAt = Date.now(); }
     St.upsert(St.S.sessions, s); St.save(); draft = null; toast(t('saved')); render();
+    sendToStore([s.id]);
   }
 
   // ================= COURSES =================
@@ -299,7 +300,7 @@
       const r = R.overview(UI.groupId, rl, UI.mine); out = { html: r.html, csv: r.csv, name: `overview_${gname(St.group(UI.groupId))}` };
     }
     const recs = authorizedRecipients();
-    html += `<div class="toolbar"><button class="btn primary" data-act="print" ${out ? '' : 'disabled'}>🖨 ${t('print')}</button><button class="btn" data-act="csv" ${out ? '' : 'disabled'}>⬇ ${t('exportCsv')}</button><button class="btn" data-act="send" ${out ? '' : 'disabled'}>📤 ${t('sendReport')}</button></div>
+    html += `<div class="toolbar"><button class="btn primary" data-act="print" ${out ? '' : 'disabled'}>🖨 ${t('print')}</button><button class="btn" data-act="csv" ${out ? '' : 'disabled'}>⬇ ${t('exportCsv')}</button>${Cloud.enabled() ? `<button class="btn" data-act="send" ${out ? '' : 'disabled'}>☁️ ${t('cloudSendBtn', { d: storeName() })}</button><button class="btn" data-act="share" ${out ? '' : 'disabled'}>📤 ${t('shareBtn')}</button>` : `<button class="btn" data-act="send" ${out ? '' : 'disabled'}>📤 ${t('sendReport')}</button>`}</div>
       <p class="muted small">${recs.length ? `${t('sendTo')}: ${recs.map((r) => `${recTitle(r)}${r.name ? ' ' + esc(r.name) : ''}`).join('، ')}` : t('noRecipients')} · ${t('sendHint')}</p></div>`;
     lastReport = out || { html: '', csv: '', name: 'report' };
     html += out ? `<div class="tbl-wrap">${out.html}</div>` : `<div class="card empty">${t('nothingToShow')}</div>`;
@@ -329,7 +330,7 @@
         <label class="f">${t('importJson')}: </label><select id="f-import-mode">${opt('merge', t('merge'), true)}${opt('replace', t('replace'))}</select>
         ${A.can('admin') ? `<div class="sp"></div><button class="btn danger block" data-act="reset-seed">${t('resetSeed')}</button>` : ''}</div>`;
     else html += `<div class="card"><h3>${t('backup')}</h3><p class="muted small">${t('backupHint')}</p><button class="btn block" data-act="export-json">⬇ ${t('exportJson')}</button></div>`;
-    html += installCard() + aboutCard();
+    html += storageSettingsCard() + installCard() + aboutCard();
     return html;
   }
   function installCard() {
@@ -402,14 +403,22 @@
     const sysBlock = (sy, label) => `<h4>${label}</h4><div class="grid2">${sysNum(sy, 'warn1', t('warn1'))}${sysNum(sy, 'warn2', t('warn2'))}${sysNum(sy, 'failUnexcused', t('failU'))}${sysNum(sy, 'failTotal', t('failT'))}</div>`;
     modal(t('deptSetup'), `${pair('university', t('universityL'))}${pair('college', t('collegeL'))}${pair('department', t('departmentL'))}${pair('headTitle', t('headTitleL'))}
       <h4>${t('logosL')}</h4><div class="logo-row">${logo('university', t('logoUni'))}${logo('college', t('logoCol'))}${logo('department', t('logoDept'))}</div>
-      <h4>${t('rulesTitle')}</h4>${sysBlock('bologna', t('sysBologna'))}${sysBlock('annual', t('sysAnnual'))}<div class="grid2">${num('weeksPerTerm', t('weeksPerTerm'), 1)}${num('editWindowHours', t('editWindowL'), 1)}<div><label class="f">${t('trackFromL')}</label><input type="date" id="f-trackFrom" value="${esc(r.trackFrom || '')}"></div><div><label class="f">${t('stagesCount')}</label><input type="number" id="f-stages" min="1" max="8" value="${CFG.stages}"></div></div>`,
+      <h4>${t('rulesTitle')}</h4>${sysBlock('bologna', t('sysBologna'))}${sysBlock('annual', t('sysAnnual'))}<div class="grid2">${num('weeksPerTerm', t('weeksPerTerm'), 1)}${num('editWindowHours', t('editWindowL'), 1)}<div><label class="f">${t('trackFromL')}</label><input type="date" id="f-trackFrom" value="${esc(r.trackFrom || '')}"></div><div><label class="f">${t('stagesCount')}</label><input type="number" id="f-stages" min="1" max="8" value="${CFG.stages}"></div></div>
+      <h4>☁️ ${t('storeTitle')}</h4><p class="muted small">${t('storeHint')}</p>
+      <label class="f">${t('storeProvider')}</label><select id="f-provider">${PROVIDERS.map((p) => opt(p, t('prov_' + p), (CFG.cloud.provider || (CFG.cloud.url ? 'gdrive' : 'none')) === p)).join('')}</select>
+      <label class="f">${t('storeName')}</label><input type="text" id="f-store-label" value="${esc(CFG.cloud.label || '')}" placeholder="${esc(t('storeNamePh'))}">
+      <label class="f">${t('storeUrl')}</label><input type="text" id="f-store-url" value="${esc(CFG.cloud.url || '')}" dir="ltr" placeholder="https://script.google.com/macros/s/…/exec  |  https://…/attendance-api.php">
+      <p class="muted small">${t('storeUrlHint')}</p>`,
       () => {
         const institution = {}; for (const k of ['university', 'college', 'department', 'headTitle']) institution[k] = [$(`#f-${k}-ar`).value.trim(), $(`#f-${k}-en`).value.trim()];
         const rules = { bologna: {}, annual: {} };
         for (const sy of ['bologna', 'annual']) for (const k of ['warn1', 'warn2', 'failUnexcused', 'failTotal']) rules[sy][k] = Number($(`#f-r-${sy}-${k}`).value) || CFG.rules[sy][k];
         for (const k of ['weeksPerTerm', 'editWindowHours']) rules[k] = Number($(`#f-r-${k}`).value) || CFG.rules[k];
         rules.trackFrom = $('#f-trackFrom').value || CFG.rules.trackFrom;
-        applyCfg({ institution, rules, stages: Number($('#f-stages').value) || CFG.stages, logos: Object.assign({}, pendingLogos) });
+        const provider = $('#f-provider').value, surl = $('#f-store-url').value.trim();
+        if (provider !== 'none' && !/^https:\/\//i.test(surl)) { toast(t('storeUrlBad')); return false; }
+        const cloud = { provider, url: provider === 'none' ? '' : surl, label: $('#f-store-label').value.trim() };
+        applyCfg({ institution, rules, cloud, stages: Number($('#f-stages').value) || CFG.stages, logos: Object.assign({}, pendingLogos) });
         toast(t('saved')); setTimeout(() => location.reload(), 400); return true;
       });
   }
@@ -525,8 +534,25 @@
     const base = lastReport.name.replace(/[\\/:*?"<>|]+/g, '_');
     const att = [{ name: base + '.csv', content: lastReport.csv, mime: 'text/csv;charset=utf-8' }];
     if (isLecturer()) att.push({ name: `absences_data_${St.todayStr()}.json`, content: St.exportAbsences(A.current.courses || [], A.current.name), mime: 'application/json' });
+    if (Cloud.enabled()) {
+      // the storage chosen by the administrator (Google Drive / data centre) receives the data and an archived copy
+      toast(t('cloudSending'));
+      const f = await Cloud.flush();
+      const page = await R.fullPageFor(base, lastReport.html);
+      const a = await Cloud.archive([{ name: base + '.html', content: page, mime: 'text/html' }, { name: base + '.csv', content: lastReport.csv, mime: 'text/csv' }]);
+      if (f && !f.error && a && !a.error) { toast(t('cloudSaved', { d: storeName() })); if (isLecturer()) { UI.lastSentAt = Date.now(); St.saveUI(); } render(); return; }
+      toast(t('cloudError', { e: (a && a.error) || (f && f.error) || '?' }));
+      return;
+    }
     const res = await R.sendReport(base, lastReport.html, att, text, recs);
     if (res === 'shared' || res === 'mail') { toast(t('saved')); if (isLecturer()) { UI.lastSentAt = Date.now(); St.saveUI(); } }
+  }
+  async function shareCurrentReport() {
+    if (!lastReport.html) return;
+    const recs = authorizedRecipients(); const base = lastReport.name.replace(/[\\/:*?"<>|]+/g, '_');
+    const att = [{ name: base + '.csv', content: lastReport.csv, mime: 'text/csv;charset=utf-8' }];
+    if (isLecturer()) att.push({ name: `absences_data_${St.todayStr()}.json`, content: St.exportAbsences(A.current.courses || [], A.current.name), mime: 'application/json' });
+    await R.sendReport(base, lastReport.html, att, lastReport.text || lastReport.name, recs);
   }
 
   // ================= EXCEL IMPORT =================
@@ -542,7 +568,8 @@
       if (!imp || !imp.parsed || imp.parsed.error) { toast(t('xlsChooseFirst')); return false; }
       const course = St.course(imp.courseId); const add = $('#f-xls-add');
       const res = Excel.applyAttendance(course, imp.parsed, { defaultHours: Number($('#f-xls-hours').value) || course.weeklyHours || 2, addUnmatched: !!(add && add.checked), canTouch: (s) => A.canEditSession(s), by: A.current ? A.current.id : '', byName: A.current ? A.current.name : '' });
-      St.save(); toast(t('xlsDone', { c: res.created, u: res.updated }) + (res.skipped ? ' · ' + t('xlsSkipped', { n: res.skipped, h: Number(CFG.rules.editWindowHours) || 72 }) : '')); imp = null; return true;
+      St.save(); toast(t('xlsDone', { c: res.created, u: res.updated }) + (res.skipped ? ' · ' + t('xlsSkipped', { n: res.skipped, h: Number(CFG.rules.editWindowHours) || 72 }) : '')); imp = null;
+      sendToStore(St.sessionsOf(course.id).filter((x) => (x.updatedAt || 0) >= Date.now() - 60000).map((x) => x.id)); return true;
     });
   }
   function xlsParse() { const c = St.course(imp.courseId); imp.parsed = Excel.parseAttendance(imp.wb.Sheets[imp.sheet], St.studentsOf(c.groupId)); }
@@ -643,7 +670,7 @@
       case 'pick-course': UI.groupId = el.dataset.g; UI.courseId = id; render(); break;
       case 'new-session': newDraft(UI.courseId); render(); break;
       case 'edit-session': { const s = St.S.sessions.find((x) => x.id === id); if (s && St.inScope(St.course(s.courseId))) { newDraft(s.courseId, s); render(); } break; }
-      case 'del-session': { e.stopPropagation(); const s = St.S.sessions.find((x) => x.id === id); if (!A.canEditSession(s)) { toast(t('lockedSession', { h: Number(CFG.rules.editWindowHours) || 72 })); break; } if (confirm(t('confirmDeleteSession'))) { St.S.sessions = St.S.sessions.filter((x) => x.id !== id); St.save(); toast(t('deleted')); render(); } break; }
+      case 'del-session': { e.stopPropagation(); const s = St.S.sessions.find((x) => x.id === id); if (!A.canEditSession(s)) { toast(t('lockedSession', { h: Number(CFG.rules.editWindowHours) || 72 })); break; } if (confirm(t('confirmDeleteSession'))) { Object.assign(s, { deleted: true, updatedAt: Date.now(), editedBy: A.current ? A.current.name : '' }); St.save(); toast(t('deleted')); render(); sendToStore([s.id]); } break; }
       case 'close-session': draft = null; render(); break;
       case 'record-missing': { const c = St.course(id); if (c && St.inScope(c)) { UI.groupId = c.groupId; UI.courseId = c.id; newDraft(c.id, null, el.dataset.date); UI.tab = 'attend'; render(); } break; }
       case 'cancel-session': if (confirm(t('unsaved'))) { draft = null; render(); } break;
@@ -668,7 +695,12 @@
       case 'print': if (lastReport.html) { R.printHTML(lastReport.html); if (R.isNative()) toast(t('printNative')); } break;
       case 'csv': if (lastReport.csv) R.deliver(lastReport.name.replace(/[\\/:*?"<>|]+/g, '_') + '.csv', lastReport.csv, 'text/csv;charset=utf-8'); break;
       case 'send': sendCurrentReport(); break;
-      case 'send-my-data': if (A.current) { await R.deliver(`absences_data_${St.todayStr()}.json`, St.exportAbsences(A.current.courses || [], A.current.name), 'application/json'); UI.lastSentAt = Date.now(); St.saveUI(); render(); } break;
+      case 'share': shareCurrentReport(); break;
+      case 'cloud-sync': { toast(t('cloudSending')); const r = await Cloud.sync(); const p = r.pull || {}; toast(r.flush && r.flush.error ? t('cloudError', { e: r.flush.error }) : p.error ? t('cloudError', { e: p.error }) : t('cloudSynced', { a: p.added || 0, u: p.updated || 0 })); render(); break; }
+      case 'cloud-full': { if (!confirm(t('cloudFullConfirm'))) break; Cloud.resetPull(); const p = await Cloud.pull(true); toast(p && p.error ? t('cloudError', { e: p.error }) : t('cloudSynced', { a: (p && p.added) || 0, u: (p && p.updated) || 0 })); render(); break; }
+      case 'cloud-test': { const r = await Cloud.ping(); toast(r.ok ? t('cloudOk', { n: r.name, d: storeName() }) : t('cloudError', { e: r.error })); break; }
+      case 'send-my-data': if (A.current && Cloud.enabled()) { const f = await Cloud.flush(); toast(f && f.error ? t('cloudError', { e: f.error }) : t('cloudSaved', { d: storeName() })); render(); break; }
+      if (A.current) { await R.deliver(`absences_data_${St.todayStr()}.json`, St.exportAbsences(A.current.courses || [], A.current.name), 'application/json'); UI.lastSentAt = Date.now(); St.saveUI(); render(); } break;
       case 'open-missing': UI.tab = 'reports'; UI.reportTab = 'missing'; render(); break;
       case 'xls-import': { const c = St.course(UI.courseId); if (c && St.inScope(c)) xlsImportForm(c); break; }
       case 'xls-template': { const c = St.course(UI.courseId); if (c && St.inScope(c)) xlsTemplateDownload(c); break; }
@@ -730,8 +762,40 @@
     const id = $('#f-acc').value, pw = $('#f-code').value, rem = $('#f-remember');
     const btn = e.target.querySelector('button[type=submit]'); if (btn) btn.disabled = true;
     const ok = await A.signIn(id, pw, !!(rem && rem.checked));
-    if (ok) { UI.lastAccount = id; UI.tab = 'attend'; UI.groupId = ''; UI.courseId = ''; St.saveUI(); render(); } else renderLock(true);
+    if (ok) { UI.lastAccount = id; UI.tab = 'attend'; UI.groupId = ''; UI.courseId = ''; St.saveUI(); render(); lastAuto = 0; setTimeout(autoSync, 500); } else renderLock(true);
   });
+
+  // ---- storage destination (Google Drive / college data centre / another data centre) ----
+  const PROVIDERS = ['none', 'gdrive', 'college', 'server'];
+  function storeName() { const c = CFG.cloud || {}; return c.label || t('prov_' + (c.provider || (c.url ? 'gdrive' : 'none'))); }
+  function sendToStore(ids) { if (!Cloud.configured()) return; Cloud.queue(ids); Cloud.flush().then(() => { const el = document.getElementById('cloud-line'); if (el) el.outerHTML = cloudLine(); }); }
+  function cloudLine() {
+    const s = Cloud.status();
+    const st = s.lastError ? `⚠️ ${t('cloudError', { e: esc(s.lastError) })}` : s.pending ? `⏳ ${t('cloudPending', { n: s.pending })}` : `✅ ${t('cloudUpToDate')}`;
+    return `<span id="cloud-line" class="small">${st}${s.lastPull ? ' · ' + t('cloudLastPull', { t: fmtDT(s.lastPull) }) : ''}</span>`;
+  }
+  function cloudCard() {
+    if (!Cloud.enabled()) return '';
+    return `<div class="card cloud row"><span>☁️ <b>${esc(storeName())}</b> · ${cloudLine()}</span><button class="btn sm fix" data-act="cloud-sync">🔄 ${t('cloudSync')}</button></div>`;
+  }
+  function storageSettingsCard() {
+    if (!Cloud.configured()) return A.can('admin') ? `<div class="card"><h3>☁️ ${t('storeTitle')}</h3><p class="muted small">${t('cloudNotSet')}</p></div>` : '';
+    const s = Cloud.status();
+    return `<div class="card"><h3>☁️ ${t('storeTitle')}: ${esc(storeName())}</h3>
+      <p class="small">${cloudLine()}${s.lastSent ? ' · ' + t('cloudLastSent', { t: fmtDT(s.lastSent) }) : ''}</p>
+      <p class="muted small">${t(isLecturer() ? 'cloudHintLect' : 'cloudHintHead', { d: esc(storeName()) })}</p>
+      <div class="toolbar"><button class="btn primary" data-act="cloud-sync">🔄 ${t('cloudSync')}</button><button class="btn" data-act="cloud-test">🔌 ${t('cloudTest')}</button>${A.can('allCourses') ? `<button class="btn" data-act="cloud-full">⬇ ${t('cloudFull')}</button>` : ''}</div></div>`;
+  }
+  let lastAuto = 0;
+  async function autoSync() {
+    if (!Cloud.enabled() || !navigator.onLine) return;
+    if (Date.now() - lastAuto < 120000) return; lastAuto = Date.now();
+    const r = await Cloud.sync();
+    if (r && r.pull && (r.pull.added || r.pull.updated) && !draft && !document.getElementById('modal').classList.contains('open')) render();
+    else { const el = document.getElementById('cloud-line'); if (el) el.outerHTML = cloudLine(); }
+  }
+  setInterval(autoSync, 180000);
+  window.addEventListener('online', () => { lastAuto = 0; autoSync(); });
 
   // Auto-lock: sessions that are not remembered lock after idleLockMinutes without use
   let lastTouch = 0;
@@ -742,5 +806,5 @@
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') idleCheck(); });
 
   window.UI = { render, toast, t, lock: () => { A.signOut(); renderLock(); } };
-  A.restore(); render();
+  A.restore(); render(); setTimeout(autoSync, 1500);
 })();

@@ -110,7 +110,8 @@
   const coursesFor = (gid, termId) => S.courses.filter((c) => c.yearId === S.currentYear && (!gid || c.groupId === gid) && (c.termId === (termId || S.currentTerm) || c.termId === 'year') && inScope(c));
   const groupsOfYear = () => S.groups.filter((g) => g.yearId === S.currentYear && (!scope || S.courses.some((c) => c.groupId === g.id && inScope(c))))
     .sort((a, b) => a.stage - b.stage || a.nameAr.localeCompare(b.nameAr, 'ar'));
-  const sessionsOf = (cid) => S.sessions.filter((s) => s.courseId === cid).sort((a, b) => a.date.localeCompare(b.date) || (a.createdAt || 0) - (b.createdAt || 0));
+  // deleted lectures stay as markers (deleted: true) so the deletion also reaches other devices and Google Drive
+  const sessionsOf = (cid) => S.sessions.filter((s) => s.courseId === cid && !s.deleted).sort((a, b) => a.date.localeCompare(b.date) || (a.createdAt || 0) - (b.createdAt || 0));
 
   // ---------- statistics ----------
   // Teaching system of a course: annual stages / year-long courses follow the annual rules, others Bologna
@@ -255,7 +256,7 @@
 
   // ---------- department file export (master) ----------
   function departmentFile() {
-    const pickCfg = { institution: CFG.institution, logos: CFG.logos, rules: CFG.rules, committee: CFG.committee, recipients: CFG.recipients, stages: CFG.stages, androidApk: CFG.androidApk };
+    const pickCfg = { institution: CFG.institution, logos: CFG.logos, rules: CFG.rules, committee: CFG.committee, recipients: CFG.recipients, stages: CFG.stages, androidApk: CFG.androidApk, cloud: CFG.cloud };
     const dept = {
       version: Date.now(),
       exportedAt: new Date().toISOString(),
@@ -274,6 +275,6 @@
     year, term, termOf, isYearCourse, weeksOf, groupsOfYear, group, course, student, studentsOf, coursesFor, sessionsOf,
     rules, systemOf, systemOfGroup, courseStats, studentAggregate, statusOf, STATUS_RANK,
     upsert, deleteGroup, deleteCourse, deleteStudent, deleteYear, copyCoursesToTerm, addYear,
-    exportJSON, exportAbsences, importAny, resetToSeed, departmentFile,
+    exportJSON, exportAbsences, importAny, mergeSessions, resetToSeed, departmentFile,
   };
 })();

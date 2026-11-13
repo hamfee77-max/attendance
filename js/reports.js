@@ -297,5 +297,5 @@
     setTimeout(() => { window.print(); setTimeout(done, 1500); }, 150);
   }
 
-  window.Reports = { missingData, missingReport, committeeHTML, isNative, deptLogoSrc, memoText, sendReport, tr, esc, fmt1, fmtH, dmy, courseName, groupName, termName, statusLabel, actionLabel, dayName, periodRange, addDays, memoData, memoHTML, memoCSV, courseTable, studentReport, overview, register, toCSV, deliver, printHTML, headerHTML };
+  window.Reports = { fullPageFor: (name, html) => fullPage(name, html), missingData, missingReport, committeeHTML, isNative, deptLogoSrc, memoText, sendReport, tr, esc, fmt1, fmtH, dmy, courseName, groupName, termName, statusLabel, actionLabel, dayName, periodRange, addDays, memoData, memoHTML, memoCSV, courseTable, studentReport, overview, register, toCSV, deliver, printHTML, headerHTML };
 })();

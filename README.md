@@ -1,4 +1,4 @@
-# Student Attendance App — نظام تسجيل غيابات الطلبة (v2.3)
+# Student Attendance App — نظام تسجيل غيابات الطلبة (v2.4)
 
 Attendance and absence-reporting app for an undergraduate department, prepared for the Department of Water
 Resources Engineering, College of Engineering, Mustansiriyah University. Every department-specific value
@@ -48,6 +48,16 @@ Instructions No. 134 of 2000 (fail above 10 % unexcused or 15 % with an excuse).
 Replace `js/department.js` with the file exported from the app (or edit code), bump `CACHE_VERSION` in
 `sw.js` when code changes, then double-click `publish-attendance.bat` (pushes to GitHub Pages).
 Devices load the new version the next time they open the app online.
+
+## Report storage (optional)
+
+The system administrator can choose where lecturers' absences and reports are stored (Department setup →
+Report storage): **Google Drive** (`server/Code.gs`, a Google Apps Script web app in the department's Google
+account), the **college data centre** or **another data centre** (`server/attendance-api.php`, PHP 7.4+ with
+SQLite over HTTPS). All use the same protocol: each account sends with a private key derived from its password
+(only its SHA-256 hash, `keyHash`, is published); lecturers may send only their courses and cannot change a
+lecture 72 h after it first reached the server; the head pulls everything automatically. Set-up steps are in
+`admin.html` (section 13).
 
 ## Native apps
 

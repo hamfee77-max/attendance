@@ -1,10 +1,10 @@
 // Service worker: lets the installed app open offline.
 // Strategy: network-first (fresh files whenever online, 4 s timeout), cache as offline fallback.
 // Bump CACHE_VERSION whenever any file changes.
-const CACHE_VERSION = 'wre-attendance-v2.3.0';
+const CACHE_VERSION = 'wre-attendance-v2.4.0';
 const SHELL = [
   './', './index.html', './help.html', './admin.html', './publish-guide.html', './privacy.html', './manifest.webmanifest', './css/app.css',
-  './js/config.js', './js/i18n.js', './js/department.js', './js/store.js', './js/names.js', './js/auth.js', './js/reports.js', './js/excel.js', './js/ui.js', './js/guide.js',
+  './js/config.js', './js/i18n.js', './js/department.js', './js/store.js', './js/names.js', './js/auth.js', './js/reports.js', './js/excel.js', './js/cloud.js', './js/ui.js', './js/guide.js',
   './js/vendor/xlsx.full.min.js',
   './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png', './icons/apple-touch-icon.png', './icons/favicon-32.png',
   './logos/university.png', './logos/college.png', './logos/department.svg',

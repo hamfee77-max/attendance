@@ -1,8 +1,8 @@
 // Department file for the Student Attendance app — exported from Settings → Administration.
 // Replace js/department.js on the website with a newly exported file, then publish.
 window.DEPT = {
- "version": 1794587815008,
- "exportedAt": "2026-11-13T16:36:55.008Z",
+ "version": 1794590349951,
+ "exportedAt": "2026-11-13T17:19:09.951Z",
  "config": {
   "institution": {
    "university": [
@@ -89,7 +89,8 @@ window.DEPT = {
    "courses": [],
    "salt": "8325fd7c9a7e2127fdeb2a2509582225",
    "iter": 120000,
-   "hash": "45bf4ddb48208c0b0a8f183bce811644375d32780ffe6a9ab264db84bab0d951"
+   "hash": "45bf4ddb48208c0b0a8f183bce811644375d32780ffe6a9ab264db84bab0d951",
+   "keyHash": "a9e0d6ecfe1b5a126f8994450d015b3c15a3280228f06441dfe81616468d9f26"
   },
   {
    "id": "u_head",
@@ -100,7 +101,8 @@ window.DEPT = {
    "salt": "4433fa5a572593118fa2adf6fad9f697",
    "iter": 120000,
    "hash": "217bb21241880dd2ae8afca8adc126d1dd3e548e50c56fc58f19193db4e72805",
-   "title": "رئيس القسم"
+   "title": "رئيس القسم",
+   "keyHash": "2757abdb4d6320789a7e017ef81d1101b32dd09769ef37eb7aa40c86bd93392d"
   },
   {
    "id": "u_01",
@@ -112,7 +114,8 @@ window.DEPT = {
    ],
    "salt": "889fc8c4b406708e442f0047a1ac07f6",
    "iter": 120000,
-   "hash": "9b035d184564f060fb8dc3f2fe9080074200703d361898e93e5b2ea83f3ce41d"
+   "hash": "9b035d184564f060fb8dc3f2fe9080074200703d361898e93e5b2ea83f3ce41d",
+   "keyHash": "22cf8fcbf4d3cfbf816bd1cace4c910f441f033e35df6b44913b6e3ec16bf119"
   },
   {
    "id": "u_02",
@@ -124,7 +127,8 @@ window.DEPT = {
    ],
    "salt": "458d36ed7773a6cf98b05f8ee1367c6e",
    "iter": 120000,
-   "hash": "f5f4a7bab901915dae73d5e7c80aade3ddaa010714902d3735cb4c503d98bd55"
+   "hash": "f5f4a7bab901915dae73d5e7c80aade3ddaa010714902d3735cb4c503d98bd55",
+   "keyHash": "6a58bd7769f07800c9b70ce90387fa6246d472a264af9d2e5e2e2040ad7b93da"
   },
   {
    "id": "u_03",
@@ -139,7 +143,8 @@ window.DEPT = {
    ],
    "salt": "85e121f0025d4bc1c3e033a10bab4e6f",
    "iter": 120000,
-   "hash": "8ee00dfbc034d186437a40f49a0d17d5eb1a047716aee05256be75257df2c983"
+   "hash": "8ee00dfbc034d186437a40f49a0d17d5eb1a047716aee05256be75257df2c983",
+   "keyHash": "498b76a99852315223a1c39dcca614e6f5f19cab2f7aeda3a015a46dd802108b"
   },
   {
    "id": "u_04",
@@ -154,7 +159,8 @@ window.DEPT = {
    ],
    "salt": "4dd41ef2c28c538e898efc6ac4eac932",
    "iter": 120000,
-   "hash": "b0f05bb9c01be2f8776c5642fb2d6a1207ad620e7d25c2d8b45d73a5fad35782"
+   "hash": "b0f05bb9c01be2f8776c5642fb2d6a1207ad620e7d25c2d8b45d73a5fad35782",
+   "keyHash": "b24933f2c649cb5c6ce8fca2f5989dd1640eb3dd7c549e96914d560d701141c9"
   },
   {
    "id": "u_05",
@@ -169,7 +175,8 @@ window.DEPT = {
    ],
    "salt": "2c944442e62de86e822d4fd71d17dbdc",
    "iter": 120000,
-   "hash": "d42983115a9fb74e5e2edead77ad3484392f9c9d33b8c6fdab8affc9d209ef18"
+   "hash": "d42983115a9fb74e5e2edead77ad3484392f9c9d33b8c6fdab8affc9d209ef18",
+   "keyHash": "ed7471ac735a31e05a6250a85e0503160b1c83fbe3d59205e8ff1a5de599925b"
   },
   {
    "id": "u_06",
@@ -181,7 +188,8 @@ window.DEPT = {
    ],
    "salt": "e13be290144eb83cb5f318b38b92078b",
    "iter": 120000,
-   "hash": "4d09ea736c5ac8ba7797b58680fed21a09f2751edd5ea8dae61d706d6bb36410"
+   "hash": "4d09ea736c5ac8ba7797b58680fed21a09f2751edd5ea8dae61d706d6bb36410",
+   "keyHash": "a82a6f3bda68cb29fcfadc4b8caf205d81d3853bcc05ea7c5eeddb1380f9f921"
   },
   {
    "id": "u_07",
@@ -195,7 +203,8 @@ window.DEPT = {
    ],
    "salt": "a62226ec6b325d170256d14ba3d17fb4",
    "iter": 120000,
-   "hash": "a7fd7692eb7882d982446a7c62ac638a103e2cacacaaa8a72fdaaa68246c99a7"
+   "hash": "a7fd7692eb7882d982446a7c62ac638a103e2cacacaaa8a72fdaaa68246c99a7",
+   "keyHash": "6f5806232884f5cbfe2d5461482fa7d8d7818530286676b02365f136ab7f27dc"
   },
   {
    "id": "u_08",
@@ -209,7 +218,8 @@ window.DEPT = {
    ],
    "salt": "b4547049713480f8b5155e4938a36013",
    "iter": 120000,
-   "hash": "2da5622ced13f9b4af85fd7e9d02c8c4c04b4968bd1a4fd53e92254ca35e2e0d"
+   "hash": "2da5622ced13f9b4af85fd7e9d02c8c4c04b4968bd1a4fd53e92254ca35e2e0d",
+   "keyHash": "6657c83893cfc2399f096538d4f4ee19916cbec3a491ec05f886945456ce7574"
   },
   {
    "id": "u_09",
@@ -222,7 +232,8 @@ window.DEPT = {
    ],
    "salt": "800280729765d18c9503f16bd6fc28d4",
    "iter": 120000,
-   "hash": "a2cef9fae072b03827790a25bc16c7c279917bbea3661c5e10f04b410d197d0a"
+   "hash": "a2cef9fae072b03827790a25bc16c7c279917bbea3661c5e10f04b410d197d0a",
+   "keyHash": "bcd154e150ce4213f468ce9c967c2e50ea416c57160149ca27c84abf28e96e3f"
   },
   {
    "id": "u_10",
@@ -237,7 +248,8 @@ window.DEPT = {
    ],
    "salt": "9355571c95450fab41b4fbab2204c36b",
    "iter": 120000,
-   "hash": "2fb0b85c1e0da4f826082fb816729e4ccecd7a038cd32ab16feb6953200238a1"
+   "hash": "2fb0b85c1e0da4f826082fb816729e4ccecd7a038cd32ab16feb6953200238a1",
+   "keyHash": "32431e160d4b50df7d2983f4b075370bc672ef7f450480d20e5e0521dfa40417"
   },
   {
    "id": "u_11",
@@ -250,7 +262,8 @@ window.DEPT = {
    ],
    "salt": "184a45a18ab9a99c9c835f78912b8947",
    "iter": 120000,
-   "hash": "f57ce3a01acfdb42d6abd95c727ea42d9d3c0ae3b04125c21eb418193844dafd"
+   "hash": "f57ce3a01acfdb42d6abd95c727ea42d9d3c0ae3b04125c21eb418193844dafd",
+   "keyHash": "7b9b1e7edd02ab06dfb5564a4e193a6487a3b6d7313286ec80bf4bdfbc71e7f7"
   },
   {
    "id": "u_12",
@@ -265,7 +278,8 @@ window.DEPT = {
    ],
    "salt": "f2577c0d3d480bf1d7e34c45c734bb4d",
    "iter": 120000,
-   "hash": "a8d3fe6f77c5e69ac870a82bf3591e5ded4b163e55fd67f87d18afc13d73f028"
+   "hash": "a8d3fe6f77c5e69ac870a82bf3591e5ded4b163e55fd67f87d18afc13d73f028",
+   "keyHash": "ffd47aad9dba8395be16dfed9c29b119c3b1c042ce83d03142530e8c8e00e1b2"
   },
   {
    "id": "u_13",
@@ -278,7 +292,8 @@ window.DEPT = {
    ],
    "salt": "b91c7be9fcb3b42cb279693dccebfb11",
    "iter": 120000,
-   "hash": "4408294c4c9194ce5f8f5040cbb6f1dc125b502b2c9977713159e5a7ef0ffd01"
+   "hash": "4408294c4c9194ce5f8f5040cbb6f1dc125b502b2c9977713159e5a7ef0ffd01",
+   "keyHash": "12658f8210539957bb4f91f1b37aeaf3332b3de18a1c52fe8483835fa62a62b9"
   },
   {
    "id": "u_14",
@@ -292,7 +307,8 @@ window.DEPT = {
    ],
    "salt": "6fc5cbf957ada3e85bf99c5878b82712",
    "iter": 120000,
-   "hash": "ce50fc5318968a324200677e5550f8d895971ee9ad3b252781b7be91636f5f1e"
+   "hash": "ce50fc5318968a324200677e5550f8d895971ee9ad3b252781b7be91636f5f1e",
+   "keyHash": "decec5e907770dbaf65c9f76cf34b58775bebd9c113540a4d54ebfb6430df250"
   },
   {
    "id": "u_15",
@@ -306,7 +322,8 @@ window.DEPT = {
    ],
    "salt": "87bb35b1bab8fc38de8f246465849619",
    "iter": 120000,
-   "hash": "a9e8d7dcc4c08632017d7b42b53e5c8ba40739b46cccf4260855e907c3bafe3d"
+   "hash": "a9e8d7dcc4c08632017d7b42b53e5c8ba40739b46cccf4260855e907c3bafe3d",
+   "keyHash": "5334552cb15da6e5998d09ddc63435be7281dab69c5f12ad4be1df2db11e235a"
   },
   {
    "id": "u_16",
@@ -320,7 +337,8 @@ window.DEPT = {
    ],
    "salt": "54f13ac8876bfd0d5e785f38a5a6029a",
    "iter": 120000,
-   "hash": "20a689dbd9e199ab80600badd86ef95421478b05f2a7e6a97b6ff0251e80fc5f"
+   "hash": "20a689dbd9e199ab80600badd86ef95421478b05f2a7e6a97b6ff0251e80fc5f",
+   "keyHash": "cc6354d3b03daf067237e10155bb2f72061f865600e4ce3addc42eba73fa1755"
   },
   {
    "id": "u_17",
@@ -333,7 +351,8 @@ window.DEPT = {
    ],
    "salt": "14e88fcf5ce3a1fe536d72cf38152229",
    "iter": 120000,
-   "hash": "87cc35744d17e7e93ecd28514ab4ce21fa03a02cc9006c447abebe7f4f44420b"
+   "hash": "87cc35744d17e7e93ecd28514ab4ce21fa03a02cc9006c447abebe7f4f44420b",
+   "keyHash": "4b750ef1b0c9101468abcae8e0c98888a3ec6e650bf103927ad11abf40f46ad4"
   },
   {
    "id": "u_18",
@@ -348,7 +367,8 @@ window.DEPT = {
    ],
    "salt": "153f3941170d06ab8677c741917ea2aa",
    "iter": 120000,
-   "hash": "0b101307d1e48249ad00405bd21fdc1afdd337344837ae3062883e40a3ff4120"
+   "hash": "0b101307d1e48249ad00405bd21fdc1afdd337344837ae3062883e40a3ff4120",
+   "keyHash": "8267243659c8a7fa791062896c0721432e705813010f3bf3c5e4ceb3bf94c4ad"
   },
   {
    "id": "u_19",
@@ -363,7 +383,8 @@ window.DEPT = {
    ],
    "salt": "658e8449b6c59ab8914f5102cd12ed07",
    "iter": 120000,
-   "hash": "223f272e66d34c7fb068c5f80fd98a68352e0e5dbe044d70e978f3c78d108e19"
+   "hash": "223f272e66d34c7fb068c5f80fd98a68352e0e5dbe044d70e978f3c78d108e19",
+   "keyHash": "58a49e9988331fe062bb95ec0346853d5dc11f2d51b57e8ba641dfc796b42f22"
   },
   {
    "id": "u_20",
@@ -376,7 +397,8 @@ window.DEPT = {
    ],
    "salt": "a412ab0a987bb6b8db7a787bea2e0a3b",
    "iter": 120000,
-   "hash": "69d53897b817d7c14c9d00e66b4c6b520cdf64cc3143d4e0b0006215d06fc282"
+   "hash": "69d53897b817d7c14c9d00e66b4c6b520cdf64cc3143d4e0b0006215d06fc282",
+   "keyHash": "072e8564c49517cfe18d893c9e265000079c5bd9f94aebbfed0e59fa7c98d928"
   },
   {
    "id": "u_21",
@@ -392,7 +414,8 @@ window.DEPT = {
    ],
    "salt": "bcd54e676b45f3ce9735a5b25b0654cf",
    "iter": 120000,
-   "hash": "83b820cf2b609f97a6bac719d23713e990a79805f3d17afa4375e00875b76720"
+   "hash": "83b820cf2b609f97a6bac719d23713e990a79805f3d17afa4375e00875b76720",
+   "keyHash": "209a637370213b022a461bf921c9186a5b52fc0e1b85a6325b6fc3c87c7ba665"
   },
   {
    "id": "u_22",
@@ -406,7 +429,8 @@ window.DEPT = {
    ],
    "salt": "dc456dbac1e5f5a4ec9b38a476ad723a",
    "iter": 120000,
-   "hash": "010268925952f379cc5ae6a91f45d2a917eb205245178626c14a16fd527a5446"
+   "hash": "010268925952f379cc5ae6a91f45d2a917eb205245178626c14a16fd527a5446",
+   "keyHash": "6d9108225b2950e0e0072de22b144e8e5e0e73ce096d03231dc0d9ab73993059"
   },
   {
    "id": "u_23",
@@ -420,7 +444,8 @@ window.DEPT = {
    ],
    "salt": "27460db2db0d7eced6f43e3441f029e4",
    "iter": 120000,
-   "hash": "2dedc951d003614f950d42f6c78957094bed3c6d3d7b928371ad45c1bdf49a2d"
+   "hash": "2dedc951d003614f950d42f6c78957094bed3c6d3d7b928371ad45c1bdf49a2d",
+   "keyHash": "b7f67d007cddd390e87f305e980a546b67b6c097b5b1a2ca19a05f33f2e672cb"
   },
   {
    "id": "u_24",
@@ -435,7 +460,8 @@ window.DEPT = {
    ],
    "salt": "be4dda10519048b169415a0ad2b2df63",
    "iter": 120000,
-   "hash": "2998177a4894dd5957a48ce6f6ba46c722b3f3da2d9c553ac9f8f8219fb8df3a"
+   "hash": "2998177a4894dd5957a48ce6f6ba46c722b3f3da2d9c553ac9f8f8219fb8df3a",
+   "keyHash": "9005abf8e2771c5411890a779121472d9428a69aa5b3133df9f82acf7384d643"
   },
   {
    "id": "u_25",
@@ -450,7 +476,8 @@ window.DEPT = {
    ],
    "salt": "74ce05307b5f9e2684a0a2b0c2f50d30",
    "iter": 120000,
-   "hash": "d3893f385ab822b50d67901749d5b54c6dc0f0aa50e9db24ce54ec62a66c7b24"
+   "hash": "d3893f385ab822b50d67901749d5b54c6dc0f0aa50e9db24ce54ec62a66c7b24",
+   "keyHash": "c6e9e8b0e74c7e738ae73cec239a09a9eaed4d2315060cd70832e214dabde730"
   },
   {
    "id": "u_26",
@@ -465,7 +492,8 @@ window.DEPT = {
    ],
    "salt": "2733d438ce519255179ee08fb1efdfe2",
    "iter": 120000,
-   "hash": "d06531d8dce4272ad0d0a1476b66ab6ae94af54df91087bae2d83fdeda4d0f14"
+   "hash": "d06531d8dce4272ad0d0a1476b66ab6ae94af54df91087bae2d83fdeda4d0f14",
+   "keyHash": "b893366db819d6e859d053bec15b612f5552948e8e212d47fc4a85f882bcc26b"
   },
   {
    "id": "u_27",
@@ -481,7 +509,8 @@ window.DEPT = {
    ],
    "salt": "bb5bd1b8538ee31d8d5d61678975d86a",
    "iter": 120000,
-   "hash": "fb7434c25ba2b24f3c356510647af299393ee0516da215bcd31907c86f463d1b"
+   "hash": "fb7434c25ba2b24f3c356510647af299393ee0516da215bcd31907c86f463d1b",
+   "keyHash": "012633cc1399f133ea231a616e507bb1bbc007e07883d82ca63f7e8eeb1128e4"
   },
   {
    "id": "u_28",
@@ -499,7 +528,8 @@ window.DEPT = {
    ],
    "salt": "89ae21bfd59f54dce6975078ba4449c5",
    "iter": 120000,
-   "hash": "65fc38a611e32d420640e85baa59a7f32560cf424e11de92589d980353d5586d"
+   "hash": "65fc38a611e32d420640e85baa59a7f32560cf424e11de92589d980353d5586d",
+   "keyHash": "5df730c139122ef649c9d483695203e8ebeb66539a8a4f266140a44256823b58"
   },
   {
    "id": "u_29",
@@ -514,7 +544,8 @@ window.DEPT = {
    ],
    "salt": "3e72bf2be206b5934c0ae752e4af1f48",
    "iter": 120000,
-   "hash": "eb9723ceb5102f149063816c78b9e31031901322e2f9b8159cf0b6317f87fcad"
+   "hash": "eb9723ceb5102f149063816c78b9e31031901322e2f9b8159cf0b6317f87fcad",
+   "keyHash": "54ae2ce26026792f5a807f6a9af689d1e601ca85230f127b29a594bb6077a991"
   },
   {
    "id": "u_30",
@@ -528,7 +559,8 @@ window.DEPT = {
    ],
    "salt": "07d2fefe0be24be90b5c0adaa81e647c",
    "iter": 120000,
-   "hash": "59921c166a22d153871bb031bbb105a61c6e3d35731fd6e72784f8c1b9724ab3"
+   "hash": "59921c166a22d153871bb031bbb105a61c6e3d35731fd6e72784f8c1b9724ab3",
+   "keyHash": "c2db9a6421e2f4eb9b00e414bd2db2e8a11e12bb6f85c6d2ba62c2140b240fed"
   },
   {
    "id": "u_31",
@@ -544,7 +576,8 @@ window.DEPT = {
    ],
    "salt": "d37dedc7ff22dac10c8e2d75ce065730",
    "iter": 120000,
-   "hash": "84604ec2e6eb7c48a4596e8e27fc11427d9e7a4e67b6e97751bd3ddb59af6492"
+   "hash": "84604ec2e6eb7c48a4596e8e27fc11427d9e7a4e67b6e97751bd3ddb59af6492",
+   "keyHash": "1b07687c664c14b1aa29e12b851fa1e9035a6c992b2f29dccba8af2058232cb5"
   },
   {
    "id": "u_32",
@@ -559,7 +592,8 @@ window.DEPT = {
    ],
    "salt": "fe0016bbcf14154b8315aab056b749a9",
    "iter": 120000,
-   "hash": "445d7dd639aa2e098584c43dec8034b19efb097a0686633e9e8bfd7344d961b6"
+   "hash": "445d7dd639aa2e098584c43dec8034b19efb097a0686633e9e8bfd7344d961b6",
+   "keyHash": "c7d4e0861bb40902847bd0ad8c05545ccdcc1dc4bc0d4d7a78375624f4027b2a"
   },
   {
    "id": "u_33",
@@ -572,7 +606,8 @@ window.DEPT = {
    ],
    "salt": "2bb61b85078eeb7675e70e00d1716c64",
    "iter": 120000,
-   "hash": "7e00c48be00bb892427460d01f900eb41acdef18f165400bf300e7239ac177b4"
+   "hash": "7e00c48be00bb892427460d01f900eb41acdef18f165400bf300e7239ac177b4",
+   "keyHash": "ede40cc49fc12839b86af551d993a2bcc6ebea7a6b996b1f2e650512b9940643"
   },
   {
    "id": "u_34",
@@ -585,7 +620,8 @@ window.DEPT = {
    ],
    "salt": "75654cbb4b1ee6a7124f457a2bc0112a",
    "iter": 120000,
-   "hash": "8074b38091f63822b114588798d66d316fa13c12630a8da4c710f96e308a4f92"
+   "hash": "8074b38091f63822b114588798d66d316fa13c12630a8da4c710f96e308a4f92",
+   "keyHash": "318ab85d6fb25b3c692dbfe5b0ef301c539da5a57802927407a417a5b66b21b8"
   },
   {
    "id": "u_35",
@@ -600,7 +636,8 @@ window.DEPT = {
    ],
    "salt": "1c0edb88b85d3bb6c52d909acffb345a",
    "iter": 120000,
-   "hash": "79b5e174f23ac09ce2a1aff349a9b2ffb8a710b51f7d109c6504bc0b6f82229f"
+   "hash": "79b5e174f23ac09ce2a1aff349a9b2ffb8a710b51f7d109c6504bc0b6f82229f",
+   "keyHash": "5549dccbadb4a7e2faea283436a60b1303643ff978175ad5f9011eed4156b706"
   },
   {
    "id": "u_36",
@@ -613,7 +650,8 @@ window.DEPT = {
    ],
    "salt": "a985cc967a8036faf90f4d740c8afaa7",
    "iter": 120000,
-   "hash": "e4bbab1fa7c33e9c1111bd8a1cbe78248738a961093db7cb5b836da9c6f19616"
+   "hash": "e4bbab1fa7c33e9c1111bd8a1cbe78248738a961093db7cb5b836da9c6f19616",
+   "keyHash": "502bb944334c07388cff64ab97d6ba23735d15ce970b550e8dff8fa2e777c974"
   },
   {
    "id": "u_37",
@@ -627,7 +665,8 @@ window.DEPT = {
    ],
    "salt": "6a3adb8d1bf867631e8576db1ad86369",
    "iter": 120000,
-   "hash": "50fad5382845d4a6ec4ae1c2f25b91ffdc9a3fef0cd04abf1c8ca8377d056361"
+   "hash": "50fad5382845d4a6ec4ae1c2f25b91ffdc9a3fef0cd04abf1c8ca8377d056361",
+   "keyHash": "44280742130965a04721983d07cabf12225bd312ca74dd25260eb6699cb8fc26"
   }
  ],
  "lists": {

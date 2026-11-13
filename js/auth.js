@@ -21,11 +21,13 @@
     .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06F0));
 
   const secure = () => !!(window.crypto && crypto.subtle);
-  async function pbkdf2(password, saltHex, iterations) {
+  // 512 bits: the first 256 are the login hash (stored publicly), the last 256 the private sending key for Google Drive
+  async function pbkdf2(password, saltHex, iterations, nbits) {
     const key = await crypto.subtle.importKey('raw', enc(normPw(password)), 'PBKDF2', false, ['deriveBits']);
-    const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: unhex(saltHex), iterations, hash: 'SHA-256' }, key, 256);
+    const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: unhex(saltHex), iterations, hash: 'SHA-256' }, key, nbits || 256);
     return hex(bits);
   }
+  async function sha256raw(s) { return hex(await crypto.subtle.digest('SHA-256', enc(String(s)))); }
   async function sha256(s) { return hex(await crypto.subtle.digest('SHA-256', enc(normPw(s)))); }
   function randomSalt() { const b = new Uint8Array(16); crypto.getRandomValues(b); return hex(b.buffer); }
   // Readable random password, e.g. "k7m4-qx9p" (no 0/o/1/l/i to avoid confusion)
@@ -35,7 +37,8 @@
   }
   async function makeCredential(password) {
     const salt = randomSalt(), iter = CFG.access.pbkdf2Iterations || 120000;
-    return { salt, iter, hash: await pbkdf2(password, salt, iter) };
+    const full = await pbkdf2(password, salt, iter, 512);
+    return { salt, iter, hash: full.slice(0, 64), keyHash: await sha256raw(full.slice(64)) };
   }
 
   // Fallback master when no accounts exist yet (fresh deployment for another department)
@@ -52,7 +55,7 @@
   const canRemember = (acc) => !!acc && (CFG.access.rememberRoles || ['lecturer']).includes(normRole(acc.role)) && (Number(CFG.access.rememberDays) || 0) > 0;
   const idleMs = () => (Number(CFG.access.idleLockMinutes) || 0) * 60000;
   const ACTKEY = SESSKEY + ':active';
-  let remembered = false;
+  let remembered = false, apiKey = '';
   function touch() { try { sessionStorage.setItem(ACTKEY, String(Date.now())); } catch (e) { /* ignore */ } }
   function idleExpired() {
     if (!current || remembered || !idleMs()) return false;
@@ -65,10 +68,11 @@
     const acc = byId(accountId); if (!acc || !secure()) return false;
     let ok = false, token = '';
     if (acc.id === BOOT.id) { token = await sha256(password); ok = token === CFG.access.bootstrapMasterHash; }
-    else { token = await pbkdf2(password, acc.salt, acc.iter || CFG.access.pbkdf2Iterations); ok = token === acc.hash; }
+    else { const full = await pbkdf2(password, acc.salt, acc.iter || CFG.access.pbkdf2Iterations, 512); token = full.slice(0, 64); ok = token === acc.hash; if (ok) apiKey = full.slice(64); }
     if (!ok) return false;
     remember = !!remember && canRemember(acc);
-    const sess = { v: SESS_V, id: acc.id, token, remember, until: remember ? Date.now() + Number(CFG.access.rememberDays) * 86400000 : 0 };
+    if (acc.id === BOOT.id) apiKey = '';
+    const sess = { v: SESS_V, id: acc.id, token, k: apiKey, remember, until: remember ? Date.now() + Number(CFG.access.rememberDays) * 86400000 : 0 };
     try { sessionStorage.setItem(SESSKEY, JSON.stringify(sess)); if (remember) localStorage.setItem(SESSKEY, JSON.stringify(sess)); else localStorage.removeItem(SESSKEY); } catch (e) { /* ignore */ }
     remembered = remember; touch();
     activate(acc);
@@ -86,14 +90,14 @@
       if (s === fromLocal && !s.remember) continue;
       const valid = acc.id === BOOT.id ? s.token === CFG.access.bootstrapMasterHash : s.token === acc.hash;   // password changed => signed out
       if (!valid) continue;
-      remembered = !!s.remember;
+      remembered = !!s.remember; apiKey = s.k || '';
       if (!remembered) { let last = 0; try { last = Number(sessionStorage.getItem(ACTKEY) || 0); } catch (e) { /* ignore */ } if (idleMs() && (!last || Date.now() - last > idleMs())) continue; }
       activate(acc); touch(); return true;
     }
     try { localStorage.removeItem(SESSKEY); } catch (e) { /* ignore */ }
     return false;
   }
-  function signOut() { try { sessionStorage.removeItem(SESSKEY); sessionStorage.removeItem(ACTKEY); localStorage.removeItem(SESSKEY); } catch (e) { /* ignore */ } current = null; remembered = false; St.setScope([], []); }
+  function signOut() { try { sessionStorage.removeItem(SESSKEY); sessionStorage.removeItem(ACTKEY); localStorage.removeItem(SESSKEY); } catch (e) { /* ignore */ } current = null; remembered = false; apiKey = ''; St.setScope([], []); }
   function activate(acc) {
     current = acc.role === normRole(acc.role) ? acc : Object.assign({}, acc, { role: normRole(acc.role) });
     acc = current;
@@ -119,5 +123,5 @@
   const role = () => (current ? current.role : null);
   const displayName = (lang) => (current ? (lang === 'en' && current.nameEn ? current.nameEn : current.name) : '');
 
-  window.Auth = { list, byId, signIn, restore, signOut, can, role, displayName, normRole, canEditSession, editDeadline, windowMs, canRemember, touch, idleExpired, get current() { return current; }, makeCredential, newPassword, normPw, secure, BOOT };
+  window.Auth = { list, byId, signIn, restore, signOut, can, role, displayName, normRole, canEditSession, editDeadline, windowMs, canRemember, touch, idleExpired, apiKey: () => apiKey, get current() { return current; }, makeCredential, newPassword, normPw, secure, BOOT };
 })();

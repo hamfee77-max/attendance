@@ -22,13 +22,13 @@
   <div class="cover">
     <div class="logos"><img data-logo="university" alt=""><img data-logo="department" alt=""><img data-logo="college" alt=""></div>
     <h1>دليل المدير وتخصيص القسم</h1>
-    <p>لمدير النظام ولرئيس القسم ومن يخوّله — الإصدار 2.3</p>
+    <p>لمدير النظام ولرئيس القسم ومن يخوّله — الإصدار 2.4</p>
   </div>
   <nav class="toc"><h2>المحتويات</h2><ol>
     <li><a href="#a1">كيف يعمل النظام</a></li><li><a href="#a2">الدخول بالحساب الرئيسي</a></li><li><a href="#a3">حسابات المستخدمين وكلمات المرور</a></li>
     <li><a href="#a4">تخويل اللجنة وأشخاص آخرين</a></li><li><a href="#a5">لجنة متابعة الغيابات (الأسماء الثلاثة)</a></li><li><a href="#a6">مستلمو التقارير</a></li>
     <li><a href="#a7">المراحل والطلبة والمواد (بولونيا والسنوي)</a></li><li><a href="#a8">الأعوام والفصول</a></li><li><a href="#a9">نشر التغييرات لجميع الأجهزة</a></li>
-    <li><a href="#a10">تكييف التطبيق لقسم آخر</a></li><li><a href="#a11">تطبيقا أندرويد والآيفون</a></li><li><a href="#a12">الأمان</a></li></ol></nav>
+    <li><a href="#a10">تكييف التطبيق لقسم آخر</a></li><li><a href="#a11">تطبيقا أندرويد والآيفون</a></li><li><a href="#a12">الأمان</a></li><li><a href="#a13">جهة خزن التقارير</a></li></ol></nav>
 
   <section id="a1"><h2 class="s">1. كيف يعمل النظام</h2>
     <ol class="steps"><li>يجهّز الحساب الرئيسي القسم: الحسابات، المواد المسندة لكل تدريسي، أعضاء اللجنة، ثم <b>ينشر ملف القسم</b>.</li>
@@ -119,6 +119,32 @@
       <li>الحماية من جهة الجهاز: تمنع الاستخدام غير المخوّل للتطبيق، ولا تشفّر بيانات الهاتف؛ ليحمِ كل مستخدم هاتفه برمز قفل.</li>
       <li>استخدم كلمات المرور المولَّدة تلقائياً، وغيّر أي كلمة تسرّبت ثم انشر.</li></ul>
   </section>
+  <section id="a13"><h2 class="s">13. جهة خزن التقارير (Google Drive أو مركز بيانات)</h2>
+    <p>بدل تبادل الملفات عبر واتساب، يمكن أن تُحفظ غيابات التدريسيين وتقاريرهم تلقائياً في جهة يحددها <b>مدير النظام</b>:</p>
+    <div class="tbl"><table><tr><th>الجهة</th><th>ما تحتاجه</th></tr>
+      <tr><td><b>Google Drive</b></td><td>حساب Google للقسم، وملف الخادم <code>server/Code.gs</code> (مجاني).</td></tr>
+      <tr><td><b>مركز بيانات الكلية</b></td><td>خادم ويب يدعم PHP 7.4+ مع SQLite وHTTPS، وملف الخادم <code>server/attendance-api.php</code> يرفعه فريق تقنية المعلومات.</td></tr>
+      <tr><td><b>مركز بيانات آخر</b></td><td>المتطلبات نفسها على أي خادم آخر يثق به القسم.</td></tr></table></div>
+    <h3>الإعداد على Google Drive (مرة واحدة، نحو 10 دقائق)</h3>
+    <ol class="steps"><li>سجّل الدخول إلى حساب Google الخاص بالقسم في المتصفح.</li>
+      <li>افتح <code>script.google.com</code> ← <b>New project</b>، وسمّه «Attendance server».</li>
+      <li>احذف المحتوى الموجود، والصق محتوى الملف <code>server/Code.gs</code> كاملاً، ثم احفظ.</li>
+      <li>اختر الدالة <b>setup</b> واضغط <b>Run</b>، ثم وافق على الأذونات المطلوبة. ينشئ ذلك مجلد «غيابات قسم هندسة الموارد المائية» وجدول «سجل الغيابات» في Drive.</li>
+      <li><b>Deploy ← New deployment ← Web app</b>: Execute as <b>Me</b>، Who has access <b>Anyone</b> ← <b>Deploy</b>، وانسخ رابط <b>Web app URL</b>.</li>
+      <li>في التطبيق بحساب مدير النظام: <span class="ui">إعداد القسم ← جهة خزن التقارير</span>: اختر Google Drive، والصق الرابط، واحفظ.</li>
+      <li><span class="ui">الإعدادات ← اختبار الاتصال</span>، ثم صدّر ملف القسم وانشره.</li></ol>
+    <div class="note">إذا منع مسؤول حسابات الجامعة خيار «Anyone» في Google Workspace، فاستخدم حساب Google آخر للقسم، أو اختر مركز بيانات الكلية.</div>
+    <h3>الإعداد على مركز بيانات (الكلية أو غيرها)</h3>
+    <ol class="steps"><li>سلّم فريق تقنية المعلومات الملف <code>server/attendance-api.php</code>.</li>
+      <li>يرفعه إلى خادم يعمل بـ HTTPS، ويضبط <code>DATA_DIR</code> على مجلد خاص خارج المجلد العام للموقع.</li>
+      <li>عند فتح رابط الملف في المتصفح يجب أن يظهر <code>{"ok":true,...}</code>.</li>
+      <li>في التطبيق: <span class="ui">إعداد القسم ← جهة خزن التقارير</span>: اختر «مركز بيانات الكلية» أو «مركز بيانات آخر»، واكتب اسمه، والصق الرابط، ثم اختبر الاتصال، وصدّر ملف القسم وانشره.</li></ol>
+    <h3>كيف تعمل بعد الإعداد</h3>
+    <ul><li><b>التدريسي:</b> كل محاضرة يحفظها تُرسل تلقائياً، ومع كل إرسال تُحفظ نسخة احتياطية في مجلده. إن لم يتوفر إنترنت تبقى في قائمة الانتظار وتُرسل لاحقاً. زر <span class="ui">إرسال إلى …</span> في التقارير يحفظ المذكرة نفسها في المجلد.</li>
+      <li><b>رئيس القسم والمخوّلون:</b> تصل الغيابات تلقائياً كل بضع دقائق، أو فوراً بزر <span class="ui">🔄 مزامنة الآن</span>، دون استيراد يدوي. التقارير الرسمية تُحفظ في مجلد «التقارير الرسمية».</li>
+      <li><b>حماية:</b> لكل حساب مفتاح إرسال خاص مشتق من كلمة مروره. التدريسي يرسل مواده فقط، ويرفض الخادم تعديلاته بعد 72 ساعة. لا تُحفظ كلمات المرور على الخادم.</li>
+      <li><b>تنظيم الملفات:</b> <code>العام الدراسي / اسم التدريسي / التاريخ والوقت.json</code>، وجدول بكل المحاضرات المستلمة وسجل بكل عملية إرسال.</li></ul>
+  </section>
 </article>
 
 <!-- ============================== ENGLISH ============================== -->
@@ -126,13 +152,13 @@
   <div class="cover">
     <div class="logos"><img data-logo="university" alt=""><img data-logo="department" alt=""><img data-logo="college" alt=""></div>
     <h1>Administrator & Customization Guide</h1>
-    <p>For the system administrator, the Head of Department and delegates — version 2.3</p>
+    <p>For the system administrator, the Head of Department and delegates — version 2.4</p>
   </div>
   <nav class="toc"><h2>Contents</h2><ol>
     <li><a href="#e1">How the system works</a></li><li><a href="#e2">Signing in with the master account</a></li><li><a href="#e3">User accounts and passwords</a></li>
     <li><a href="#e4">Authorizing the committee and others</a></li><li><a href="#e5">Absence follow-up committee (three names)</a></li><li><a href="#e6">Report recipients</a></li>
     <li><a href="#e7">Stages, students and courses (Bologna and annual)</a></li><li><a href="#e8">Years and terms</a></li><li><a href="#e9">Publishing changes to all devices</a></li>
-    <li><a href="#e10">Adapting the app for another department</a></li><li><a href="#e11">Android and iPhone apps</a></li><li><a href="#e12">Security</a></li></ol></nav>
+    <li><a href="#e10">Adapting the app for another department</a></li><li><a href="#e11">Android and iPhone apps</a></li><li><a href="#e12">Security</a></li><li><a href="#e13">Report storage</a></li></ol></nav>
 
   <section id="e1"><h2 class="s">1. How the system works</h2>
     <ol class="steps"><li>The master account prepares the department: accounts, the courses assigned to each lecturer, the committee members, then <b>publishes the department file</b>.</li>
@@ -222,6 +248,32 @@
       <li>The administrator, the head and delegates are asked for their password at every opening; only lecturers may remember their device for 7 days; the app locks after 15 minutes without use. These values are set in <code>js/config.js → access</code>.</li>
       <li>Protection is on the device side: it prevents unauthorized use of the app but does not encrypt the phone's data; every user should protect their phone with a screen lock.</li>
       <li>Use the generated passwords, and replace any leaked password, then publish.</li></ul>
+  </section>
+  <section id="e13"><h2 class="s">13. Report storage (Google Drive or a data centre)</h2>
+    <p>Instead of exchanging files through WhatsApp, lecturers' absences and reports can be stored automatically in a destination chosen by the <b>system administrator</b>:</p>
+    <div class="tbl"><table><tr><th>Destination</th><th>What it needs</th></tr>
+      <tr><td><b>Google Drive</b></td><td>The department's Google account and the server file <code>server/Code.gs</code> (free).</td></tr>
+      <tr><td><b>College data centre</b></td><td>A web server with PHP 7.4+, SQLite and HTTPS, and the server file <code>server/attendance-api.php</code> installed by the IT team.</td></tr>
+      <tr><td><b>Another data centre</b></td><td>The same, on any other server the department trusts.</td></tr></table></div>
+    <h3>Google Drive set-up (once, about 10 minutes)</h3>
+    <ol class="steps"><li>Sign in to the department's Google account in the browser.</li>
+      <li>Open <code>script.google.com</code> → <b>New project</b> and name it “Attendance server”.</li>
+      <li>Delete the existing content, paste the whole of <code>server/Code.gs</code>, and save.</li>
+      <li>Select the function <b>setup</b>, press <b>Run</b> and allow the permissions it asks for. It creates the folder and the “Attendance log” sheet in Drive.</li>
+      <li><b>Deploy → New deployment → Web app</b>: Execute as <b>Me</b>, Who has access <b>Anyone</b> → <b>Deploy</b>, and copy the <b>Web app URL</b>.</li>
+      <li>In the app as system administrator: <span class="ui">Department setup → Report storage</span>: choose Google Drive, paste the address and save.</li>
+      <li><span class="ui">Settings → Test connection</span>, then export the department file and publish it.</li></ol>
+    <div class="note">If the university's Google Workspace administrator blocks “Anyone” access, use another Google account for the department or choose the college data centre.</div>
+    <h3>Data-centre set-up (the college's or another)</h3>
+    <ol class="steps"><li>Give <code>server/attendance-api.php</code> to the IT team.</li>
+      <li>They place it on an HTTPS server and set <code>DATA_DIR</code> to a private folder outside the public web root.</li>
+      <li>Opening the file's address in a browser must show <code>{"ok":true,...}</code>.</li>
+      <li>In the app: <span class="ui">Department setup → Report storage</span>: choose “College data centre” or “Another data centre”, type its name, paste the address, test the connection, then export the department file and publish.</li></ol>
+    <h3>How it works afterwards</h3>
+    <ul><li><b>Lecturer:</b> every saved lecture is sent automatically with a backup copy in their folder; without internet it waits in a queue and is sent later. <span class="ui">Send to …</span> in Reports also archives the memo itself.</li>
+      <li><b>Head and delegates:</b> absences arrive automatically every few minutes, or at once with <span class="ui">🔄 Sync now</span>, with no manual import. Official reports are archived in the “official reports” folder.</li>
+      <li><b>Protection:</b> each account has a private sending key derived from its password; lecturers can send only their courses and the server refuses their changes after 72 hours. No password is stored on the server.</li>
+      <li><b>Organisation:</b> <code>year / lecturer / date-time.json</code>, plus a table of every lecture received and a log of every submission.</li></ul>
   </section>
 </article>
 <footer class="owner" id="owner-foot"></footer>
