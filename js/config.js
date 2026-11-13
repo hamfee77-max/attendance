@@ -7,7 +7,7 @@
 // ============================================================================
 window.APP_CONFIG = {
   appId: 'wre-attendance',              // storage key prefix; change when deploying for another department
-  version: '2.0.0',
+  version: '2.1.0',
 
   // Owner and designer of the app (shown in About, the lock screen and the guides)
   owner: {
@@ -47,6 +47,8 @@ window.APP_CONFIG = {
     failUnexcused: 10, // fail when unexcused absence exceeds this
     failTotal: 15,     // fail when total absence (excused + unexcused) exceeds this
     weeksPerTerm: 15,  // Article 15: a unit = 1 weekly hour for 15 weeks
+    editWindowHours: 72,       // lecturers may change a recorded lecture within this many hours
+    trackFrom: '2026-11-15',   // alerts for lectures not recorded / not received start from this date
     regulationRef: [
       'المادة (9) من التعليمات الامتحانية رقم 134 لسنة 2000 المعدلة بالقرار 157 لسنة 2004',
       'Article 9 of Examination Instructions No. 134 of 2000, amended by decision 157 of 2004',

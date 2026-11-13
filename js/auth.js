@@ -1,8 +1,14 @@
 // ============================================================================
 //  AUTH: personal accounts, password hashing (PBKDF2-SHA256), sessions, roles
-//  Roles:  master    = head of department or anyone the head authorizes (everything)
-//          committee = absence follow-up committee (all courses, import, final reports)
-//          lecturer  = sees and reports only the courses assigned to the account
+//  Three levels:
+//    admin    = system administrator: everything the head can do, plus the app's own details
+//               (adapting it to another department: names, logos, rules, settings) and administrator accounts
+//    head     = head of department, or whoever the head authorizes (coordinator, committee member…):
+//               everything within the department — lecturers' accounts and passwords, students, stages,
+//               courses, academic years, receiving reports, editing absences at any time,
+//               final reports signed by the absence committee
+//    lecturer = documents absences of the assigned courses only; may edit a lecture within
+//               rules.editWindowHours (72 h) of recording it
 // ============================================================================
 (function () {
   const St = window.Store, CFG = St.CFG;
@@ -33,8 +39,10 @@
   }
 
   // Fallback master when no accounts exist yet (fresh deployment for another department)
-  const BOOT = { id: 'bootstrap-master', name: 'رئيس القسم', nameEn: 'Head of Department', role: 'master', courses: [] };
-  function list() { const a = St.accounts(); return a.length ? a : [BOOT]; }
+  const BOOT = { id: 'bootstrap-master', name: 'مدير النظام', nameEn: 'System administrator', role: 'admin', courses: [] };
+  // older role names: master -> admin, committee -> head
+  const normRole = (r) => (r === 'master' ? 'admin' : r === 'committee' ? 'head' : (r || 'lecturer'));
+  function list() { const a = St.accounts().map((x) => (x.role === normRole(x.role) ? x : Object.assign({}, x, { role: normRole(x.role) }))); return a.length ? a : [BOOT]; }
   const byId = (id) => list().find((a) => a.id === id);
 
   let current = null;
@@ -63,19 +71,29 @@
   }
   function signOut() { try { sessionStorage.removeItem(SESSKEY); localStorage.removeItem(SESSKEY); } catch (e) { /* ignore */ } current = null; St.setScope([], []); }
   function activate(acc) {
-    current = acc;
+    current = acc.role === normRole(acc.role) ? acc : Object.assign({}, acc, { role: normRole(acc.role) });
+    acc = current;
     if (acc.role === 'lecturer') St.setScope(acc.courses || [], acc.courses || []);
     else St.setScope(null, acc.courses || []);
   }
 
   const PERMS = {
-    master: ['allCourses', 'editLists', 'admin', 'import', 'final', 'backup'],
-    committee: ['allCourses', 'import', 'final', 'backup'],
+    admin: ['allCourses', 'editLists', 'years', 'admin', 'accounts', 'manageAdmins', 'import', 'final', 'backup', 'editAnytime', 'committee', 'exportDept'],
+    head: ['allCourses', 'editLists', 'years', 'accounts', 'import', 'final', 'backup', 'editAnytime', 'committee', 'exportDept'],
     lecturer: [],
   };
   const can = (p) => !!(current && (PERMS[current.role] || []).includes(p));
+  // Lecturer edit window: a lecture can be changed within editWindowHours of being recorded
+  const windowMs = () => (Number(CFG.rules.editWindowHours) || 72) * 3600000;
+  const editDeadline = (s) => (Number((s && s.createdAt) || 0) + windowMs());
+  function canEditSession(s) {
+    if (!current || !s) return false;
+    const c = St.course(s.courseId); if (!c || !St.inScope(c)) return false;
+    if (can('editAnytime')) return true;
+    return Date.now() <= editDeadline(s);
+  }
   const role = () => (current ? current.role : null);
   const displayName = (lang) => (current ? (lang === 'en' && current.nameEn ? current.nameEn : current.name) : '');
 
-  window.Auth = { list, byId, signIn, restore, signOut, can, role, displayName, get current() { return current; }, makeCredential, newPassword, normPw, secure, BOOT };
+  window.Auth = { list, byId, signIn, restore, signOut, can, role, displayName, normRole, canEditSession, editDeadline, windowMs, get current() { return current; }, makeCredential, newPassword, normPw, secure, BOOT };
 })();

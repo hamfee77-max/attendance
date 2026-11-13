@@ -23,7 +23,7 @@
     <div class="logos"><img data-logo="university" alt=""><img data-logo="department" alt=""><img data-logo="college" alt=""></div>
     <h1>دليل استخدام نظام تسجيل غيابات الطلبة</h1>
     <p><span data-inst="department"></span> — <span data-inst="college"></span> — <span data-inst="university"></span></p>
-    <p>الإصدار 2.0 — للتدريسيين ولجنة متابعة الغيابات</p>
+    <p>الإصدار 2.1 — للتدريسيين ورئيس القسم ولجنة متابعة الغيابات</p>
   </div>
   <nav class="toc"><h2>المحتويات</h2><ol>
     <li><a href="#a1">نبذة عن التطبيق</a></li><li><a href="#a2">التثبيت والنسخة الإلكترونية</a></li><li><a href="#a3">تسجيل الدخول والصلاحيات</a></li>
@@ -49,15 +49,15 @@
   <section id="a3"><h2 class="s">3. تسجيل الدخول والصلاحيات</h2>
     <ol class="steps"><li>اختر <b>اسمك</b> من القائمة.</li><li>اكتب <b>كلمة المرور الخاصة بك</b> التي سلّمها لك رئيس القسم (الحروف الكبيرة والصغيرة سواء).</li><li>اترك «تذكّر هذا الجهاز» مفعّلاً على هاتفك الشخصي فقط، ثم اضغط <span class="ui">دخول</span>.</li></ol>
     <div class="tbl"><table><tr><th>الصلاحية</th><th>لمن</th><th>ما يتيحه</th></tr>
-      <tr><td>تدريسي</td><td>كل تدريسي</td><td>مواده فقط: تسجيل الغيابات، الاستيراد من Excel، تقارير غيابات مواده وإرسالها إلى اللجنة.</td></tr>
-      <tr><td>لجنة متابعة الغيابات</td><td>من يخوّله رئيس القسم</td><td>جميع المواد، استيراد ملفات التدريسيين، التقرير النهائي وكل التقارير.</td></tr>
-      <tr><td>الحساب الرئيسي</td><td>رئيس القسم أو من يخوّله</td><td>كل ما سبق، إضافة إلى الحسابات وكلمات المرور واللجنة وإعداد القسم والقوائم.</td></tr></table></div>
+      <tr><td>مدير النظام</td><td>مسؤول التطبيق</td><td>صلاحيات رئيس القسم كلها، ويختص وحده بتعديل تفاصيل التطبيق نفسه (الأسماء والشعارات والضوابط والإعدادات) لموائمته مع قسم آخر، وبحسابات مدير النظام.</td></tr>
+      <tr><td>رئيس القسم / مخوّل</td><td>رئيس القسم، ومن يخوّله (مقرر القسم أو أي شخص)</td><td>كل التعديلات الخاصة بقسمه: كلمات مرور التدريسيين وحساباتهم، الطلبة والمراحل والمواد والأعوام، استلام تقارير الغياب، تعديل الغيابات في أي وقت، استيراد ملفات التدريسيين، والتقارير الموقّعة من لجنة الغيابات.</td></tr>
+      <tr><td>تدريسي</td><td>كل تدريسي</td><td>توثيق غيابات المواد المسندة إليه فقط، وتعديلها خلال <b>72 ساعة</b> من تسجيلها، وإرسالها.</td></tr></table></div>
     <p>للخروج: <span class="ui">الإعدادات ← تسجيل الخروج</span>. إذا نسيت كلمة المرور فاطلب من رئيس القسم إصدار كلمة جديدة.</p>
   </section>
 
   <section id="a4"><h2 class="s">4. ماذا يرى كل مستخدم</h2>
     <ul><li><b>التدريسي:</b> ثلاثة تبويبات فقط: <span class="ui">التسجيل</span> و<span class="ui">التقارير</span> و<span class="ui">الإعدادات</span>، ولا تظهر له إلا المراحل والمواد المسندة إليه. لا يرى مواد زملائه.</li>
-      <li><b>اللجنة والحساب الرئيسي:</b> إضافة إلى ذلك <span class="ui">المواد</span> و<span class="ui">الطلبة</span>. تعديل القوائم والمواد للحساب الرئيسي فقط.</li>
+      <li><b>رئيس القسم والمخوّلون ومدير النظام:</b> إضافة إلى ذلك <span class="ui">المواد</span> و<span class="ui">الطلبة</span> مع صلاحية تعديلهما.</li>
       <li>الشريط العلوي يعرض اسمك وصلاحيتك، والعام الدراسي والفصل المختارين.</li></ul>
   </section>
 
@@ -67,6 +67,10 @@
       <tr><td><span class="k P">✓</span></td><td>حاضر</td><td>لا يُحسب غياباً.</td></tr><tr><td><span class="k A">غ</span></td><td>غائب</td><td>غياب بدون عذر.</td></tr>
       <tr><td><span class="k E">ع</span></td><td>بعذر</td><td>يدخل في النسبة الكلية فقط، مع ملاحظة العذر ✎.</td></tr><tr><td><span class="k L">ت</span></td><td>متأخر</td><td>للمتابعة فقط.</td></tr></table></div>
     <p>الضغط على اسم الطالب يبدّل الحالة بالترتيب. ثم اضغط <span class="ui">💾 حفظ</span>. لتعديل محاضرة سابقة اضغط عليها في قائمة المحاضرات، و🗑 لحذفها.</p>
+    <h3>مهلة التعديل: 72 ساعة</h3>
+    <p>يستطيع التدريسي تعديل المحاضرة أو حذفها خلال <b>72 ساعة</b> من تسجيلها، ويظهر بجانبها «التعديل متاح حتى…». بعدها تُقفل 🔒 وتُعرض للقراءة فقط، ويكون أي تعديل عن طريق رئيس القسم أو من يخوّله، ويظهر في السجل اسم من عدّلها.</p>
+    <h3>تنبيه المحاضرات غير المسجّلة</h3>
+    <p>في أعلى تبويب <span class="ui">التسجيل</span> يظهر تنبيه بالمحاضرات المقررة حسب الجدول التي لم تُسجَّل غياباتها، وما كان منها اليوم باللون الأحمر، مع رقم على التبويب. اضغط المحاضرة لتسجيلها بتاريخها. وإذا كانت لديك غيابات مسجّلة لم تُرسل، يظهر تذكير بالإرسال. سجّل الغيابات وأرسلها <b>في يوم المحاضرة نفسه</b>.</p>
   </section>
 
   <section id="a6"><h2 class="s">6. الاستيراد من Excel</h2>
@@ -104,6 +108,8 @@
       <li>افتح <span class="ui">التقرير النهائي</span>، اختر المرحلة والفترة (الفصل أو العام كاملاً).</li>
       <li>يُوجَّه التقرير إلى رئيس القسم، ويتضمن موقف كل طالب ونسبته والإجراء المقترح، و<b>ينتهي بأسماء لجنة متابعة الغيابات: رئيس اللجنة وعضوين، مع خانات التوقيع</b>.</li>
       <li>اطبعه أو احفظه PDF، أو أرسله بـ <span class="ui">📤 إرسال التقرير</span>.</li></ol>
+    <h3>متابعة الإرسال</h3>
+    <p>تقرير <span class="ui">لم تصل غياباتها</span> يعرض لكل تدريسي ومادة تواريخ المحاضرات المقررة التي لم تصل غياباتها حتى أمس، ويظهر تنبيه بعددها في أعلى التبويبات. يمكن طباعته أو إرساله لمتابعة المتأخرين. ويستطيع رئيس القسم أو المخوّل تعديل أي محاضرة في أي وقت.</p>
     <p>تعيين أعضاء اللجنة وإدارة الحسابات موضّحان في <a href="admin.html">دليل المدير</a>.</p>
   </section>
 
@@ -140,7 +146,7 @@
     <div class="logos"><img data-logo="university" alt=""><img data-logo="department" alt=""><img data-logo="college" alt=""></div>
     <h1>Student Attendance System — User Guide</h1>
     <p><span data-inst="department"></span> — <span data-inst="college"></span> — <span data-inst="university"></span></p>
-    <p>Version 2.0 — for lecturers and the absence follow-up committee</p>
+    <p>Version 2.1 — for lecturers, the Head of Department and the absence follow-up committee</p>
   </div>
   <nav class="toc"><h2>Contents</h2><ol>
     <li><a href="#e1">About the app</a></li><li><a href="#e2">Installing and the web version</a></li><li><a href="#e3">Signing in and roles</a></li>
@@ -166,15 +172,15 @@
   <section id="e3"><h2 class="s">3. Signing in and roles</h2>
     <ol class="steps"><li>Choose <b>your name</b> from the list.</li><li>Type <b>your personal password</b> issued by the Head of Department (upper/lower case does not matter).</li><li>Keep “Remember this device” ticked only on your own phone, then tap <span class="ui">Sign in</span>.</li></ol>
     <div class="tbl"><table><tr><th>Role</th><th>For</th><th>What it allows</th></tr>
-      <tr><td>Lecturer</td><td>Every lecturer</td><td>Own courses only: record absences, import Excel, issue and send absence reports to the committee.</td></tr>
-      <tr><td>Absence committee</td><td>People authorized by the head</td><td>All courses, import lecturers' files, the final report and all reports.</td></tr>
-      <tr><td>Master account</td><td>Head of Department or whoever the head authorizes</td><td>All of the above, plus accounts and passwords, the committee, department setup and lists.</td></tr></table></div>
+      <tr><td>System administrator</td><td>The app administrator</td><td>All of the head's permissions, plus — exclusively — changing the app's own details (names, logos, rules, settings) to fit another department, and administrator accounts.</td></tr>
+      <tr><td>Head of department / delegate</td><td>The head, and whoever the head authorizes (the coordinator or anyone)</td><td>Everything within the department: lecturers' accounts and passwords, students, stages, courses and years, receiving absence reports, editing absences at any time, importing lecturers' files, and reports signed by the absence committee.</td></tr>
+      <tr><td>Lecturer</td><td>Every lecturer</td><td>Documents absences of their assigned courses only, may edit them within <b>72 hours</b> of recording, and sends them.</td></tr></table></div>
     <p>To leave: <span class="ui">Settings → Sign out</span>. If you forget your password, ask the Head of Department to issue a new one.</p>
   </section>
 
   <section id="e4"><h2 class="s">4. What each user sees</h2>
     <ul><li><b>Lecturer:</b> three tabs only, <span class="ui">Record</span>, <span class="ui">Reports</span> and <span class="ui">Settings</span>, with only the stages and courses assigned to them. Colleagues' courses are not visible.</li>
-      <li><b>Committee and master:</b> also <span class="ui">Courses</span> and <span class="ui">Students</span>. Only the master account can edit lists and courses.</li>
+      <li><b>Head, delegates and administrator:</b> also <span class="ui">Courses</span> and <span class="ui">Students</span>, with permission to edit them.</li>
       <li>The top bar shows your name and role, and the selected year and term.</li></ul>
   </section>
 
@@ -184,6 +190,10 @@
       <tr><td><span class="k P">P</span></td><td>Present</td><td>Not counted.</td></tr><tr><td><span class="k A">A</span></td><td>Absent</td><td>Unexcused absence.</td></tr>
       <tr><td><span class="k E">E</span></td><td>Excused</td><td>Counts in the total percentage only; add the excuse note with ✎.</td></tr><tr><td><span class="k L">L</span></td><td>Late</td><td>For follow-up only.</td></tr></table></div>
     <p>Tapping a name cycles the status. Then tap <span class="ui">💾 Save</span>. Tap a past lecture in the list to edit it, or 🗑 to delete it.</p>
+    <h3>Editing window: 72 hours</h3>
+    <p>A lecturer can edit or delete a lecture within <b>72 hours</b> of recording it; “editable until…” is shown next to it. After that it is locked 🔒 and read-only, any change goes through the Head of Department or a delegate, and the record shows who edited it.</p>
+    <h3>Alert for lectures not recorded</h3>
+    <p>At the top of <span class="ui">Record</span>, an alert lists the lectures due by the timetable whose absences are not recorded, today's in red, with a number on the tab. Tap a lecture to record it on its date. If recorded absences have not been sent, a reminder appears. Record and send absences <b>on the day of the lecture</b>.</p>
   </section>
 
   <section id="e6"><h2 class="s">6. Importing from Excel</h2>
@@ -221,6 +231,8 @@
       <li>Open <span class="ui">Final report</span> and choose the stage and the period (term or whole year).</li>
       <li>The report is addressed to the Head of Department, gives each student's status, percentage and recommended action, and <b>ends with the absence follow-up committee: the chair and two members, with signature lines</b>.</li>
       <li>Print it, save it as PDF, or send it with <span class="ui">📤 Send report</span>.</li></ol>
+    <h3>Submission tracking</h3>
+    <p>The <span class="ui">Not received</span> report lists, for each lecturer and course, the scheduled lecture dates up to yesterday whose absences have not arrived, and an alert with the count appears at the top. Print or send it to follow up. The Head of Department or a delegate can edit any lecture at any time.</p>
     <p>Setting the committee members and managing accounts are explained in the <a href="admin.html">Administrator guide</a>.</p>
   </section>
 

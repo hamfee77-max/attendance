@@ -204,6 +204,44 @@
     return ':root{--line:#dbe3ee;--fail:#c62828;--warn2:#e8702a}body{font-family:Segoe UI,Tahoma,sans-serif;margin:16px}' + css;
   }
 
+  // ---------- lectures due but not recorded / not received ----------
+  // A lecture is due on every timetable day of its course (holidays skipped) from rules.trackFrom up to opts.upTo.
+  // It is missing when no lecture of that course exists on that date on this device.
+  function missingData(opts) {
+    const from = CFG.rules.trackFrom || ''; const upTo = opts.upTo; const items = [];
+    if (!window.Excel) return { items, lecturers: [], from, upTo };
+    for (const c of St.S.courses) {
+      if (c.yearId !== St.S.currentYear || !St.inScope(c) || c.type === 'X') continue;
+      if (opts.mine && !St.isMine(c)) continue;
+      const have = new Set(St.sessionsOf(c.id).map((s) => s.date));
+      for (const d of Excel.scheduledDates(c)) if ((!from || d >= from) && d <= upTo && !have.has(d)) items.push({ course: c, date: d });
+    }
+    const accs = window.Auth ? Auth.list().filter((a) => Auth.normRole(a.role) === 'lecturer') : [];
+    for (const it of items) {
+      const names = accs.filter((a) => (a.courses || []).includes(it.course.id)).map((a) => a.name);
+      it.names = names.length ? names : (window.Names ? Names.parts(it.course.lecturer).map(Names.clean) : [it.course.lecturer || '—']);
+      it.lecturer = it.names.join(' + ') || '—';
+    }
+    items.sort((a, b) => a.lecturer.localeCompare(b.lecturer, 'ar') || a.course.nameAr.localeCompare(b.course.nameAr, 'ar') || a.date.localeCompare(b.date));
+    return { items, lecturers: [...new Set([].concat(...items.map((i) => i.names)))], from, upTo };
+  }
+  function missingReport(m, lang) {
+    const groups = [];
+    for (const it of m.items) {
+      const k = it.lecturer + '|' + it.course.id; let g = groups.find((x) => x.k === k);
+      if (!g) { g = { k, lecturer: it.lecturer, course: it.course, dates: [] }; groups.push(g); }
+      g.dates.push(it.date);
+    }
+    const rows = groups.map((g, i) => `<tr><td>${i + 1}</td><td class="name">${esc(g.lecturer)}</td><td>${esc(courseName(g.course, lang))}</td><td>${esc(groupName(St.group(g.course.groupId), lang))}</td><td>${g.dates.length}</td><td class="dates">${g.dates.map(dmy).join('، ')}</td></tr>`).join('');
+    const html = `<div class="doc" dir="${lang === 'ar' ? 'rtl' : 'ltr'}">${headerHTML(lang)}<h3>${tr('missingRepTitle', lang)}</h3>
+      <div class="doc-meta"><span>${tr('year', lang)}: ${esc(St.year().name)}</span><span>${tr('from', lang)}: ${dmy(m.from)}</span><span>${tr('to', lang)}: ${dmy(m.upTo)}</span><span>${tr('missingTotals', lang, { n: m.items.length, l: m.lecturers.length })}</span></div>
+      ${groups.length ? `<table class="rep"><thead><tr><th>${tr('n', lang)}</th><th>${tr('lecturer', lang)}</th><th>${tr('course', lang)}</th><th>${tr('group', lang)}</th><th>${tr('missingCountL', lang)}</th><th>${tr('missingDatesL', lang)}</th></tr></thead><tbody>${rows}</tbody></table>` : `<p>${tr('missingNone', lang)}</p>`}
+      <p class="small">${tr('missingLegend', lang)}</p>${footerHTML(lang)}</div>`;
+    const csv = toCSV([[tr('n', lang), tr('lecturer', lang), tr('course', lang), tr('group', lang), tr('missingCountL', lang), tr('missingDatesL', lang)]].concat(groups.map((g, i) => [i + 1, g.lecturer, courseName(g.course, lang), groupName(St.group(g.course.groupId), lang), g.dates.length, g.dates.map(dmy).join(' ')])));
+    const text = tr('missingRepTitle', lang) + '\n' + tr('missingTotals', lang, { n: m.items.length, l: m.lecturers.length }) + '\n\n' + groups.map((g) => `• ${g.lecturer} — ${courseName(g.course, lang)}: ${g.dates.map(dmy).join(', ')}`).join('\n');
+    return { html, csv, text };
+  }
+
   // ---------- utilities ----------
   function toCSV(rows) { return '﻿' + rows.map((r) => r.map((v) => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(',')).join('\r\n'); }
   // ---------- native (Android app) helpers: the WebView has no downloads, print or Web Share ----------
@@ -258,5 +296,5 @@
     setTimeout(() => { window.print(); setTimeout(done, 1500); }, 150);
   }
 
-  window.Reports = { committeeHTML, isNative, deptLogoSrc, memoText, sendReport, tr, esc, fmt1, fmtH, dmy, courseName, groupName, termName, statusLabel, actionLabel, dayName, periodRange, addDays, memoData, memoHTML, memoCSV, courseTable, studentReport, overview, register, toCSV, deliver, printHTML, headerHTML };
+  window.Reports = { missingData, missingReport, committeeHTML, isNative, deptLogoSrc, memoText, sendReport, tr, esc, fmt1, fmtH, dmy, courseName, groupName, termName, statusLabel, actionLabel, dayName, periodRange, addDays, memoData, memoHTML, memoCSV, courseTable, studentReport, overview, register, toCSV, deliver, printHTML, headerHTML };
 })();

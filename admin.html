@@ -22,7 +22,7 @@
   <div class="cover">
     <div class="logos"><img data-logo="university" alt=""><img data-logo="department" alt=""><img data-logo="college" alt=""></div>
     <h1>دليل المدير وتخصيص القسم</h1>
-    <p>للحساب الرئيسي: رئيس القسم أو من يخوّله — الإصدار 2.0</p>
+    <p>لمدير النظام ولرئيس القسم ومن يخوّله — الإصدار 2.1</p>
   </div>
   <nav class="toc"><h2>المحتويات</h2><ol>
     <li><a href="#a1">كيف يعمل النظام</a></li><li><a href="#a2">الدخول بالحساب الرئيسي</a></li><li><a href="#a3">حسابات المستخدمين وكلمات المرور</a></li>
@@ -37,10 +37,14 @@
     <div class="note">لا يوجد خادم. كل ما يخص القسم (الأسماء، الشعارات، الضوابط، اللجنة، الحسابات، القوائم) يُحفظ في ملف واحد هو <code>js/department.js</code> على الموقع، وكل جهاز يقرأه تلقائياً.</div>
   </section>
 
-  <section id="a2"><h2 class="s">2. الدخول بالحساب الرئيسي</h2>
-    <p>اختر «رئيس القسم» من قائمة الدخول وأدخل الرمز الرئيسي. تظهر في <span class="ui">الإعدادات</span> بطاقة <span class="ui">🛡 الإدارة (الحساب الرئيسي)</span>، وفيها:</p>
+  <section id="a2"><h2 class="s">2. المستويات الثلاثة والدخول</h2>
+    <div class="tbl"><table><tr><th>المستوى</th><th>الصلاحيات</th></tr>
+      <tr><td><b>مدير النظام</b></td><td>كل صلاحيات رئيس القسم، ويختص وحده بتعديل <b>تفاصيل التطبيق نفسه</b> لموائمته مع قسم آخر: «إعداد القسم» (الأسماء والشعارات والضوابط ومهلة التعديل وتاريخ المتابعة وعدد المراحل)، وإعادة التحميل، وحسابات مدير النظام، ونشر الموقع.</td></tr>
+      <tr><td><b>رئيس القسم / مخوّل</b></td><td><b>كل التعديلات الخاصة بقسمه</b>: حسابات التدريسيين وكلمات مرورهم وإسناد المواد، تخويل غيره (مقرر القسم أو أي شخص) بصلاحية «رئيس القسم / مخوّل» مع صفته، الطلبة والمراحل والمواد والأعوام الدراسية، استلام تقارير الغياب، تعديل الغيابات في أي وقت، استيراد ملفات التدريسيين، لجنة الغيابات ومستلمو التقارير.</td></tr>
+      <tr><td><b>التدريسي</b></td><td>توثيق غيابات مواده فقط، وتعديلها خلال 72 ساعة من تسجيلها، وإرسالها.</td></tr></table></div>
+    <p>يدخل مدير النظام باختيار «مدير النظام»، ورئيس القسم باختيار «رئيس القسم». تظهر في <span class="ui">الإعدادات</span> بطاقة الإدارة، وفيها:</p>
     <ul><li><span class="ui">🔑 حسابات المستخدمين وكلمات المرور</span></li><li><span class="ui">👥 لجنة متابعة الغيابات</span></li><li><span class="ui">🏛 إعداد القسم</span></li><li><span class="ui">⬇ تصدير ملف القسم</span></li><li>مستلمو التقارير، وروابط هذا الدليل ودليل النشر في المتاجر.</li></ul>
-    <p>على نشر جديد لقسم آخر بلا حسابات، يظهر في القائمة «رئيس القسم» ويُدخَل بالرمز الافتتاحي المحدد في <code>js/config.js → access.bootstrapMasterHash</code>.</p>
+    <p>«إعداد القسم» وإعادة التحميل يظهران لمدير النظام فقط. على نشر جديد لقسم آخر بلا حسابات، يظهر في القائمة «مدير النظام» ويُدخَل بالرمز الافتتاحي المحدد في <code>js/config.js → access.bootstrapMasterHash</code>.</p>
   </section>
 
   <section id="a3"><h2 class="s">3. حسابات المستخدمين وكلمات المرور</h2>
@@ -53,13 +57,13 @@
     <div class="warn">كلمات المرور تُعرض مرة واحدة فقط عند إنشائها، ولا يحفظ التطبيق إلا صيغتها المشفّرة. احتفظ بالورقة في مكان آمن وسلّم كل كلمة لصاحبها.</div>
   </section>
 
-  <section id="a4"><h2 class="s">4. تخويل اللجنة وأشخاص آخرين</h2>
-    <p>في تعديل أي حساب اختر الصلاحية:</p>
-    <div class="tbl"><table><tr><th>الصلاحية</th><th>متى تُستخدم</th></tr>
-      <tr><td>تدريسي</td><td>لكل تدريسي؛ يرى المواد المسندة إليه فقط.</td></tr>
-      <tr><td>لجنة متابعة الغيابات</td><td>لأعضاء اللجنة؛ يرون كل المواد، ويستوردون ملفات التدريسيين، ويُصدرون التقرير النهائي.</td></tr>
-      <tr><td>الحساب الرئيسي</td><td>لرئيس القسم ولمن يخوّله إدارة النظام كاملاً. يجب أن يبقى حساب رئيسي واحد على الأقل.</td></tr></table></div>
-    <p>عضو اللجنة الذي يدرّس أيضاً يحتفظ بمواده المسندة، ويمكنه تفعيل «موادي فقط» لتصفيتها.</p>
+  <section id="a4"><h2 class="s">4. تخويل مقرر القسم أو أي شخص</h2>
+    <ol class="steps"><li>من حسابات المستخدمين اضغط <span class="ui">＋ إضافة حساب</span> (أو عدّل حساباً موجوداً).</li>
+      <li>اختر الصلاحية <b>«رئيس القسم / مخوّل»</b>، واكتب <b>الصفة</b> التي تظهر بجانب الاسم، مثل «مقرر القسم» أو «عضو لجنة الغيابات».</li>
+      <li>تُنشأ كلمة المرور وتُعرض مرة واحدة، ثم انشر التغيير.</li></ol>
+    <p>المخوّل يملك صلاحيات رئيس القسم نفسها. صلاحية «مدير النظام» يمنحها مدير النظام فقط، ويجب أن يبقى حساب مدير نظام واحد على الأقل. من يدرّس من المخوّلين يحتفظ بمواده ويمكنه تفعيل «موادي فقط».</p>
+    <h3>مهلة تعديل التدريسي والتنبيهات</h3>
+    <p>من <span class="ui">إعداد القسم</span> (مدير النظام) تُحدَّد <b>مهلة تعديل التدريسي</b> (72 ساعة افتراضياً) و<b>تاريخ بدء متابعة الإرسال</b> الذي تُحسب منه تنبيهات المحاضرات غير المسجّلة وتقرير «لم تصل غياباتها». تُستخرج المحاضرات المقررة من يوم المادة في حقل «الموعد»، فاحرص على أن يحتوي اسم اليوم.</p>
   </section>
 
   <section id="a5"><h2 class="s">5. لجنة متابعة الغيابات (الأسماء الثلاثة)</h2>
@@ -82,7 +86,7 @@
   </section>
 
   <section id="a9"><h2 class="s">9. نشر التغييرات لجميع الأجهزة</h2>
-    <ol class="steps"><li>بعد أي تعديل إداري يظهر تنبيه «توجد تغييرات إدارية غير منشورة».</li>
+    <ol class="steps"><li>بعد أي تعديل إداري يظهر تنبيه بوجود تغييرات غير منشورة. إذا كان التعديل من رئيس القسم، يصدّر الملف ويرسله إلى مدير النظام لينشره.</li>
       <li>اضغط <span class="ui">⬇ تصدير ملف القسم (department.js)</span>.</li>
       <li>ضع الملف مكان <code>js/department.js</code> في مجلد الموقع على الحاسوب (<code>F:\My claud works\wre-attendance\js</code>).</li>
       <li>انقر نقرتين على <code>publish-attendance.bat</code>. خلال دقيقة تصل التغييرات إلى جميع الأجهزة عند فتح التطبيق، ولا تتأثر الغيابات المسجلة.</li></ol>
@@ -121,7 +125,7 @@
   <div class="cover">
     <div class="logos"><img data-logo="university" alt=""><img data-logo="department" alt=""><img data-logo="college" alt=""></div>
     <h1>Administrator & Customization Guide</h1>
-    <p>For the master account: the Head of Department or whoever the head authorizes — version 2.0</p>
+    <p>For the system administrator, the Head of Department and delegates — version 2.1</p>
   </div>
   <nav class="toc"><h2>Contents</h2><ol>
     <li><a href="#e1">How the system works</a></li><li><a href="#e2">Signing in with the master account</a></li><li><a href="#e3">User accounts and passwords</a></li>
@@ -136,10 +140,14 @@
     <div class="note">There is no server. Everything about the department (names, logos, rules, committee, accounts, lists) is kept in one file on the website, <code>js/department.js</code>, which every device reads automatically.</div>
   </section>
 
-  <section id="e2"><h2 class="s">2. Signing in with the master account</h2>
-    <p>Choose “Head of Department” in the sign-in list and enter the master code. <span class="ui">Settings</span> then shows <span class="ui">🛡 Administration (master account)</span> with:</p>
+  <section id="e2"><h2 class="s">2. The three levels and signing in</h2>
+    <div class="tbl"><table><tr><th>Level</th><th>Permissions</th></tr>
+      <tr><td><b>System administrator</b></td><td>All of the head's permissions, plus — exclusively — changing <b>the app's own details</b> to fit another department: “Department setup” (names, logos, rules, edit window, tracking date, number of stages), reset, administrator accounts and publishing the site.</td></tr>
+      <tr><td><b>Head of department / delegate</b></td><td><b>Everything within the department</b>: lecturers' accounts, passwords and course assignments; authorizing others (the coordinator or anyone) with the “Head of department / delegate” level and a title; students, stages, courses and academic years; receiving absence reports; editing absences at any time; importing lecturers' files; the absence committee and report recipients.</td></tr>
+      <tr><td><b>Lecturer</b></td><td>Documents absences of their own courses only, may edit them within 72 hours of recording, and sends them.</td></tr></table></div>
+    <p>The administrator signs in as “System administrator”, the head as “Head of Department”. <span class="ui">Settings</span> then shows the management card with:</p>
     <ul><li><span class="ui">🔑 User accounts and passwords</span></li><li><span class="ui">👥 Absence follow-up committee</span></li><li><span class="ui">🏛 Department setup</span></li><li><span class="ui">⬇ Export department file</span></li><li>Report recipients, and links to this guide and the store publishing guide.</li></ul>
-    <p>On a new deployment for another department with no accounts, “Head of Department” appears and signs in with the bootstrap code set in <code>js/config.js → access.bootstrapMasterHash</code>.</p>
+    <p>“Department setup” and reset are shown to the administrator only. On a new deployment for another department with no accounts, “System administrator” appears and signs in with the bootstrap code set in <code>js/config.js → access.bootstrapMasterHash</code>.</p>
   </section>
 
   <section id="e3"><h2 class="s">3. User accounts and passwords</h2>
@@ -152,13 +160,13 @@
     <div class="warn">Passwords are shown only once, when created; the app keeps only their hashes. Keep the sheet safe and hand each password to its owner.</div>
   </section>
 
-  <section id="e4"><h2 class="s">4. Authorizing the committee and others</h2>
-    <p>When editing an account, choose its role:</p>
-    <div class="tbl"><table><tr><th>Role</th><th>Use it for</th></tr>
-      <tr><td>Lecturer</td><td>Every lecturer; sees only assigned courses.</td></tr>
-      <tr><td>Absence committee</td><td>Committee members; see all courses, import lecturers' files, issue the final report.</td></tr>
-      <tr><td>Master account</td><td>The Head of Department and anyone the head authorizes to run the whole system. At least one master account must remain.</td></tr></table></div>
-    <p>A committee member who also teaches keeps their assigned courses and can tick “My courses only” to filter them.</p>
+  <section id="e4"><h2 class="s">4. Authorizing the coordinator or anyone</h2>
+    <ol class="steps"><li>In User accounts tap <span class="ui">＋ Add account</span> (or edit an existing one).</li>
+      <li>Choose the level <b>“Head of department / delegate”</b> and type the <b>title</b> shown next to the name, e.g. “Department coordinator” or “Absence committee member”.</li>
+      <li>The password is generated and shown once; then publish the change.</li></ol>
+    <p>A delegate has the same permissions as the head. Only the administrator can grant the “System administrator” level, and at least one administrator account must remain. Delegates who teach keep their courses and can tick “My courses only”.</p>
+    <h3>Lecturer edit window and alerts</h3>
+    <p>In <span class="ui">Department setup</span> (administrator) set the <b>lecturer edit window</b> (72 hours by default) and the <b>date to track submissions from</b>, used for the not-recorded alerts and the “Not received” report. Due lectures come from the day name in each course's schedule, so make sure it contains the day.</p>
   </section>
 
   <section id="e5"><h2 class="s">5. Absence follow-up committee (three names)</h2>
@@ -181,7 +189,7 @@
   </section>
 
   <section id="e9"><h2 class="s">9. Publishing changes to all devices</h2>
-    <ol class="steps"><li>After any administration change, a banner “unpublished administration changes” appears.</li>
+    <ol class="steps"><li>After any administration change a banner about unpublished changes appears. If the head made the change, they export the file and send it to the administrator to publish.</li>
       <li>Tap <span class="ui">⬇ Export department file (department.js)</span>.</li>
       <li>Put the file in place of <code>js/department.js</code> in the site folder on the computer (<code>F:\My claud works\wre-attendance\js</code>).</li>
       <li>Double-click <code>publish-attendance.bat</code>. Within a minute every device picks up the changes when the app opens; recorded absences are not affected.</li></ol>

@@ -20,12 +20,35 @@
   const typeLabel = (ty) => t({ T: 'typeT', U: 'typeU', P: 'typeP', X: 'typeX' }[ty] || 'typeX');
   const sysChip = (c) => `<span class="chip ${St.isYearCourse(c) ? 'yr' : ''}">${St.isYearCourse(c) ? t('annualChip') : t('semesterChip')}</span>`;
   const opt = (v, label, sel) => `<option value="${esc(v)}" ${sel ? 'selected' : ''}>${esc(label)}</option>`;
-  const roleLabel = (r) => t({ master: 'roleMaster', committee: 'roleCommittee', lecturer: 'roleLecturer' }[r] || 'roleLecturer');
+  const roleLabel = (r) => t({ admin: 'roleAdmin', head: 'roleHead', lecturer: 'roleLecturer' }[A.normRole(r)] || 'roleLecturer');
+  const accRoleText = (a) => (a && a.title ? a.title : roleLabel(a && a.role));
   const accName = (a) => (lang() === 'en' && a.nameEn ? a.nameEn : a.name);
   const isLecturer = () => A.role() === 'lecturer';
   // apply a configuration change on this device and keep it as an unpublished draft (master)
   const applyCfg = (patch) => { St.saveDraft({ config: patch }); St.deepMerge(CFG, patch); };
 
+  const fmtDT = (ms) => { const d = new Date(ms); const p = (n) => String(n).padStart(2, '0'); return `${p(d.getDate())}/${p(d.getMonth() + 1)} ${p(d.getHours())}:${p(d.getMinutes())}`; };
+  // ---- alerts: lectures due but not recorded (lecturer) / not received (head, administrator) ----
+  function alertsCard() {
+    if (!window.Excel || !A.current) return '';
+    const today = St.todayStr();
+    if (isLecturer()) {
+      const due = R.missingData({ upTo: today }).items;
+      const unsent = St.S.sessions.some((s) => { const c = St.course(s.courseId); return c && St.inScope(c) && (s.updatedAt || 0) > (UI.lastSentAt || 0); });
+      let h = '';
+      if (due.length) {
+        const todayN = due.filter((d) => d.date === today).length;
+        h += `<div class="card alert"><h3>⚠️ ${t('missingTitle', { n: due.length })}</h3>${todayN ? `<p class="small"><b>📅 ${t('missingToday', { n: todayN })}</b></p>` : ''}
+          <div class="chips">${due.slice(-14).reverse().map((d) => `<button class="chip-btn ${d.date === today ? 'today' : ''}" data-act="record-missing" data-id="${d.course.id}" data-date="${d.date}">${d.date === today ? '📅 ' : ''}${esc(cname(d.course))} · ${R.dmy(d.date)}</button>`).join('')}${due.length > 14 ? `<span class="muted small">+${due.length - 14}</span>` : ''}</div>
+          <p class="muted small">${t('missingLectHint')}</p></div>`;
+      }
+      if (unsent) h += `<div class="card alert info"><span>📤 ${t('unsentReminder')}</span> <button class="btn sm primary" data-act="send-my-data">📤 ${t('sendMyData')}</button></div>`;
+      return h;
+    }
+    const m = R.missingData({ upTo: R.addDays(today, -1) });
+    if (!m.items.length) return '';
+    return `<div class="card alert"><span>⚠️ ${t('notReceivedTitle', { n: m.items.length, l: m.lecturers.length })}</span> <button class="btn sm" data-act="open-missing">${t('openMissing')}</button></div>`;
+  }
   function toast(msg) { const el = $('#toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove('show'), 2600); }
   function applyDir() { document.documentElement.lang = lang(); document.documentElement.dir = lang() === 'ar' ? 'rtl' : 'ltr'; document.title = t('appName'); }
 
@@ -58,7 +81,7 @@
     const ins = CFG.institution;
     $('#top').innerHTML = `<div class="brand">
       <div class="logos">${logosHTML()}</div>
-      <div class="title"><h1>${esc(ins.department[L()])}</h1><small>👤 ${esc(A.displayName(lang()))} · ${esc(roleLabel(A.role()))}</small></div>
+      <div class="title"><h1>${esc(ins.department[L()])}</h1><small>👤 ${esc(A.displayName(lang()))} · ${esc(accRoleText(A.current))}</small></div>
       <button class="lang" data-act="toggle-lang">${lang() === 'ar' ? 'EN' : 'عربي'}</button></div>
       <div class="ctx">
         <select data-set="currentYear">${St.S.years.map((x) => opt(x.id, x.name, x.id === St.S.currentYear)).join('')}</select>
@@ -67,7 +90,9 @@
   }
   function renderTabs() {
     const all = { attend: ['✓', 'tabAttend'], courses: ['📚', 'tabCourses'], students: ['👥', 'tabStudents'], reports: ['📄', 'tabReports'], settings: ['⚙️', 'tabSettings'] };
-    $('#tabs').innerHTML = `<div class="tabs-in">${allowedTabs().map((id) => `<button class="${UI.tab === id ? 'on' : ''}" data-act="tab" data-id="${id}"><span class="ic">${all[id][0]}</span>${t(all[id][1])}</button>`).join('')}</div>`;
+    let badge = 0;
+    try { if (isLecturer() && window.Excel) badge = R.missingData({ upTo: St.todayStr() }).items.length; } catch (e) { badge = 0; }
+    $('#tabs').innerHTML = `<div class="tabs-in">${allowedTabs().map((id) => `<button class="${UI.tab === id ? 'on' : ''}" data-act="tab" data-id="${id}"><span class="ic">${all[id][0]}${id === 'attend' && badge ? `<i class="badge">${badge > 99 ? '99+' : badge}</i>` : ''}</span>${t(all[id][1])}</button>`).join('')}</div>`;
   }
 
   // ---------- shared selectors ----------
@@ -90,7 +115,7 @@
     const todayIdx = new Date().getDay(); const dayAr = I18N.dayNames[0].split(',')[todayIdx]; const dayEn = I18N.dayNames[1].split(',')[todayIdx];
     const pool = isLecturer() || UI.mine ? St.coursesFor('') : St.coursesFor(UI.groupId);
     const todays = pool.filter((x) => (!UI.mine || St.isMine(x)) && x.schedule && (N.norm(x.schedule).includes(N.norm(dayAr)) || x.schedule.toLowerCase().includes(dayEn.toLowerCase())));
-    let html = `<div class="card"><label class="f">${t('group')}</label>${groupSelect('data-set="ui.groupId"', UI.groupId)}
+    let html = alertsCard() + `<div class="card"><label class="f">${t('group')}</label>${groupSelect('data-set="ui.groupId"', UI.groupId)}
       <label class="f">${t('course')}</label><div class="row">${courseSelect('data-set="ui.courseId"', UI.groupId, UI.courseId)}${mineBox()}</div></div>`;
     if (todays.length) html += `<div class="card"><h3>${t('todayCourses')} · ${lang() === 'ar' ? dayAr : dayEn} ${R.dmy(St.todayStr())}</h3><div class="today-strip">${todays.map((x) => `<div class="tc" data-act="pick-course" data-id="${x.id}" data-g="${x.groupId}"><b>${esc(cname(x))}</b>${esc(gname(St.group(x.groupId)))}<br>${esc(x.schedule)} · ${esc(x.room || '')}</div>`).join('')}</div></div>`;
     if (!c) return html + `<div class="card empty">${t('noCourses')}</div>`;
@@ -104,7 +129,11 @@
       <div class="toolbar"><button class="btn" data-act="xls-import">📥 ${t('xlsImport')}</button><button class="btn" data-act="xls-template">⬇ ${t('xlsTemplate')}</button></div></div>`;
     html += `<div class="card"><h3>${t('sessions')}</h3>`;
     if (!sess.length) html += `<div class="empty">${t('noSessions')}</div>`;
-    else html += `<div class="list">${sess.slice().reverse().map((s) => { const abs = Object.values(s.records || {}).filter((v) => v === 'A' || v === 'E').length; return `<div class="item" data-act="edit-session" data-id="${s.id}"><div class="main"><div class="t">${R.dmy(s.date)} · ${R.dayName(s.date, lang())} · ${R.fmtH(s.hours)} ${t('hours')}</div><div class="s">${abs} ${t('absentCount')}${s.topic ? ' · ' + esc(s.topic) : ''}</div></div><div class="acts"><button class="icon" data-act="del-session" data-id="${s.id}" title="${t('delete')}">🗑</button></div></div>`; }).join('')}</div>`;
+    else html += `<div class="list">${sess.slice().reverse().map((s) => {
+      const abs = Object.values(s.records || {}).filter((v) => v === 'A' || v === 'E').length;
+      const editable = A.canEditSession(s);
+      const until = !A.can('editAnytime') && editable ? ` · ⏳ ${t('editUntil', { t: fmtDT(A.editDeadline(s)) })}` : '';
+      return `<div class="item ${editable ? '' : 'locked'}" data-act="edit-session" data-id="${s.id}"><div class="main"><div class="t">${editable ? '' : '🔒 '}${R.dmy(s.date)} · ${R.dayName(s.date, lang())} · ${R.fmtH(s.hours)} ${t('hours')}</div><div class="s">${abs} ${t('absentCount')}${s.topic ? ' · ' + esc(s.topic) : ''}${until}${s.editedBy ? ` · ✎ ${t('editedByL', { n: esc(s.editedBy) })}` : ''}</div></div>${editable ? `<div class="acts"><button class="icon" data-act="del-session" data-id="${s.id}" title="${t('delete')}">🗑</button></div>` : ''}</div>`; }).join('')}</div>`;
     return html + '</div>';
   }
 
@@ -113,27 +142,33 @@
     const span = St.termOf(c.termId);
     const outside = span && (draft.date < span.start || draft.date > span.end);
     const absN = Object.values(draft.records).filter((v) => v === 'A' || v === 'E').length;
-    const seg = (sid) => { const r = draft.records[sid] || 'P'; return `<div class="seg">${['P', 'A', 'E', 'L'].map((k) => `<button class="${r === k ? 'on ' + k : ''}" data-act="set-rec" data-id="${sid}" data-v="${k}" title="${t({ P: 'present', A: 'absent', E: 'excused', L: 'late' }[k])}">${t({ P: 'presentShort', A: 'absentShort', E: 'excusedShort', L: 'lateShort' }[k])}</button>`).join('')}</div>`; };
+    const ro = !!draft.readOnly;
+    const seg = (sid) => { const r = draft.records[sid] || 'P'; return `<div class="seg">${['P', 'A', 'E', 'L'].map((k) => `<button class="${r === k ? 'on ' + k : ''}" ${ro ? 'disabled' : `data-act="set-rec" data-id="${sid}" data-v="${k}"`} title="${t({ P: 'present', A: 'absent', E: 'excused', L: 'late' }[k])}">${t({ P: 'presentShort', A: 'absentShort', E: 'excusedShort', L: 'lateShort' }[k])}</button>`).join('')}</div>`; };
     return `<div class="card"><h3><span>${esc(cname(c))}</span><button class="btn sm ghost" data-act="cancel-session">✕ ${t('cancel')}</button></h3>
       <div class="muted">${esc(gname(St.group(c.groupId)))} · ${esc(c.lecturer || '')}</div>
-      <div class="grid2"><div><label class="f">${t('date')}</label><input type="date" data-draft="date" value="${draft.date}"></div><div><label class="f">${t('hours')}</label><input type="number" min="0.5" step="0.5" data-draft="hours" value="${draft.hours}"></div></div>
-      <label class="f">${t('topic')}</label><input type="text" data-draft="topic" value="${esc(draft.topic || '')}">
+      ${ro ? `<div class="warnbox small">🔒 ${t('lockedSession', { h: Number(CFG.rules.editWindowHours) || 72 })}</div>` : ''}
+      <div class="grid2"><div><label class="f">${t('date')}</label><input type="date" data-draft="date" value="${draft.date}" ${ro ? 'disabled' : ''}></div><div><label class="f">${t('hours')}</label><input type="number" min="0.5" step="0.5" data-draft="hours" value="${draft.hours}" ${ro ? 'disabled' : ''}></div></div>
+      <label class="f">${t('topic')}</label><input type="text" data-draft="topic" value="${esc(draft.topic || '')}" ${ro ? 'disabled' : ''}>
       ${outside ? `<p class="small" style="color:var(--warn2)">${t('outsideTerm')}</p>` : ''}
-      <div class="toolbar"><button class="btn" data-act="all-present">✓ ${t('allPresent')}</button></div>
-      <p class="muted small">${t('tapToCycle')} · ${t('present')} / ${t('absent')} / ${t('excused')} / ${t('late')}</p></div>
-      <div class="card sheet">${students.length ? students.map((s, i) => { const r = draft.records[s.id] || 'P'; const note = draft.notes[s.id]; return `<div class="srow ${r}"><div class="nm" data-act="cycle" data-id="${s.id}"><span class="idx">${i + 1}</span>${esc(s.name)}${note ? `<span class="nt">✎ ${esc(note)}</span>` : ''}</div>${r === 'E' ? `<button class="icon" data-act="note" data-id="${s.id}">✎</button>` : ''}${seg(s.id)}</div>`; }).join('') : `<div class="empty">${t('noStudents')}</div>`}</div>
-      <div class="sticky-actions"><div class="toolbar"><button class="btn primary" data-act="save-session">💾 ${t('save')} (${absN} ${t('absentCount')})</button><button class="btn" data-act="cancel-session">${t('cancel')}</button></div></div>`;
+      ${ro ? '' : `<div class="toolbar"><button class="btn" data-act="all-present">✓ ${t('allPresent')}</button></div>
+      <p class="muted small">${t('tapToCycle')} · ${t('present')} / ${t('absent')} / ${t('excused')} / ${t('late')}</p>`}</div>
+      <div class="card sheet">${students.length ? students.map((s, i) => { const r = draft.records[s.id] || 'P'; const note = draft.notes[s.id]; return `<div class="srow ${r}"><div class="nm" ${ro ? '' : `data-act="cycle" data-id="${s.id}"`}><span class="idx">${i + 1}</span>${esc(s.name)}${note ? `<span class="nt">✎ ${esc(note)}</span>` : ''}</div>${r === 'E' && !ro ? `<button class="icon" data-act="note" data-id="${s.id}">✎</button>` : ''}${seg(s.id)}</div>`; }).join('') : `<div class="empty">${t('noStudents')}</div>`}</div>
+      <div class="sticky-actions"><div class="toolbar">${ro ? `<button class="btn" data-act="close-session">${t('close')}</button>` : `<button class="btn primary" data-act="save-session">💾 ${t('save')} (${absN} ${t('absentCount')})</button><button class="btn" data-act="cancel-session">${t('cancel')}</button>`}</div></div>`;
   }
-  function newDraft(courseId, sess) {
+  function newDraft(courseId, sess, date) {
     const c = St.course(courseId);
-    draft = sess ? { id: sess.id, courseId, date: sess.date, hours: sess.hours, topic: sess.topic || '', records: Object.assign({}, sess.records || {}), notes: Object.assign({}, sess.notes || {}), createdAt: sess.createdAt }
-      : { id: null, courseId, date: St.todayStr(), hours: c.weeklyHours || 2, topic: '', records: {}, notes: {} };
+    draft = sess ? { id: sess.id, courseId, date: sess.date, hours: sess.hours, topic: sess.topic || '', records: Object.assign({}, sess.records || {}), notes: Object.assign({}, sess.notes || {}), createdAt: sess.createdAt, by: sess.by, readOnly: !A.canEditSession(sess) }
+      : { id: null, courseId, date: date || St.todayStr(), hours: c.weeklyHours || 2, topic: '', records: {}, notes: {} };
   }
   function saveDraftSession() {
     if (!draft.date) { toast(t('required')); return; }
+    const prev = draft.id ? St.S.sessions.find((x) => x.id === draft.id) : null;
+    if (prev && !A.canEditSession(prev)) { toast(t('lockedSession', { h: Number(CFG.rules.editWindowHours) || 72 })); return; }
     const records = {}; for (const k in draft.records) if (draft.records[k] && draft.records[k] !== 'P') records[k] = draft.records[k];
     const notes = {}; for (const k in draft.notes) if (draft.notes[k]) notes[k] = draft.notes[k];
-    const s = { id: draft.id || 's_' + St.uid(), courseId: draft.courseId, date: draft.date, hours: Number(draft.hours) || 0, topic: draft.topic || '', records, notes, by: A.current ? A.current.id : '', createdAt: draft.createdAt || Date.now(), updatedAt: Date.now() };
+    const me = A.current ? A.current.name : '';
+    const s = { id: draft.id || 's_' + St.uid(), courseId: draft.courseId, date: draft.date, hours: Number(draft.hours) || 0, topic: draft.topic || '', records, notes, by: prev ? (prev.by || '') : (A.current ? A.current.id : ''), byName: prev ? (prev.byName || '') : me, createdAt: draft.createdAt || Date.now(), updatedAt: Date.now() };
+    if (prev && A.current && prev.by !== A.current.id) { s.editedBy = me; s.editedAt = Date.now(); }
     St.upsert(St.S.sessions, s); St.save(); draft = null; toast(t('saved')); render();
   }
 
@@ -224,7 +259,7 @@
     if (!groups.length) return `<div class="card empty">${isLecturer() ? t('noAssigned') : t('noGroups')}</div>`;
     UI.reportLang = UI.reportLang || lang();
     const tabs = isLecturer() ? [['memo', 'repMemo'], ['course', 'repCourse'], ['register', 'repRegister']]
-      : [['memo', 'repMemo'], ['final', 'repFinal'], ['course', 'repCourse'], ['student', 'repStudent'], ['overview', 'repGroup'], ['register', 'repRegister']];
+      : [['memo', 'repMemo'], ['final', 'repFinal'], ['missing', 'repMissing'], ['course', 'repCourse'], ['student', 'repStudent'], ['overview', 'repGroup'], ['register', 'repRegister']];
     if (!tabs.find((x) => x[0] === UI.reportTab)) UI.reportTab = 'memo';
     let html = '';
     if (A.can('import')) html += `<div class="card row"><span class="small muted">${t('importLecturerHint')}</span><label class="btn fix">📥 ${t('importLecturer')}<input type="file" id="f-import-abs" accept=".json,application/json" multiple style="display:none"></label></div>`;
@@ -254,6 +289,10 @@
       const ss = St.studentsOf(UI.groupId); if (!ss.find((s) => s.id === UI.studentId)) UI.studentId = ss[0] ? ss[0].id : '';
       html += `<label class="f">${t('student')}</label><select data-set="ui.studentId">${ss.map((s) => opt(s.id, s.name, s.id === UI.studentId)).join('')}</select>`;
       if (UI.studentId) { const r = R.studentReport(UI.studentId, rl); out = { html: r.html, csv: r.csv, name: `student_${St.student(UI.studentId).name}` }; }
+    } else if (UI.reportTab === 'missing') {
+      html += `<p class="muted small">${t('missingHint', { d: R.dmy(CFG.rules.trackFrom || '') })}</p>`;
+      const m = R.missingData({ upTo: R.addDays(St.todayStr(), -1) }); const r = R.missingReport(m, rl);
+      out = { html: r.html, csv: r.csv, name: `not_received_${St.todayStr()}`, text: r.text };
     } else if (UI.reportTab === 'overview') {
       html += `<div class="row">${mineBox() || '<span></span>'}</div>`;
       const r = R.overview(UI.groupId, rl, UI.mine); out = { html: r.html, csv: r.csv, name: `overview_${gname(St.group(UI.groupId))}` };
@@ -268,19 +307,20 @@
 
   // ================= SETTINGS =================
   function viewSettings() {
-    if (UI.adminView === 'accounts' && A.can('admin')) return viewAccounts();
+    if (UI.adminView === 'accounts' && A.can('accounts')) return viewAccounts();
     const s = St.S.settings, acc = A.current, r = St.rules();
     const myCourses = isLecturer() ? (acc.courses || []).map((id) => St.course(id)).filter(Boolean) : [];
     let html = '';
-    if (A.can('admin') && St.hasDraft()) html += `<div class="card warnbox">⚠️ ${t('draftBanner')} <button class="btn sm" data-act="export-dept">⬇ ${t('exportDept')}</button></div>`;
-    html += `<div class="card"><h3><span>👤 ${t('myAccount')}</span><span class="chip">${esc(roleLabel(acc.role))}</span></h3>
+    if (A.can('exportDept') && St.hasDraft()) html += `<div class="card warnbox">⚠️ ${A.can('admin') ? t('draftBanner') : t('draftBannerHead')} <button class="btn sm" data-act="export-dept">⬇ ${t('exportDept')}</button></div>`;
+    html += `<div class="card"><h3><span>👤 ${t('myAccount')}</span><span class="chip">${esc(accRoleText(acc))}</span></h3>
       <p><b>${esc(accName(acc))}</b></p>
       ${myCourses.length ? `<details><summary>${t('myCoursesList')} (${myCourses.length})</summary><ul class="small">${myCourses.map((c) => `<li>${esc(cname(c))} — ${esc(gname(St.group(c.groupId)))}${St.isYearCourse(c) ? ' (' + t('annualChip') + ')' : ''}</li>`).join('')}</ul></details>` : ''}
       <label class="f">${t('language')}</label><select data-set="settings.lang">${opt('ar', 'العربية', s.lang === 'ar')}${opt('en', 'English', s.lang === 'en')}</select>
       <div class="toolbar"><a class="btn" href="help.html?lang=${lang()}">📖 ${t('userGuide')}</a><button class="btn" data-act="lock-now">🔒 ${t('signOut')}</button></div></div>`;
     if (isLecturer()) html += `<div class="card"><h3>📤 ${t('sendMyData')}</h3><p class="muted small">${t('sendMyDataHint')}</p><button class="btn primary block" data-act="send-my-data">📤 ${t('sendMyData')}</button></div>`;
     html += `<div class="card"><h3>${t('thresholds')}</h3><div class="tbl"><table class="rep"><tr><th>${t('warn1')}</th><th>${t('warn2')}</th><th>${t('failU')}</th><th>${t('failT')}</th></tr><tr><td>${r.warn1}%</td><td>${r.warn2}%</td><td>${r.failUnexcused}%</td><td>${r.failTotal}%</td></tr></table></div><p class="muted small">${t('regulation')}</p></div>`;
-    if (A.can('admin')) html += adminCard() + yearsCard();
+    if (A.can('accounts')) html += adminCard();
+    if (A.can('years')) html += yearsCard();
     if (A.can('backup')) html += `<div class="card"><h3>${t('backup')}</h3><p class="muted small">${t('backupHint')}</p>
         <div class="toolbar"><button class="btn primary" data-act="export-json">⬇ ${t('exportJson')}</button><label class="btn">⬆ ${t('importJson')}<input type="file" accept=".json,application/json" id="f-import" style="display:none"></label></div>
         <label class="f">${t('importJson')}: </label><select id="f-import-mode">${opt('merge', t('merge'), true)}${opt('replace', t('replace'))}</select>
@@ -313,17 +353,18 @@
     const recs = CFG.recipients || []; const c = CFG.committee || {};
     const accs = St.accounts();
     const list = recs.length ? `<div class="list">${recs.map((r) => `<div class="item"><div class="main"><div class="t">${recTitle(r)}${r.name ? ' — ' + esc(r.name) : ''} ${r.authorized === false ? '' : '<span class="chip ok">✓</span>'}</div><div class="s">${esc(r.email || '')}${r.phone ? ' · ' + esc(r.phone) : ''}</div></div><div class="acts"><button class="icon" data-act="edit-recipient" data-id="${r.id}">✎</button><button class="icon" data-act="del-recipient" data-id="${r.id}">🗑</button></div></div>`).join('')}</div>` : `<div class="empty">${t('noRecipients')}</div>`;
-    return `<div class="card admin"><h3>🛡 ${t('adminTitle')}</h3><p class="muted small">${t('adminIntro')}</p>
+    const adm = A.can('admin');
+    return `<div class="card admin"><h3>🛡 ${adm ? t('adminTitle') : t('headMgmtTitle')}</h3><p class="muted small">${adm ? t('adminIntro') : t('headIntro')}</p>
       <div class="admin-grid">
         <button class="btn" data-act="accounts-view">🔑 ${t('accountsMgr')} <span class="chip">${accs.length}</span></button>
         <button class="btn" data-act="committee-form">👥 ${t('committeeSetup')}</button>
-        <button class="btn" data-act="dept-form">🏛 ${t('deptSetup')}</button>
+        ${adm ? `<button class="btn" data-act="dept-form">🏛 ${t('deptSetup')}</button>` : ''}
         <button class="btn primary" data-act="export-dept">⬇ ${t('exportDept')}</button>
       </div>
-      <p class="muted small">${t('exportDeptHint')}</p>
+      <p class="muted small">${adm ? t('exportDeptHint') : t('exportDeptHeadHint')}</p>
       <p class="small"><b>${esc(R.tr('committeeSetup', lang()))}:</b> ${esc(c.chair || '—')} · ${esc(c.member1 || '—')} · ${esc(c.member2 || '—')}</p>
       <h4 style="margin-top:12px">${t('recipients')} <button class="btn sm" data-act="add-recipient">＋ ${t('addRecipient')}</button></h4><p class="muted small">${t('adminHint')}</p>${list}
-      <div class="toolbar"><a class="btn sm" href="admin.html?lang=${lang()}">📘 ${t('adminGuide')}</a><a class="btn sm" href="publish-guide.html?lang=${lang()}">🏪 ${t('storeGuide')}</a></div></div>`;
+      <div class="toolbar"><a class="btn sm" href="admin.html?lang=${lang()}">📘 ${t('adminGuide')}</a>${adm ? `<a class="btn sm" href="publish-guide.html?lang=${lang()}">🏪 ${t('storeGuide')}</a>` : ''}</div></div>`;
   }
   function recipientForm(r) {
     r = r || { title: 'head', name: '', email: '', phone: '', authorized: true };
@@ -356,10 +397,11 @@
     const num = (k, label, step) => `<div><label class="f">${label}</label><input type="number" id="f-r-${k}" min="0" step="${step || 0.5}" value="${r[k]}"></div>`;
     modal(t('deptSetup'), `${pair('university', t('universityL'))}${pair('college', t('collegeL'))}${pair('department', t('departmentL'))}${pair('headTitle', t('headTitleL'))}
       <h4>${t('logosL')}</h4><div class="logo-row">${logo('university', t('logoUni'))}${logo('college', t('logoCol'))}${logo('department', t('logoDept'))}</div>
-      <h4>${t('rulesTitle')}</h4><div class="grid2">${num('warn1', t('warn1'))}${num('warn2', t('warn2'))}${num('failUnexcused', t('failU'))}${num('failTotal', t('failT'))}${num('weeksPerTerm', t('weeksPerTerm'), 1)}<div><label class="f">${t('stagesCount')}</label><input type="number" id="f-stages" min="1" max="8" value="${CFG.stages}"></div></div>`,
+      <h4>${t('rulesTitle')}</h4><div class="grid2">${num('warn1', t('warn1'))}${num('warn2', t('warn2'))}${num('failUnexcused', t('failU'))}${num('failTotal', t('failT'))}${num('weeksPerTerm', t('weeksPerTerm'), 1)}${num('editWindowHours', t('editWindowL'), 1)}<div><label class="f">${t('trackFromL')}</label><input type="date" id="f-trackFrom" value="${esc(r.trackFrom || '')}"></div><div><label class="f">${t('stagesCount')}</label><input type="number" id="f-stages" min="1" max="8" value="${CFG.stages}"></div></div>`,
       () => {
         const institution = {}; for (const k of ['university', 'college', 'department', 'headTitle']) institution[k] = [$(`#f-${k}-ar`).value.trim(), $(`#f-${k}-en`).value.trim()];
-        const rules = {}; for (const k of ['warn1', 'warn2', 'failUnexcused', 'failTotal', 'weeksPerTerm']) rules[k] = Number($(`#f-r-${k}`).value) || CFG.rules[k];
+        const rules = {}; for (const k of ['warn1', 'warn2', 'failUnexcused', 'failTotal', 'weeksPerTerm', 'editWindowHours']) rules[k] = Number($(`#f-r-${k}`).value) || CFG.rules[k];
+        rules.trackFrom = $('#f-trackFrom').value || CFG.rules.trackFrom;
         applyCfg({ institution, rules, stages: Number($('#f-stages').value) || CFG.stages, logos: Object.assign({}, pendingLogos) });
         toast(t('saved')); setTimeout(() => location.reload(), 400); return true;
       });
@@ -372,16 +414,20 @@
 
   // ---- accounts manager (master) ----
   function viewAccounts() {
-    const accs = St.accounts().slice().sort((a, b) => ({ master: 0, committee: 1, lecturer: 2 }[a.role] - { master: 0, committee: 1, lecturer: 2 }[b.role]) || a.name.localeCompare(b.name, 'ar'));
+    const rank = (a) => ({ admin: 0, head: 1, lecturer: 2 }[A.normRole(a.role)]);
+    const accs = St.accounts().slice().sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name, 'ar'));
     const fresh = Object.keys(newPasswords).length;
     return `<div class="card"><h3><span>🔑 ${t('accountsMgr')} <span class="chip">${accs.length}</span></span><button class="btn sm" data-act="accounts-back">← ${t('back')}</button></h3>
       <div class="toolbar"><button class="btn primary" data-act="add-account">＋ ${t('addAccount')}</button><button class="btn" data-act="auto-accounts">⚡ ${t('autoAccounts')}</button><button class="btn" data-act="cred-sheet" ${fresh ? '' : 'disabled'}>🖨 ${t('credentialsSheet')} (${fresh})</button></div>
       <p class="muted small">${t('exportDeptHint')}</p></div>
-      <div class="card"><div class="list">${accs.map((a) => `<div class="item"><div class="main"><div class="t">${esc(accName(a))} <span class="chip ${a.role}">${esc(roleLabel(a.role))}</span>${newPasswords[a.id] ? ' <span class="chip ok">🔑</span>' : ''}</div><div class="s">${a.role === 'lecturer' ? t('coursesN', { n: (a.courses || []).length }) : ''}${a.hash ? '' : ' ⚠️ ' + t('setPasswordFirst')}</div></div><div class="acts"><button class="icon" data-act="edit-account" data-id="${a.id}" title="${t('edit')}">✎</button><button class="icon" data-act="pw-account" data-id="${a.id}" title="${t('resetPassword')}">🔑</button><button class="icon" data-act="del-account" data-id="${a.id}" title="${t('delete')}">🗑</button></div></div>`).join('') || `<div class="empty">—</div>`}</div></div>`;
+      <div class="card"><div class="list">${accs.map((a) => { const r = A.normRole(a.role); const mine = canManage(a); return `<div class="item"><div class="main"><div class="t">${esc(accName(a))} <span class="chip ${r}">${esc(accRoleText(a))}</span>${newPasswords[a.id] ? ' <span class="chip ok">🔑</span>' : ''}</div><div class="s">${r === 'lecturer' ? t('coursesN', { n: (a.courses || []).length }) : esc(roleLabel(r))}${a.hash ? '' : ' ⚠️ ' + t('setPasswordFirst')}</div></div>${mine ? `<div class="acts"><button class="icon" data-act="edit-account" data-id="${a.id}" title="${t('edit')}">✎</button><button class="icon" data-act="pw-account" data-id="${a.id}" title="${t('resetPassword')}">🔑</button>${a.id === (A.current && A.current.id) ? '' : `<button class="icon" data-act="del-account" data-id="${a.id}" title="${t('delete')}">🗑</button>`}</div>` : ''}</div>`; }).join('') || `<div class="empty">—</div>`}</div></div>`;
   }
+  // the head (and delegates) manage head-level and lecturer accounts; only the administrator manages administrators
+  const canManage = (a) => A.can('manageAdmins') || A.normRole(a.role) !== 'admin';
   function yearCourses() { return St.S.courses.filter((c) => c.yearId === St.S.currentYear); }
   function accountForm(a) {
-    const isNew = !a; a = a || { id: 'u_' + St.uid(), name: '', nameEn: '', role: 'lecturer', courses: [] };
+    const isNew = !a; a = a || { id: 'u_' + St.uid(), name: '', nameEn: '', role: 'lecturer', title: '', courses: [] };
+    if (!isNew && !canManage(a)) { toast(t('notAllowed')); return; }
     const sel = new Set(a.courses || []);
     const byGroup = St.S.groups.filter((g) => g.yearId === St.S.currentYear).map((g) => {
       const cs = yearCourses().filter((c) => c.groupId === g.id); if (!cs.length) return '';
@@ -390,18 +436,20 @@
     modal(isNew ? t('addAccount') : t('editAccount'), `
       <label class="f">${t('accName')} *</label><input type="text" id="f-acc-name" value="${esc(a.name)}" dir="rtl">
       <label class="f">${t('accNameEn')}</label><input type="text" id="f-acc-nameEn" value="${esc(a.nameEn || '')}" dir="ltr">
-      <label class="f">${t('accRole')}</label><select id="f-acc-role">${['lecturer', 'committee', 'master'].map((r) => opt(r, roleLabel(r), a.role === r)).join('')}</select>
+      <label class="f">${t('accRole')}</label><select id="f-acc-role">${(A.can('manageAdmins') ? ['lecturer', 'head', 'admin'] : ['lecturer', 'head']).map((r) => opt(r, roleLabel(r), A.normRole(a.role) === r)).join('')}</select>
+      <label class="f">${t('accTitle')}</label><input type="text" id="f-acc-title" value="${esc(a.title || '')}" placeholder="${esc(t('accTitlePh'))}">
       <h4>${t('accCourses')} <button type="button" class="btn sm" data-act="acc-auto">⚡ ${t('autoAssign')}</button></h4><div class="acc-courses">${byGroup}</div>`,
       () => {
         const name = $('#f-acc-name').value.trim(); if (!name) { toast(t('required')); return false; }
-        const o = Object.assign({}, a, { name, nameEn: $('#f-acc-nameEn').value.trim(), role: $('#f-acc-role').value, courses: [...document.querySelectorAll('.f-acc-c:checked')].map((x) => x.value) });
+        const o = Object.assign({}, a, { name, nameEn: $('#f-acc-nameEn').value.trim(), role: $('#f-acc-role').value, title: $('#f-acc-title').value.trim(), courses: [...document.querySelectorAll('.f-acc-c:checked')].map((x) => x.value) });
+        if (!canManage(o)) { toast(t('notAllowed')); return false; }
         const list = St.clone(St.accounts()); St.upsert(list, o); St.saveDraft({ accounts: list });
         if (isNew || !o.hash) setTimeout(() => newPasswordFor(o.id), 50);
         toast(t('saved')); return true;
       });
   }
   async function newPasswordFor(id) {
-    const list = St.clone(St.accounts()); const a = list.find((x) => x.id === id); if (!a) return;
+    const list = St.clone(St.accounts()); const a = list.find((x) => x.id === id); if (!a || !canManage(a)) return;
     const pw = A.newPassword(); Object.assign(a, await A.makeCredential(pw));
     St.saveDraft({ accounts: list }); newPasswords[id] = { name: a.name, nameEn: a.nameEn, role: a.role, pw };
     render();
@@ -461,7 +509,7 @@
     const att = [{ name: base + '.csv', content: lastReport.csv, mime: 'text/csv;charset=utf-8' }];
     if (isLecturer()) att.push({ name: `absences_data_${St.todayStr()}.json`, content: St.exportAbsences(A.current.courses || [], A.current.name), mime: 'application/json' });
     const res = await R.sendReport(base, lastReport.html, att, text, recs);
-    if (res === 'shared' || res === 'mail') toast(t('saved'));
+    if (res === 'shared' || res === 'mail') { toast(t('saved')); if (isLecturer()) { UI.lastSentAt = Date.now(); St.saveUI(); } }
   }
 
   // ================= EXCEL IMPORT =================
@@ -476,8 +524,8 @@
       <div id="xls-preview"></div>`, () => {
       if (!imp || !imp.parsed || imp.parsed.error) { toast(t('xlsChooseFirst')); return false; }
       const course = St.course(imp.courseId); const add = $('#f-xls-add');
-      const res = Excel.applyAttendance(course, imp.parsed, { defaultHours: Number($('#f-xls-hours').value) || course.weeklyHours || 2, addUnmatched: !!(add && add.checked) });
-      St.save(); toast(t('xlsDone', { c: res.created, u: res.updated })); imp = null; return true;
+      const res = Excel.applyAttendance(course, imp.parsed, { defaultHours: Number($('#f-xls-hours').value) || course.weeklyHours || 2, addUnmatched: !!(add && add.checked), canTouch: (s) => A.canEditSession(s), by: A.current ? A.current.id : '', byName: A.current ? A.current.name : '' });
+      St.save(); toast(t('xlsDone', { c: res.created, u: res.updated }) + (res.skipped ? ' · ' + t('xlsSkipped', { n: res.skipped, h: Number(CFG.rules.editWindowHours) || 72 }) : '')); imp = null; return true;
     });
   }
   function xlsParse() { const c = St.course(imp.courseId); imp.parsed = Excel.parseAttendance(imp.wb.Sheets[imp.sheet], St.studentsOf(c.groupId)); }
@@ -577,7 +625,9 @@
       case 'pick-course': UI.groupId = el.dataset.g; UI.courseId = id; render(); break;
       case 'new-session': newDraft(UI.courseId); render(); break;
       case 'edit-session': { const s = St.S.sessions.find((x) => x.id === id); if (s && St.inScope(St.course(s.courseId))) { newDraft(s.courseId, s); render(); } break; }
-      case 'del-session': e.stopPropagation(); if (confirm(t('confirmDeleteSession'))) { St.S.sessions = St.S.sessions.filter((x) => x.id !== id); St.save(); toast(t('deleted')); render(); } break;
+      case 'del-session': { e.stopPropagation(); const s = St.S.sessions.find((x) => x.id === id); if (!A.canEditSession(s)) { toast(t('lockedSession', { h: Number(CFG.rules.editWindowHours) || 72 })); break; } if (confirm(t('confirmDeleteSession'))) { St.S.sessions = St.S.sessions.filter((x) => x.id !== id); St.save(); toast(t('deleted')); render(); } break; }
+      case 'close-session': draft = null; render(); break;
+      case 'record-missing': { const c = St.course(id); if (c && St.inScope(c)) { UI.groupId = c.groupId; UI.courseId = c.id; newDraft(c.id, null, el.dataset.date); UI.tab = 'attend'; render(); } break; }
       case 'cancel-session': if (confirm(t('unsaved'))) { draft = null; render(); } break;
       case 'save-session': saveDraftSession(); break;
       case 'all-present': draft.records = {}; render(); break;
@@ -600,27 +650,28 @@
       case 'print': if (lastReport.html) { R.printHTML(lastReport.html); if (R.isNative()) toast(t('printNative')); } break;
       case 'csv': if (lastReport.csv) R.deliver(lastReport.name.replace(/[\\/:*?"<>|]+/g, '_') + '.csv', lastReport.csv, 'text/csv;charset=utf-8'); break;
       case 'send': sendCurrentReport(); break;
-      case 'send-my-data': if (A.current) R.deliver(`absences_data_${St.todayStr()}.json`, St.exportAbsences(A.current.courses || [], A.current.name), 'application/json'); break;
+      case 'send-my-data': if (A.current) { await R.deliver(`absences_data_${St.todayStr()}.json`, St.exportAbsences(A.current.courses || [], A.current.name), 'application/json'); UI.lastSentAt = Date.now(); St.saveUI(); render(); } break;
+      case 'open-missing': UI.tab = 'reports'; UI.reportTab = 'missing'; render(); break;
       case 'xls-import': { const c = St.course(UI.courseId); if (c && St.inScope(c)) xlsImportForm(c); break; }
       case 'xls-template': { const c = St.course(UI.courseId); if (c && St.inScope(c)) xlsTemplateDownload(c); break; }
-      case 'add-recipient': if (admin) recipientForm(); break;
-      case 'edit-recipient': if (admin) recipientForm((CFG.recipients || []).find((r) => r.id === id)); break;
-      case 'del-recipient': if (admin && confirm(t('confirmDeleteRecipient'))) { applyCfg({ recipients: (CFG.recipients || []).filter((r) => r.id !== id) }); toast(t('deleted')); render(); } break;
-      case 'committee-form': if (admin) committeeForm(); break;
+      case 'add-recipient': if (A.can('committee')) recipientForm(); break;
+      case 'edit-recipient': if (A.can('committee')) recipientForm((CFG.recipients || []).find((r) => r.id === id)); break;
+      case 'del-recipient': if (A.can('committee') && confirm(t('confirmDeleteRecipient'))) { applyCfg({ recipients: (CFG.recipients || []).filter((r) => r.id !== id) }); toast(t('deleted')); render(); } break;
+      case 'committee-form': if (A.can('committee')) committeeForm(); break;
       case 'dept-form': if (admin) deptForm(); break;
-      case 'export-dept': if (admin) R.deliver('department.js', St.departmentFile(), 'text/javascript'); break;
-      case 'accounts-view': if (admin) { UI.adminView = 'accounts'; render(); } break;
+      case 'export-dept': if (A.can('exportDept')) R.deliver('department.js', St.departmentFile(), 'text/javascript'); break;
+      case 'accounts-view': if (A.can('accounts')) { UI.adminView = 'accounts'; render(); } break;
       case 'accounts-back': UI.adminView = ''; render(); break;
-      case 'add-account': if (admin) accountForm(); break;
-      case 'edit-account': if (admin) accountForm(St.accounts().find((a) => a.id === id)); break;
-      case 'pw-account': if (admin) newPasswordFor(id); break;
-      case 'del-account': if (admin && confirm(t('confirmDeleteAccount'))) { const list = St.accounts().filter((a) => a.id !== id); if (!list.some((a) => a.role === 'master' && a.hash)) { toast(t('needMaster')); break; } St.saveDraft({ accounts: list }); delete newPasswords[id]; render(); } break;
-      case 'auto-accounts': if (admin) autoAccounts(); break;
-      case 'cred-sheet': if (admin) credentialsSheet(); break;
+      case 'add-account': if (A.can('accounts')) accountForm(); break;
+      case 'edit-account': if (A.can('accounts')) accountForm(St.accounts().find((a) => a.id === id)); break;
+      case 'pw-account': if (A.can('accounts')) newPasswordFor(id); break;
+      case 'del-account': { const acc = St.accounts().find((a) => a.id === id); if (!A.can('accounts') || !acc || !canManage(acc) || (A.current && acc.id === A.current.id)) break; if (!confirm(t('confirmDeleteAccount'))) break; const list = St.accounts().filter((a) => a.id !== id); if (!list.some((a) => A.normRole(a.role) === 'admin' && a.hash)) { toast(t('needMaster')); break; } St.saveDraft({ accounts: list }); delete newPasswords[id]; render(); break; }
+      case 'auto-accounts': if (A.can('accounts')) autoAccounts(); break;
+      case 'cred-sheet': if (A.can('accounts')) credentialsSheet(); break;
       case 'acc-auto': { const name = $('#f-acc-name').value.trim(); if (!name) break; document.querySelectorAll('.f-acc-c').forEach((x) => { const c = St.course(x.value); if (c && N.teaches(name, c)) { x.checked = true; x.closest('details').open = true; } }); break; }
-      case 'add-year': if (admin) yearForm(); break;
-      case 'edit-year': if (admin) yearForm(St.S.years.find((y) => y.id === id)); break;
-      case 'del-year': if (admin && confirm(t('confirmDeleteYear'))) { St.deleteYear(id); St.save(); toast(t('deleted')); render(); } break;
+      case 'add-year': if (A.can('years')) yearForm(); break;
+      case 'edit-year': if (A.can('years')) yearForm(St.S.years.find((y) => y.id === id)); break;
+      case 'del-year': if (A.can('years') && confirm(t('confirmDeleteYear'))) { St.deleteYear(id); St.save(); toast(t('deleted')); render(); } break;
       case 'add-event-row': { const box = $('#f-events'); box.insertAdjacentHTML('beforeend', `<div class="row"><input type="text" placeholder="عربي" dir="rtl"><input type="text" placeholder="English" dir="ltr"><input type="date" class="fix" style="flex:0 0 140px"><input type="date" class="fix" style="flex:0 0 140px"></div>`); break; }
       case 'export-json': if (A.can('backup')) R.deliver(`${CFG.appId}_backup_${St.todayStr()}.json`, St.exportJSON(), 'application/json'); else R.deliver(`absences_data_${St.todayStr()}.json`, St.exportAbsences((A.current && A.current.courses) || [], A.current ? A.current.name : ''), 'application/json'); break;
       case 'reset-seed': if (admin && confirm(t('confirmReset'))) { St.resetToSeed(); UI.groupId = ''; UI.courseId = ''; render(); } break;

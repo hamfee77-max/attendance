@@ -1,8 +1,8 @@
 // Department file for the Student Attendance app — exported from Settings → Administration.
 // Replace js/department.js on the website with a newly exported file, then publish.
 window.DEPT = {
- "version": 1794559090296,
- "exportedAt": "2026-11-13T08:38:10.296Z",
+ "version": 1794586694164,
+ "exportedAt": "2026-11-13T16:18:14.164Z",
  "config": {
   "institution": {
    "university": [
@@ -62,14 +62,26 @@ window.DEPT = {
  },
  "accounts": [
   {
+   "id": "u_admin",
+   "name": "مدير النظام",
+   "nameEn": "System administrator",
+   "role": "admin",
+   "title": "مدير النظام",
+   "courses": [],
+   "salt": "8325fd7c9a7e2127fdeb2a2509582225",
+   "iter": 120000,
+   "hash": "45bf4ddb48208c0b0a8f183bce811644375d32780ffe6a9ab264db84bab0d951"
+  },
+  {
    "id": "u_head",
    "name": "رئيس القسم",
    "nameEn": "Head of Department",
-   "role": "master",
+   "role": "head",
    "courses": [],
    "salt": "4433fa5a572593118fa2adf6fad9f697",
    "iter": 120000,
-   "hash": "217bb21241880dd2ae8afca8adc126d1dd3e548e50c56fc58f19193db4e72805"
+   "hash": "217bb21241880dd2ae8afca8adc126d1dd3e548e50c56fc58f19193db4e72805",
+   "title": "رئيس القسم"
   },
   {
    "id": "u_01",

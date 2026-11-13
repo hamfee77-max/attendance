@@ -151,6 +151,7 @@
     }
     parsed.dates.forEach((d, i) => {
       const existing = St.sessionsOf(course.id).find((s) => s.date === d.date);
+      if (existing && opts.canTouch && !opts.canTouch(existing)) { res.skipped = (res.skipped || 0) + 1; return; }
       const records = existing ? Object.assign({}, existing.records || {}) : {};
       for (const r of parsed.rows) {
         if (!r.student) continue;
@@ -158,7 +159,7 @@
       }
       const sess = existing
         ? Object.assign({}, existing, { records, hours: d.hours || existing.hours, updatedAt: Date.now() })
-        : { id: 's_' + St.uid(), courseId: course.id, date: d.date, hours: d.hours || opts.defaultHours, topic: '', records, notes: {}, source: 'excel', createdAt: Date.now(), updatedAt: Date.now() };
+        : { id: 's_' + St.uid(), courseId: course.id, date: d.date, hours: d.hours || opts.defaultHours, topic: '', records, notes: {}, source: 'excel', by: opts.by || '', byName: opts.byName || '', createdAt: Date.now(), updatedAt: Date.now() };
       St.upsert(St.S.sessions, sess); existing ? res.updated++ : res.created++;
     });
     return res;
@@ -180,11 +181,13 @@
 
   // ---------- template ----------
   const DAYS = [['الاحد', 'sunday'], ['الاثنين', 'monday'], ['الثلاثاء', 'tuesday'], ['الاربعاء', 'wednesday'], ['الخميس', 'thursday'], ['الجمعه', 'friday'], ['السبت', 'saturday']];
-  function lectureDates(course) {
-    if (course.termId === 'year') { const y = St.year(); return y ? [].concat(...y.terms.map((tm) => lectureDates(Object.assign({}, course, { termId: tm.id })))) : []; }
+  // strict = only courses whose timetable names a day (used for the "not recorded" alerts)
+  function lectureDates(course, strict) {
+    if (course.termId === 'year') { const y = St.year(); return y ? [].concat(...y.terms.map((tm) => lectureDates(Object.assign({}, course, { termId: tm.id }), strict))) : []; }
     const term = St.termOf(course.termId); if (!term || !term.start || !term.end) return [];
     const sch = norm(course.schedule || '');
     const days = DAYS.map((d, i) => (sch.includes(d[0]) || sch.includes(d[1]) ? i : -1)).filter((i) => i >= 0);
+    if (strict && !days.length) return [];
     const breaks = ((St.year() || {}).events || []).filter((e) => e.end && e.end > e.start);
     const out = []; const d = new Date(term.start + 'T00:00:00'); const end = new Date(term.end + 'T00:00:00');
     const first = d.getDay();
@@ -228,5 +231,6 @@
     return X.read(await file.arrayBuffer(), { type: 'array' });
   }
 
-  window.Excel = { load, readFile, parseAttendance, applyAttendance, parseStudents, template, lectureDates, norm, parseDate };
+  const scheduledDates = (course) => lectureDates(course, true);
+  window.Excel = { load, readFile, parseAttendance, applyAttendance, parseStudents, template, lectureDates, scheduledDates, norm, parseDate };
 })();
