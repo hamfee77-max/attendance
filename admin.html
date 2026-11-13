@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>دليل المدير — Administrator Guide</title>
+<meta name="theme-color" content="#0b3d70">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="stylesheet" href="css/guide.css">
+</head>
+<body data-title-ar="دليل المدير وتخصيص القسم" data-title-en="Administrator & Customization Guide">
+<header class="top">
+  <img data-logo="university" alt="">
+  <div class="t" data-ar="دليل المدير وتخصيص القسم" data-en="Administrator & Customization Guide"></div>
+  <button type="button" id="langBtn" class="noprint" data-ar="English" data-en="عربي"></button>
+  <button type="button" id="printBtn" class="noprint">🖨</button>
+  <a href="index.html" class="noprint" data-ar="← التطبيق" data-en="App →"></a>
+</header>
+<main>
+<!-- ============================== ARABIC ============================== -->
+<article data-lang="ar" lang="ar" dir="rtl">
+  <div class="cover">
+    <div class="logos"><img data-logo="university" alt=""><img data-logo="department" alt=""><img data-logo="college" alt=""></div>
+    <h1>دليل المدير وتخصيص القسم</h1>
+    <p>للحساب الرئيسي: رئيس القسم أو من يخوّله — الإصدار 2.0</p>
+  </div>
+  <nav class="toc"><h2>المحتويات</h2><ol>
+    <li><a href="#a1">كيف يعمل النظام</a></li><li><a href="#a2">الدخول بالحساب الرئيسي</a></li><li><a href="#a3">حسابات المستخدمين وكلمات المرور</a></li>
+    <li><a href="#a4">تخويل اللجنة وأشخاص آخرين</a></li><li><a href="#a5">لجنة متابعة الغيابات (الأسماء الثلاثة)</a></li><li><a href="#a6">مستلمو التقارير</a></li>
+    <li><a href="#a7">المراحل والطلبة والمواد (بولونيا والسنوي)</a></li><li><a href="#a8">الأعوام والفصول</a></li><li><a href="#a9">نشر التغييرات لجميع الأجهزة</a></li>
+    <li><a href="#a10">تكييف التطبيق لقسم آخر</a></li><li><a href="#a11">تطبيقا أندرويد والآيفون</a></li><li><a href="#a12">الأمان</a></li></ol></nav>
+
+  <section id="a1"><h2 class="s">1. كيف يعمل النظام</h2>
+    <ol class="steps"><li>يجهّز الحساب الرئيسي القسم: الحسابات، المواد المسندة لكل تدريسي، أعضاء اللجنة، ثم <b>ينشر ملف القسم</b>.</li>
+      <li>يدخل كل تدريسي باسمه وكلمة مروره، فيرى مواده فقط، ويسجّل الحضور، ويرسل تقرير <b>الغيابات فقط</b> مع ملف بياناتها إلى اللجنة.</li>
+      <li>تستورد اللجنة ملفات التدريسيين، وتُصدر <b>التقرير النهائي</b> الذي ينتهي بأسماء رئيس اللجنة والعضوين وتواقيعهم، ويُرفع إلى رئيس القسم.</li></ol>
+    <div class="note">لا يوجد خادم. كل ما يخص القسم (الأسماء، الشعارات، الضوابط، اللجنة، الحسابات، القوائم) يُحفظ في ملف واحد هو <code>js/department.js</code> على الموقع، وكل جهاز يقرأه تلقائياً.</div>
+  </section>
+
+  <section id="a2"><h2 class="s">2. الدخول بالحساب الرئيسي</h2>
+    <p>اختر «رئيس القسم» من قائمة الدخول وأدخل الرمز الرئيسي. تظهر في <span class="ui">الإعدادات</span> بطاقة <span class="ui">🛡 الإدارة (الحساب الرئيسي)</span>، وفيها:</p>
+    <ul><li><span class="ui">🔑 حسابات المستخدمين وكلمات المرور</span></li><li><span class="ui">👥 لجنة متابعة الغيابات</span></li><li><span class="ui">🏛 إعداد القسم</span></li><li><span class="ui">⬇ تصدير ملف القسم</span></li><li>مستلمو التقارير، وروابط هذا الدليل ودليل النشر في المتاجر.</li></ul>
+    <p>على نشر جديد لقسم آخر بلا حسابات، يظهر في القائمة «رئيس القسم» ويُدخَل بالرمز الافتتاحي المحدد في <code>js/config.js → access.bootstrapMasterHash</code>.</p>
+  </section>
+
+  <section id="a3"><h2 class="s">3. حسابات المستخدمين وكلمات المرور</h2>
+    <ol class="steps"><li>افتح <span class="ui">حسابات المستخدمين وكلمات المرور</span>.</li>
+      <li><span class="ui">⚡ إنشاء حسابات التدريسيين من الجدول</span>: ينشئ حساباً لكل تدريسي يرد اسمه في المواد ولم يكن له حساب، ويسند إليه مواده تلقائياً ويولّد له كلمة مرور.</li>
+      <li><span class="ui">＋ إضافة حساب</span>: الاسم، الصلاحية، والمواد المسندة (مجمّعة حسب المرحلة، مع زر «إسناد تلقائي حسب الاسم»). تُعرض كلمة المرور فور الإنشاء.</li>
+      <li>🔑 بجانب أي حساب: كلمة مرور جديدة (عند النسيان أو التسريب). كلمة المرور القديمة تتوقف فوراً بعد النشر.</li>
+      <li><span class="ui">🖨 طباعة ورقة كلمات المرور الجديدة</span>: ورقة بأسماء من أُنشئت لهم كلمات مرور في هذه الجلسة، لتسليمها شخصياً.</li>
+      <li>انشر التغييرات (القسم 9) لتصل الحسابات إلى الأجهزة.</li></ol>
+    <div class="warn">كلمات المرور تُعرض مرة واحدة فقط عند إنشائها، ولا يحفظ التطبيق إلا صيغتها المشفّرة. احتفظ بالورقة في مكان آمن وسلّم كل كلمة لصاحبها.</div>
+  </section>
+
+  <section id="a4"><h2 class="s">4. تخويل اللجنة وأشخاص آخرين</h2>
+    <p>في تعديل أي حساب اختر الصلاحية:</p>
+    <div class="tbl"><table><tr><th>الصلاحية</th><th>متى تُستخدم</th></tr>
+      <tr><td>تدريسي</td><td>لكل تدريسي؛ يرى المواد المسندة إليه فقط.</td></tr>
+      <tr><td>لجنة متابعة الغيابات</td><td>لأعضاء اللجنة؛ يرون كل المواد، ويستوردون ملفات التدريسيين، ويُصدرون التقرير النهائي.</td></tr>
+      <tr><td>الحساب الرئيسي</td><td>لرئيس القسم ولمن يخوّله إدارة النظام كاملاً. يجب أن يبقى حساب رئيسي واحد على الأقل.</td></tr></table></div>
+    <p>عضو اللجنة الذي يدرّس أيضاً يحتفظ بمواده المسندة، ويمكنه تفعيل «موادي فقط» لتصفيتها.</p>
+  </section>
+
+  <section id="a5"><h2 class="s">5. لجنة متابعة الغيابات (الأسماء الثلاثة)</h2>
+    <p><span class="ui">👥 لجنة متابعة الغيابات</span>: اسم اللجنة بالعربية والإنكليزية، و<b>رئيس اللجنة</b> و<b>العضو الأول</b> و<b>العضو الثاني</b>. تُطبع هذه الأسماء مع خانات التوقيع في نهاية <b>التقرير النهائي</b> وكل مذكرة تصدرها اللجنة أو الحساب الرئيسي. مذكرات التدريسيين تُوجَّه إلى رئيس اللجنة وتنتهي بتوقيع التدريسي.</p>
+  </section>
+
+  <section id="a6"><h2 class="s">6. مستلمو التقارير</h2>
+    <p>في بطاقة الإدارة: <span class="ui">＋ إضافة مستلم</span> (رئيس القسم، لجنة الغيابات، شخص مخوّل) مع البريد ورقم الواتساب، وخيار «مخوّل باستلام التقارير» للإيقاف دون حذف. تظهر القائمة لكل المستخدمين عند إرسال التقارير بعد النشر.</p>
+  </section>
+
+  <section id="a7"><h2 class="s">7. المراحل والطلبة والمواد (بولونيا والسنوي)</h2>
+    <ul><li><span class="ui">الطلبة</span>: إضافة المراحل والشعب (النظام: بولونيا أو السنوي)، والطلبة يدوياً أو باستيراد الأسماء من Excel.</li>
+      <li><span class="ui">المواد</span>: لكل مادة <b>نظام المادة</b>: «بولونيا (فصلي)» لمادة فصل واحد، أو «سنوي (العام كاملاً)» لمادة تمتد الفصلين. المادة السنوية تظهر في الفصلين وتُحسب نسبتها من الساعات الأسبوعية × أسابيع العام.</li>
+      <li>المواد الجديدة لمرحلة سنوية تكون سنوية افتراضياً.</li>
+      <li>بعد إضافة مادة جديدة، أسندها إلى تدريسيها من حسابات المستخدمين.</li></ul>
+  </section>
+
+  <section id="a8"><h2 class="s">8. الأعوام والفصول</h2>
+    <p>في <span class="ui">الإعدادات ← الأعوام الدراسية</span>: تعديل التواريخ والأسابيع ومواعيد التقويم، و<span class="ui">＋ إضافة عام دراسي</span> مع نسخ المراحل والطلبة والمواد من العام الحالي؛ تُنقل إسنادات التدريسيين إلى المواد المنسوخة تلقائياً.</p>
+  </section>
+
+  <section id="a9"><h2 class="s">9. نشر التغييرات لجميع الأجهزة</h2>
+    <ol class="steps"><li>بعد أي تعديل إداري يظهر تنبيه «توجد تغييرات إدارية غير منشورة».</li>
+      <li>اضغط <span class="ui">⬇ تصدير ملف القسم (department.js)</span>.</li>
+      <li>ضع الملف مكان <code>js/department.js</code> في مجلد الموقع على الحاسوب (<code>F:\My claud works\wre-attendance\js</code>).</li>
+      <li>انقر نقرتين على <code>publish-attendance.bat</code>. خلال دقيقة تصل التغييرات إلى جميع الأجهزة عند فتح التطبيق، ولا تتأثر الغيابات المسجلة.</li></ol>
+  </section>
+
+  <section id="a10"><h2 class="s">10. تكييف التطبيق لقسم آخر</h2>
+    <h3>الطريقة السريعة (من داخل التطبيق)</h3>
+    <ol class="steps"><li>انسخ مجلد الموقع كاملاً لقسم جديد، وغيّر <code>appId</code> في <code>js/config.js</code> (مثلاً <code>civil-attendance</code>) لكي لا تختلط بيانات القسمين على الجهاز نفسه.</li>
+      <li>استبدل <code>js/department.js</code> بملف فارغ يحتوي السطر: <code>window.DEPT = {};</code></li>
+      <li>انشره على مستودع GitHub جديد مع تفعيل GitHub Pages، وادخل بالحساب الافتتاحي «رئيس القسم».</li>
+      <li><span class="ui">🏛 إعداد القسم</span>: أسماء الجامعة والكلية والقسم وصفة رئيس القسم بالعربية والإنكليزية، و<b>رفع الشعارات الثلاثة</b>، وضوابط الغياب، وأسابيع الفصل، وعدد المراحل.</li>
+      <li>أضف العام الدراسي والمراحل والطلبة (استيراد Excel) والمواد، ثم أنشئ الحسابات واللجنة.</li>
+      <li>صدّر ملف القسم وانشره (القسم 9).</li></ol>
+    <h3>الملفات القابلة للتعديل يدوياً</h3>
+    <div class="tbl"><table><tr><th>الملف</th><th>المحتوى</th></tr>
+      <tr><td><code>js/department.js</code></td><td>كل ما يخص القسم (يُصدَّر من التطبيق).</td></tr>
+      <tr><td><code>js/config.js</code></td><td>القيم الافتراضية: معرّف التطبيق، المالك، الحساب الافتتاحي، أيام الدوام.</td></tr>
+      <tr><td><code>js/i18n.js</code></td><td>كل نصوص الواجهة والتقارير بالعربية والإنكليزية.</td></tr>
+      <tr><td><code>logos/</code> و<code>icons/</code></td><td>الشعارات الافتراضية وأيقونات التطبيق.</td></tr>
+      <tr><td><code>manifest.webmanifest</code></td><td>اسم التطبيق على الشاشة الرئيسية.</td></tr></table></div>
+  </section>
+
+  <section id="a11"><h2 class="s">11. تطبيقا أندرويد والآيفون</h2>
+    <p>تطبيق أندرويد يُبنى من مجلد <code>wre-attendance-android</code> بالأمر <code>scripts\build-apk.ps1</code>، ويُنسخ الملف تلقائياً إلى الموقع ليُنزَّل من الإعدادات. مشروع الآيفون جاهز في مجلد <code>ios</code> ضمن المجلد نفسه، ويحتاج جهاز Mac للبناء. التفاصيل الكاملة والنشر في المتاجر في <a href="publish-guide.html">دليل النشر في المتاجر</a>.</p>
+  </section>
+
+  <section id="a12"><h2 class="s">12. الأمان</h2>
+    <ul><li>كلمات المرور محفوظة بصيغة PBKDF2-SHA256 مع ملح عشوائي (120000 دورة)، ولا تُحفظ نصاً.</li>
+      <li>الحماية من جهة الجهاز: تمنع الاستخدام غير المخوّل للتطبيق، ولا تشفّر بيانات الهاتف؛ ليحمِ كل مستخدم هاتفه برمز قفل.</li>
+      <li>استخدم كلمات المرور المولَّدة تلقائياً، وغيّر أي كلمة تسرّبت ثم انشر.</li></ul>
+  </section>
+</article>
+
+<!-- ============================== ENGLISH ============================== -->
+<article data-lang="en" lang="en" dir="ltr" hidden>
+  <div class="cover">
+    <div class="logos"><img data-logo="university" alt=""><img data-logo="department" alt=""><img data-logo="college" alt=""></div>
+    <h1>Administrator & Customization Guide</h1>
+    <p>For the master account: the Head of Department or whoever the head authorizes — version 2.0</p>
+  </div>
+  <nav class="toc"><h2>Contents</h2><ol>
+    <li><a href="#e1">How the system works</a></li><li><a href="#e2">Signing in with the master account</a></li><li><a href="#e3">User accounts and passwords</a></li>
+    <li><a href="#e4">Authorizing the committee and others</a></li><li><a href="#e5">Absence follow-up committee (three names)</a></li><li><a href="#e6">Report recipients</a></li>
+    <li><a href="#e7">Stages, students and courses (Bologna and annual)</a></li><li><a href="#e8">Years and terms</a></li><li><a href="#e9">Publishing changes to all devices</a></li>
+    <li><a href="#e10">Adapting the app for another department</a></li><li><a href="#e11">Android and iPhone apps</a></li><li><a href="#e12">Security</a></li></ol></nav>
+
+  <section id="e1"><h2 class="s">1. How the system works</h2>
+    <ol class="steps"><li>The master account prepares the department: accounts, the courses assigned to each lecturer, the committee members, then <b>publishes the department file</b>.</li>
+      <li>Each lecturer signs in with their name and password, sees only their courses, records attendance, and sends an <b>absences-only</b> report with its data file to the committee.</li>
+      <li>The committee imports the lecturers' files and issues the <b>final report</b>, which ends with the committee chair's and two members' names and signatures, and goes to the Head of Department.</li></ol>
+    <div class="note">There is no server. Everything about the department (names, logos, rules, committee, accounts, lists) is kept in one file on the website, <code>js/department.js</code>, which every device reads automatically.</div>
+  </section>
+
+  <section id="e2"><h2 class="s">2. Signing in with the master account</h2>
+    <p>Choose “Head of Department” in the sign-in list and enter the master code. <span class="ui">Settings</span> then shows <span class="ui">🛡 Administration (master account)</span> with:</p>
+    <ul><li><span class="ui">🔑 User accounts and passwords</span></li><li><span class="ui">👥 Absence follow-up committee</span></li><li><span class="ui">🏛 Department setup</span></li><li><span class="ui">⬇ Export department file</span></li><li>Report recipients, and links to this guide and the store publishing guide.</li></ul>
+    <p>On a new deployment for another department with no accounts, “Head of Department” appears and signs in with the bootstrap code set in <code>js/config.js → access.bootstrapMasterHash</code>.</p>
+  </section>
+
+  <section id="e3"><h2 class="s">3. User accounts and passwords</h2>
+    <ol class="steps"><li>Open <span class="ui">User accounts and passwords</span>.</li>
+      <li><span class="ui">⚡ Create lecturer accounts from the timetable</span> creates an account for every lecturer named in the courses who has none, assigns their courses automatically and generates a password.</li>
+      <li><span class="ui">＋ Add account</span>: name, role and assigned courses (grouped by stage, with “Auto-assign by name”). The password is shown right after creation.</li>
+      <li>🔑 next to an account issues a new password (forgotten or leaked). The old password stops working once published.</li>
+      <li><span class="ui">🖨 Print sheet of new passwords</span> lists everyone who received a password in this session, to hand over in person.</li>
+      <li>Publish the changes (section 9) so accounts reach the devices.</li></ol>
+    <div class="warn">Passwords are shown only once, when created; the app keeps only their hashes. Keep the sheet safe and hand each password to its owner.</div>
+  </section>
+
+  <section id="e4"><h2 class="s">4. Authorizing the committee and others</h2>
+    <p>When editing an account, choose its role:</p>
+    <div class="tbl"><table><tr><th>Role</th><th>Use it for</th></tr>
+      <tr><td>Lecturer</td><td>Every lecturer; sees only assigned courses.</td></tr>
+      <tr><td>Absence committee</td><td>Committee members; see all courses, import lecturers' files, issue the final report.</td></tr>
+      <tr><td>Master account</td><td>The Head of Department and anyone the head authorizes to run the whole system. At least one master account must remain.</td></tr></table></div>
+    <p>A committee member who also teaches keeps their assigned courses and can tick “My courses only” to filter them.</p>
+  </section>
+
+  <section id="e5"><h2 class="s">5. Absence follow-up committee (three names)</h2>
+    <p><span class="ui">👥 Absence follow-up committee</span>: committee name in Arabic and English, the <b>chair</b>, the <b>first member</b> and the <b>second member</b>. These names, with signature lines, are printed at the end of the <b>final report</b> and of every memo issued by the committee or the master account. Lecturers' memos are addressed to the committee chair and end with the lecturer's signature.</p>
+  </section>
+
+  <section id="e6"><h2 class="s">6. Report recipients</h2>
+    <p>In the administration card: <span class="ui">＋ Add recipient</span> (Head of Department, absence committee, authorized person) with email and WhatsApp number; “Authorized to receive reports” suspends a recipient without deleting it. After publishing, everyone sees the list when sending reports.</p>
+  </section>
+
+  <section id="e7"><h2 class="s">7. Stages, students and courses (Bologna and annual)</h2>
+    <ul><li><span class="ui">Students</span>: add stages and sections (system: Bologna or annual) and students, by hand or by importing names from Excel.</li>
+      <li><span class="ui">Courses</span>: each course has a <b>course system</b>: “Bologna (semester)” for a one-term course or “Annual (whole year)” for a course spanning both terms. An annual course appears in both terms and its percentage uses weekly hours × weeks of the year.</li>
+      <li>New courses of an annual stage default to annual.</li>
+      <li>After adding a course, assign it to its lecturer in User accounts.</li></ul>
+  </section>
+
+  <section id="e8"><h2 class="s">8. Years and terms</h2>
+    <p>In <span class="ui">Settings → Academic years</span>: edit dates, weeks and calendar events; <span class="ui">＋ Add academic year</span> copies stages, students and courses from the current year, and lecturers' course assignments are carried to the copied courses automatically.</p>
+  </section>
+
+  <section id="e9"><h2 class="s">9. Publishing changes to all devices</h2>
+    <ol class="steps"><li>After any administration change, a banner “unpublished administration changes” appears.</li>
+      <li>Tap <span class="ui">⬇ Export department file (department.js)</span>.</li>
+      <li>Put the file in place of <code>js/department.js</code> in the site folder on the computer (<code>F:\My claud works\wre-attendance\js</code>).</li>
+      <li>Double-click <code>publish-attendance.bat</code>. Within a minute every device picks up the changes when the app opens; recorded absences are not affected.</li></ol>
+  </section>
+
+  <section id="e10"><h2 class="s">10. Adapting the app for another department</h2>
+    <h3>Quick way (inside the app)</h3>
+    <ol class="steps"><li>Copy the whole site folder for the new department and change <code>appId</code> in <code>js/config.js</code> (e.g. <code>civil-attendance</code>) so the two departments' data never mix on one device.</li>
+      <li>Replace <code>js/department.js</code> with an empty file containing: <code>window.DEPT = {};</code></li>
+      <li>Publish it to a new GitHub repository with GitHub Pages and sign in with the bootstrap “Head of Department” account.</li>
+      <li><span class="ui">🏛 Department setup</span>: university, college, department and head-of-department title in Arabic and English, <b>upload the three logos</b>, absence rules, weeks per term and number of stages.</li>
+      <li>Add the academic year, stages, students (Excel import) and courses, then create the accounts and the committee.</li>
+      <li>Export the department file and publish (section 9).</li></ol>
+    <h3>Files that can be edited by hand</h3>
+    <div class="tbl"><table><tr><th>File</th><th>Contents</th></tr>
+      <tr><td><code>js/department.js</code></td><td>Everything about the department (exported from the app).</td></tr>
+      <tr><td><code>js/config.js</code></td><td>Defaults: app id, owner, bootstrap account, working days.</td></tr>
+      <tr><td><code>js/i18n.js</code></td><td>Every interface and report text in Arabic and English.</td></tr>
+      <tr><td><code>logos/</code> and <code>icons/</code></td><td>Default logos and app icons.</td></tr>
+      <tr><td><code>manifest.webmanifest</code></td><td>The app name on the home screen.</td></tr></table></div>
+  </section>
+
+  <section id="e11"><h2 class="s">11. Android and iPhone apps</h2>
+    <p>The Android app is built from the <code>wre-attendance-android</code> folder with <code>scripts\build-apk.ps1</code>; the file is copied to the website automatically for download from Settings. The iPhone project is ready in the <code>ios</code> folder of the same directory and needs a Mac to build. Full details and store publishing are in the <a href="publish-guide.html">App store publishing guide</a>.</p>
+  </section>
+
+  <section id="e12"><h2 class="s">12. Security</h2>
+    <ul><li>Passwords are stored as PBKDF2-SHA256 with a random salt (120,000 iterations), never as text.</li>
+      <li>Protection is on the device side: it prevents unauthorized use of the app but does not encrypt the phone's data; every user should protect their phone with a screen lock.</li>
+      <li>Use the generated passwords, and replace any leaked password, then publish.</li></ul>
+  </section>
+</article>
+<footer class="owner" id="owner-foot"></footer>
+</main>
+<script src="js/config.js"></script>
+<script src="js/department.js"></script>
+<script src="js/guide.js"></script>
+</body>
+</html>

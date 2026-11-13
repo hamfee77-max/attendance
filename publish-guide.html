@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>دليل النشر في المتاجر — Store Publishing Guide</title>
+<meta name="theme-color" content="#0b3d70">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="stylesheet" href="css/guide.css">
+</head>
+<body data-title-ar="دليل النشر في متاجر التطبيقات" data-title-en="App Store Publishing Guide">
+<header class="top">
+  <img data-logo="university" alt="">
+  <div class="t" data-ar="دليل النشر في متاجر التطبيقات" data-en="App Store Publishing Guide"></div>
+  <button type="button" id="langBtn" class="noprint" data-ar="English" data-en="عربي"></button>
+  <button type="button" id="printBtn" class="noprint">🖨</button>
+  <a href="index.html" class="noprint" data-ar="← التطبيق" data-en="App →"></a>
+</header>
+<main>
+<!-- ============================== ARABIC ============================== -->
+<article data-lang="ar" lang="ar" dir="rtl">
+  <div class="cover">
+    <div class="logos"><img data-logo="university" alt=""><img data-logo="department" alt=""><img data-logo="college" alt=""></div>
+    <h1>دليل نشر التطبيق في Google Play وApp Store وHuawei AppGallery</h1>
+    <p>الإصدار 2.0 — تشرين الثاني 2026</p>
+  </div>
+  <nav class="toc"><h2>المحتويات</h2><ol>
+    <li><a href="#a1">مقارنة سريعة</a></li><li><a href="#a2">الملفات الجاهزة</a></li><li><a href="#a3">ما تحتاجه كل المتاجر</a></li>
+    <li><a href="#a4">Google Play</a></li><li><a href="#a5">Huawei AppGallery</a></li><li><a href="#a6">Apple App Store (آيفون وآيباد)</a></li>
+    <li><a href="#a7">التحديثات اللاحقة</a></li><li><a href="#a8">نصوص صفحة المتجر الجاهزة</a></li><li><a href="#a9">التوزيع بدون متاجر</a></li></ol></nav>
+
+  <section id="a1"><h2 class="s">1. مقارنة سريعة</h2>
+    <div class="tbl"><table><tr><th></th><th>Google Play</th><th>Huawei AppGallery</th><th>Apple App Store</th></tr>
+      <tr><td>الحساب</td><td>Google Play Console</td><td>HUAWEI Developers / AppGallery Connect</td><td>Apple Developer Program</td></tr>
+      <tr><td>الكلفة</td><td>25 دولاراً مرة واحدة</td><td>مجاني</td><td>99 دولاراً سنوياً</td></tr>
+      <tr><td>التحقق</td><td>هوية شخصية + هاتف</td><td>هوية شخصية (وجهان) + بطاقة مصرفية</td><td>Apple ID مع مصادقة ثنائية + هوية</td></tr>
+      <tr><td>الملف المرفوع</td><td>AAB</td><td>AAB أو APK</td><td>يُرفع من Xcode على جهاز Mac</td></tr>
+      <tr><td>جهاز البناء</td><td>هذا الحاسوب (Windows)</td><td>هذا الحاسوب (Windows)</td><td>Mac مع Xcode حديث</td></tr>
+      <tr><td>مدة المراجعة التقريبية</td><td>أيام، وقبلها 14 يوم اختبار للحسابات الشخصية الجديدة</td><td>3–5 أيام عمل</td><td>1–3 أيام</td></tr></table></div>
+    <div class="note">المواعيد والرسوم والمتطلبات يحددها كل متجر وتتغير؛ راجع صفحة المتجر الرسمية قبل البدء.</div>
+  </section>
+
+  <section id="a2"><h2 class="s">2. الملفات الجاهزة</h2>
+    <p>في المجلد <code>F:\My claud works\wre-attendance-android</code>:</p>
+    <div class="tbl"><table><tr><th>الملف</th><th>الاستخدام</th></tr>
+      <tr><td><code>dist\WRE-Attendance-2.0.0.aab</code></td><td>الرفع إلى Google Play وHuawei AppGallery.</td></tr>
+      <tr><td><code>dist\WRE-Attendance-2.0.0.apk</code></td><td>التثبيت المباشر على هواتف أندرويد، أو الرفع إلى Huawei.</td></tr>
+      <tr><td><code>ios\</code></td><td>مشروع Xcode الكامل للآيفون والآيباد (يُفتح على Mac).</td></tr>
+      <tr><td><code>keys\</code></td><td>مفتاح التوقيع وكلمة مروره. <b>احتفظ بنسخة آمنة منه؛ لا يمكن تحديث التطبيق بدونه.</b></td></tr></table></div>
+    <p>مواصفات النسخة: المعرّف <code>iq.edu.uomustansiriyah.wre.attendance</code>، الإصدار 2.0.0 (رمز 200)، يستهدف Android 16 (API 36) كما يشترط Google Play منذ 31 آب 2026، ويعمل من Android 7.0 فأحدث.</p>
+    <p>لإعادة البناء بعد أي تعديل: <code>powershell -ExecutionPolicy Bypass -File scripts\build-apk.ps1</code> (ارفع رقم الإصدار أولاً في <code>package.json</code> و<code>android\app\build.gradle</code>).</p>
+  </section>
+
+  <section id="a3"><h2 class="s">3. ما تحتاجه كل المتاجر</h2>
+    <ul><li><b>رابط سياسة الخصوصية:</b> <code>https://hamfee77-max.github.io/attendance/privacy.html</code></li>
+      <li><b>الأيقونة:</b> <code>icons/icon-512.png</code> (512×512).</li>
+      <li><b>لقطات شاشة:</b> التقطها من الهاتف بعد الدخول (شاشة التسجيل، المذكرة، التقرير النهائي)، 2–8 لقطات.</li>
+      <li><b>حساب للمراجعين:</b> التطبيق يتطلب تسجيل دخول، فأنشئ من <span class="ui">حسابات المستخدمين</span> حساباً باسم «مراجع المتجر» بصلاحية «تدريسي» وأسند إليه مادة واحدة، وانشر التحديث، واكتب اسمه وكلمة مروره في خانة تعليمات المراجعة. احذفه بعد الموافقة.</li>
+      <li><b>البريد وجهة الاتصال:</b> <code>dr.sabah77@uomustansiriyah.edu.iq</code></li></ul>
+  </section>
+
+  <section id="a4"><h2 class="s">4. Google Play</h2>
+    <h3>إنشاء الحساب</h3>
+    <ol class="steps"><li>ادخل <code>play.google.com/console</code> بحساب Google، واختر نوع الحساب: <b>شخصي</b> أو <b>مؤسسة</b> (يتطلب رقم D-U-N-S للجامعة).</li>
+      <li>ادفع رسم التسجيل (25 دولاراً) وأكمل التحقق من الهوية ورقم الهاتف.</li></ol>
+    <div class="warn">الحسابات الشخصية الجديدة ملزمة باختبار مغلق: 12 مختبراً على الأقل يبقون مشتركين 14 يوماً متتالية قبل طلب النشر للعامة. يمكن أن يكون المختبرون من تدريسيي القسم.</div>
+    <h3>إنشاء التطبيق ورفعه</h3>
+    <ol class="steps"><li><b>Create app</b>: الاسم «غيابات الموارد المائية — WRE Attendance»، اللغة الافتراضية العربية، النوع App، مجاني.</li>
+      <li>فعّل <b>Play App Signing</b> (افتراضي)، فيصبح مفتاحنا «مفتاح الرفع».</li>
+      <li><b>Testing → Closed testing</b>: أنشئ مساراً، أضف بريد المختبرين، وارفع <code>WRE-Attendance-2.0.0.aab</code>.</li>
+      <li>أكمل <b>App content</b>:
+        <ul><li>Privacy policy: الرابط أعلاه.</li>
+          <li>App access: «All or some functionality is restricted» مع اسم حساب المراجع وكلمة مروره.</li>
+          <li>Ads: لا يحتوي إعلانات.</li>
+          <li>Content rating: استبيان IARC، الفئة Utility/Productivity.</li>
+          <li>Target audience: 18 سنة فأكثر.</li>
+          <li>Data safety: <b>No data collected</b> و<b>No data shared</b>؛ البيانات تبقى على الجهاز، والمشاركة تتم بإجراء صريح من المستخدم عبر قائمة المشاركة.</li>
+          <li>Government apps: لا. Financial features / Health: لا.</li></ul></li>
+      <li><b>Main store listing</b>: الاسم، الوصف القصير والكامل (القسم 8)، الأيقونة 512×512، صورة الواجهة 1024×500، ولقطتان على الأقل.</li>
+      <li>بعد 14 يوماً من الاختبار المغلق: <b>Apply for production</b>، ثم أنشئ إصداراً في <b>Production</b> وأرسله للمراجعة.</li></ol>
+    <div class="tip">بديل للاستخدام الداخلي فقط: إذا أُنشئ الحساب باسم الجامعة يمكن نشر التطبيق بشكل خاص عبر Managed Google Play لأجهزة المؤسسة.</div>
+  </section>
+
+  <section id="a5"><h2 class="s">5. Huawei AppGallery</h2>
+    <ol class="steps"><li>سجّل في <code>developer.huawei.com</code> واختر <b>Individual</b>، وأكمل التحقق: صورة وجهي الهوية، والاسم ورقمها كما في الوثيقة تماماً، وبطاقة مصرفية (عادة يوم إلى يومين).</li>
+      <li>ادخل <b>AppGallery Connect → My apps → New app</b>: النوع App، اللغة العربية، الاسم، الفئة Education أو Business.</li>
+      <li>في <b>Version information</b>: ارفع <code>WRE-Attendance-2.0.0.aab</code> (أو APK)، واختر الدول (العراق ودول أخرى)، وأضف رابط الخصوصية والأيقونة (216×216) واللقطات.</li>
+      <li>في <b>App review information</b>: اسم حساب المراجع وكلمة مروره.</li>
+      <li><b>Submit</b>. تصل نتيجة المراجعة بالبريد.</li></ol>
+    <div class="note">التطبيق لا يعتمد على خدمات Google، فيعمل على هواتف Huawei الحديثة دون تعديل.</div>
+  </section>
+
+  <section id="a6"><h2 class="s">6. Apple App Store (آيفون وآيباد)</h2>
+    <h3>المتطلبات</h3>
+    <ul><li>جهاز <b>Mac</b> بنظام حديث مع <b>Xcode</b> (مجاني من Mac App Store). لا يمكن بناء تطبيقات الآيفون على Windows. بديل: خدمة Mac سحابية (مثل Codemagic أو GitHub Actions بأجهزة macOS).</li>
+      <li>عضوية <b>Apple Developer Program</b> بـ 99 دولاراً سنوياً لنشر التطبيق في المتجر أو عبر TestFlight.</li></ul>
+    <h3>البناء على Mac</h3>
+    <ol class="steps"><li>انسخ مجلد <code>wre-attendance-android</code> كاملاً (عدا <code>node_modules</code> و<code>android-cap6-backup</code>) إلى جهاز Mac.</li>
+      <li>ثبّت Node.js، ثم نفّذ في المجلد: <code>npm install</code> ثم <code>npx cap sync ios</code>.</li>
+      <li>افتح المشروع: <code>npx cap open ios</code> (يفتح <code>ios/App/App.xcodeproj</code> في Xcode).</li>
+      <li>في <b>Signing &amp; Capabilities</b> اختر فريقك (Team)، وتأكد أن Bundle Identifier هو <code>iq.edu.uomustansiriyah.wre.attendance</code>.</li>
+      <li>للتجربة على آيفون موصول: اختر الجهاز واضغط ▶ Run. (بحساب Apple مجاني يعمل التطبيق 7 أيام ثم يحتاج إعادة تثبيت.)</li></ol>
+    <h3>النشر</h3>
+    <ol class="steps"><li>في <code>appstoreconnect.apple.com</code> أنشئ تطبيقاً جديداً بالمعرّف نفسه.</li>
+      <li>في Xcode: اختر <b>Any iOS Device</b> ثم <b>Product → Archive</b> ثم <b>Distribute App → App Store Connect → Upload</b>.</li>
+      <li>في App Store Connect: الوصف، الكلمات المفتاحية، رابط الدعم والخصوصية، لقطات 6.9 إنش للآيفون (1320×2868) و13 إنش للآيباد، و<b>App Privacy: Data Not Collected</b>، وفي <b>App Review Information</b> حساب المراجع.</li>
+      <li>جرّبه عبر <b>TestFlight</b> مع زملائك، ثم <b>Submit for Review</b>.</li></ol>
+    <div class="warn">تطبّق Apple البند 4.2 (الحد الأدنى من الوظائف) على التطبيقات المبنية على الويب. يتضمن تطبيقنا وظائف أصلية (المشاركة، الملفات، العمل دون إنترنت)، لكن إن رُفض فاشرح في الرد أنه أداة داخلية للقسم، أو استخدم <b>Apple Business Manager</b> للتوزيع الخاص على أجهزة الجامعة.</div>
+  </section>
+
+  <section id="a7"><h2 class="s">7. التحديثات اللاحقة</h2>
+    <ul><li>تحديثات المحتوى (الحسابات، المواد، الطلبة، اللجنة) تتم بنشر ملف القسم على الموقع، ولا تحتاج تحديث المتاجر.</li>
+      <li>تحديث الكود: ارفع رقم الإصدار، أعد البناء، وارفع AAB جديداً إلى Google Play وHuawei، وأرشيفاً جديداً من Xcode إلى Apple.</li>
+      <li>كل تحديث لأندرويد يجب أن يوقَّع بالمفتاح نفسه في <code>keys\</code>.</li></ul>
+  </section>
+
+  <section id="a8"><h2 class="s">8. نصوص صفحة المتجر الجاهزة</h2>
+    <p><b>الاسم (30 حرفاً كحد أقصى):</b> غيابات الموارد المائية</p>
+    <p><b>الوصف القصير (80 حرفاً):</b> تسجيل غيابات الطلبة وإصدار تقارير الغياب واللجنة النهائية للقسم.</p>
+    <p><b>الوصف الكامل:</b></p>
+    <pre dir="rtl" style="text-align:right">تطبيق قسم هندسة الموارد المائية — كلية الهندسة — الجامعة المستنصرية لتسجيل غيابات الطلبة ومتابعتها.
+• دخول شخصي لكل تدريسي بكلمة مرور، ولا يرى إلا مواده.
+• تسجيل الحضور والغياب والتأخر والأعذار لكل محاضرة، أو استيرادها من Excel.
+• حساب نسب الغياب تلقائياً وفق المادة (9) من التعليمات الامتحانية، للنظامين بولونيا والسنوي.
+• تقارير يومية وأسبوعية وشهرية بالغيابات فقط، ترسل إلى لجنة متابعة الغيابات.
+• التقرير النهائي للجنة بأسماء رئيسها وعضويها وتواقيعهم، بالعربية أو الإنكليزية.
+• يعمل دون إنترنت، والبيانات تبقى على جهازك.
+تصميم: د. صباح حسن الفرطوسي.</pre>
+    <p><b>الفئة:</b> Education (تعليم) أو Productivity (إنتاجية).</p>
+  </section>
+
+  <section id="a9"><h2 class="s">9. التوزيع بدون متاجر (متاح الآن)</h2>
+    <ul><li><b>أندرويد:</b> ملف APK من <span class="ui">الإعدادات ← تنزيل تطبيق أندرويد</span>.</li>
+      <li><b>آيفون وآيباد:</b> الرابط في Safari ثم «إضافة إلى الشاشة الرئيسية».</li>
+      <li><b>الحاسوب:</b> الرابط في Google Chrome.</li></ul>
+  </section>
+</article>
+
+<!-- ============================== ENGLISH ============================== -->
+<article data-lang="en" lang="en" dir="ltr" hidden>
+  <div class="cover">
+    <div class="logos"><img data-logo="university" alt=""><img data-logo="department" alt=""><img data-logo="college" alt=""></div>
+    <h1>Publishing on Google Play, the App Store and Huawei AppGallery</h1>
+    <p>Version 2.0 — November 2026</p>
+  </div>
+  <nav class="toc"><h2>Contents</h2><ol>
+    <li><a href="#e1">Quick comparison</a></li><li><a href="#e2">Ready files</a></li><li><a href="#e3">What every store needs</a></li>
+    <li><a href="#e4">Google Play</a></li><li><a href="#e5">Huawei AppGallery</a></li><li><a href="#e6">Apple App Store (iPhone and iPad)</a></li>
+    <li><a href="#e7">Later updates</a></li><li><a href="#e8">Ready store-listing texts</a></li><li><a href="#e9">Distribution without stores</a></li></ol></nav>
+
+  <section id="e1"><h2 class="s">1. Quick comparison</h2>
+    <div class="tbl"><table><tr><th></th><th>Google Play</th><th>Huawei AppGallery</th><th>Apple App Store</th></tr>
+      <tr><td>Account</td><td>Google Play Console</td><td>HUAWEI Developers / AppGallery Connect</td><td>Apple Developer Program</td></tr>
+      <tr><td>Cost</td><td>US$25 once</td><td>Free</td><td>US$99 per year</td></tr>
+      <tr><td>Verification</td><td>Personal ID + phone</td><td>ID card (both sides) + bank card</td><td>Apple ID with two-factor + ID</td></tr>
+      <tr><td>Uploaded file</td><td>AAB</td><td>AAB or APK</td><td>Uploaded from Xcode on a Mac</td></tr>
+      <tr><td>Build machine</td><td>This computer (Windows)</td><td>This computer (Windows)</td><td>A Mac with a recent Xcode</td></tr>
+      <tr><td>Typical review</td><td>Days, preceded by 14 days of testing for new personal accounts</td><td>3–5 working days</td><td>1–3 days</td></tr></table></div>
+    <div class="note">Fees, timings and requirements are set by each store and change; check the official store pages before starting.</div>
+  </section>
+
+  <section id="e2"><h2 class="s">2. Ready files</h2>
+    <p>In <code>F:\My claud works\wre-attendance-android</code>:</p>
+    <div class="tbl"><table><tr><th>File</th><th>Use</th></tr>
+      <tr><td><code>dist\WRE-Attendance-2.0.0.aab</code></td><td>Upload to Google Play and Huawei AppGallery.</td></tr>
+      <tr><td><code>dist\WRE-Attendance-2.0.0.apk</code></td><td>Direct install on Android phones, or upload to Huawei.</td></tr>
+      <tr><td><code>ios\</code></td><td>The complete Xcode project for iPhone and iPad (opened on a Mac).</td></tr>
+      <tr><td><code>keys\</code></td><td>The signing key and its password. <b>Keep a safe copy; the app cannot be updated without it.</b></td></tr></table></div>
+    <p>Build details: id <code>iq.edu.uomustansiriyah.wre.attendance</code>, version 2.0.0 (code 200), targets Android 16 (API 36) as Google Play has required since 31 August 2026, runs on Android 7.0 and newer.</p>
+    <p>To rebuild after changes: <code>powershell -ExecutionPolicy Bypass -File scripts\build-apk.ps1</code> (first raise the version in <code>package.json</code> and <code>android\app\build.gradle</code>).</p>
+  </section>
+
+  <section id="e3"><h2 class="s">3. What every store needs</h2>
+    <ul><li><b>Privacy policy URL:</b> <code>https://hamfee77-max.github.io/attendance/privacy.html</code></li>
+      <li><b>Icon:</b> <code>icons/icon-512.png</code> (512×512).</li>
+      <li><b>Screenshots:</b> take 2–8 on a phone after signing in (Record screen, memo, final report).</li>
+      <li><b>Reviewer account:</b> the app requires sign-in, so create a “Store reviewer” account with the Lecturer role and one assigned course in <span class="ui">User accounts</span>, publish the update, and put its name and password in the review notes. Delete it after approval.</li>
+      <li><b>Contact email:</b> <code>dr.sabah77@uomustansiriyah.edu.iq</code></li></ul>
+  </section>
+
+  <section id="e4"><h2 class="s">4. Google Play</h2>
+    <h3>Create the account</h3>
+    <ol class="steps"><li>Go to <code>play.google.com/console</code> with a Google account and choose <b>Personal</b> or <b>Organization</b> (needs the university's D-U-N-S number).</li>
+      <li>Pay the US$25 registration fee and complete identity and phone verification.</li></ol>
+    <div class="warn">New personal accounts must run a closed test with at least 12 testers opted in for 14 consecutive days before applying for production. The department's lecturers can be the testers.</div>
+    <h3>Create and upload the app</h3>
+    <ol class="steps"><li><b>Create app</b>: name “WRE Attendance — غيابات الموارد المائية”, default language Arabic, type App, free.</li>
+      <li>Keep <b>Play App Signing</b> on (default); our key becomes the upload key.</li>
+      <li><b>Testing → Closed testing</b>: create a track, add the testers' emails, upload <code>WRE-Attendance-2.0.0.aab</code>.</li>
+      <li>Complete <b>App content</b>:
+        <ul><li>Privacy policy: the URL above.</li>
+          <li>App access: “All or some functionality is restricted”, with the reviewer account name and password.</li>
+          <li>Ads: no ads.</li>
+          <li>Content rating: IARC questionnaire, category Utility/Productivity.</li>
+          <li>Target audience: 18 and over.</li>
+          <li>Data safety: <b>No data collected</b> and <b>No data shared</b>; data stays on the device and is shared only by an explicit user action through the share sheet.</li>
+          <li>Government app: no. Financial / health features: no.</li></ul></li>
+      <li><b>Main store listing</b>: name, short and full description (section 8), 512×512 icon, 1024×500 feature graphic, at least two screenshots.</li>
+      <li>After 14 days of closed testing: <b>Apply for production</b>, then create a <b>Production</b> release and send it for review.</li></ol>
+    <div class="tip">Internal-only alternative: an organization account in the university's name can publish privately through Managed Google Play to the institution's devices.</div>
+  </section>
+
+  <section id="e5"><h2 class="s">5. Huawei AppGallery</h2>
+    <ol class="steps"><li>Register at <code>developer.huawei.com</code> as <b>Individual</b> and complete verification: both sides of your ID card, the name and number exactly as on the document, and a bank card (usually one to two days).</li>
+      <li>Open <b>AppGallery Connect → My apps → New app</b>: type App, language Arabic, name, category Education or Business.</li>
+      <li>In <b>Version information</b> upload <code>WRE-Attendance-2.0.0.aab</code> (or the APK), choose the countries (Iraq and others), add the privacy URL, the 216×216 icon and screenshots.</li>
+      <li>In <b>App review information</b> give the reviewer account name and password.</li>
+      <li><b>Submit</b>. The review result arrives by email.</li></ol>
+    <div class="note">The app does not depend on Google services, so it runs on recent Huawei phones without changes.</div>
+  </section>
+
+  <section id="e6"><h2 class="s">6. Apple App Store (iPhone and iPad)</h2>
+    <h3>Requirements</h3>
+    <ul><li>A <b>Mac</b> with a recent macOS and <b>Xcode</b> (free from the Mac App Store). iPhone apps cannot be built on Windows. Alternative: a cloud Mac service (e.g. Codemagic or GitHub Actions macOS runners).</li>
+      <li>An <b>Apple Developer Program</b> membership (US$99 per year) to publish on the App Store or through TestFlight.</li></ul>
+    <h3>Build on the Mac</h3>
+    <ol class="steps"><li>Copy the whole <code>wre-attendance-android</code> folder (except <code>node_modules</code> and <code>android-cap6-backup</code>) to the Mac.</li>
+      <li>Install Node.js, then run in the folder: <code>npm install</code> and <code>npx cap sync ios</code>.</li>
+      <li>Open the project: <code>npx cap open ios</code> (opens <code>ios/App/App.xcodeproj</code> in Xcode).</li>
+      <li>In <b>Signing &amp; Capabilities</b> choose your Team and check the Bundle Identifier is <code>iq.edu.uomustansiriyah.wre.attendance</code>.</li>
+      <li>To try it on a connected iPhone, select the device and press ▶ Run. (With a free Apple account the app runs for 7 days and then needs reinstalling.)</li></ol>
+    <h3>Publish</h3>
+    <ol class="steps"><li>In <code>appstoreconnect.apple.com</code> create a new app with the same identifier.</li>
+      <li>In Xcode choose <b>Any iOS Device</b>, then <b>Product → Archive</b>, then <b>Distribute App → App Store Connect → Upload</b>.</li>
+      <li>In App Store Connect add the description, keywords, support and privacy URLs, 6.9-inch iPhone screenshots (1320×2868) and 13-inch iPad screenshots, <b>App Privacy: Data Not Collected</b>, and the reviewer account under <b>App Review Information</b>.</li>
+      <li>Test with colleagues through <b>TestFlight</b>, then <b>Submit for Review</b>.</li></ol>
+    <div class="warn">Apple applies guideline 4.2 (minimum functionality) to web-based apps. Ours includes native features (sharing, files, offline use), but if it is rejected, explain in the reply that it is an internal department tool, or use <b>Apple Business Manager</b> for private distribution to the university's devices.</div>
+  </section>
+
+  <section id="e7"><h2 class="s">7. Later updates</h2>
+    <ul><li>Content updates (accounts, courses, students, committee) are published through the department file on the website and need no store update.</li>
+      <li>Code updates: raise the version, rebuild, upload a new AAB to Google Play and Huawei, and a new Xcode archive to Apple.</li>
+      <li>Every Android update must be signed with the same key in <code>keys\</code>.</li></ul>
+  </section>
+
+  <section id="e8"><h2 class="s">8. Ready store-listing texts</h2>
+    <p><b>Name (30 characters max):</b> WRE Attendance</p>
+    <p><b>Short description (80):</b> Record student absences and issue absence and final committee reports.</p>
+    <p><b>Full description:</b></p>
+    <pre>Student attendance app of the Department of Water Resources Engineering, College of Engineering, Mustansiriyah University.
+• Personal sign-in for every lecturer, who sees only their own courses.
+• Record present, absent, late and excused students per lecture, or import from Excel.
+• Absence percentages calculated automatically under Article 9 of the examination instructions, for both Bologna and annual systems.
+• Daily, weekly and monthly absences-only reports sent to the absence follow-up committee.
+• The committee's final report with its chair's and two members' names and signatures, in Arabic or English.
+• Works offline; data stays on your device.
+Designed by Dr. Sabah H. Fartosy.</pre>
+    <p><b>Category:</b> Education or Productivity.</p>
+  </section>
+
+  <section id="e9"><h2 class="s">9. Distribution without stores (available now)</h2>
+    <ul><li><b>Android:</b> the APK from <span class="ui">Settings → Download the Android app</span>.</li>
+      <li><b>iPhone and iPad:</b> the link in Safari, then “Add to Home Screen”.</li>
+      <li><b>Computer:</b> the link in Google Chrome.</li></ul>
+  </section>
+</article>
+<footer class="owner" id="owner-foot"></footer>
+</main>
+<script src="js/config.js"></script>
+<script src="js/department.js"></script>
+<script src="js/guide.js"></script>
+</body>
+</html>

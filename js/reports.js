@@ -12,7 +12,8 @@
   const dmy = (iso) => (iso ? iso.split('-').reverse().join('/') : '');
   const courseName = (c, lang) => (lang === 'en' && c.nameEn ? c.nameEn : c.nameAr);
   const groupName = (g, lang) => (g ? (lang === 'en' && g.nameEn ? g.nameEn : g.nameAr) : '');
-  const termName = (id, lang) => { const t = CFG.terms.find((x) => x[0] === id); return t ? (lang === 'ar' ? t[1] : t[2]) : id; };
+  const termName = (id, lang) => { if (id === 'year') return tr('wholeYear', lang); const t = CFG.terms.find((x) => x[0] === id); return t ? (lang === 'ar' ? t[1] : t[2]) : id; };
+  const who = (lang) => (window.Auth ? Auth.displayName(lang) : '');
   const statusLabel = (st, lang) => tr({ ok: 'stOk', warn1: 'stWarn1', warn2: 'stWarn2', fail: 'stFail' }[st], lang);
   const actionLabel = (st, lang) => tr({ ok: 'actOk', warn1: 'actWarn1', warn2: 'actWarn2', fail: 'actFail' }[st], lang);
   const dayName = (iso, lang) => { const d = new Date(iso + 'T00:00:00'); return tr('dayNames', lang).split(',')[d.getDay()]; };
@@ -24,11 +25,12 @@
     if (type === 'week') { const d = new Date(date + 'T00:00:00'); const off = (d.getDay() - CFG.weekStartsOn + 7) % 7; const s = addDays(date, -off); return { from: s, to: addDays(s, 6) }; }
     if (type === 'month') { const [y, m] = date.split('-'); const last = new Date(Number(y), Number(m), 0).getDate(); return { from: `${y}-${m}-01`, to: `${y}-${m}-${String(last).padStart(2, '0')}` }; }
     if (type === 'term') return { from: t ? t.start : '', to: t ? t.end : '' };
+    if (type === 'year') { const y = St.year(); return { from: y ? y.start : '', to: y ? y.end : '' }; }
     return { from: from || '', to: to || '' };
   }
 
   // Department logo: prefer logos/department.png when the file exists, else the configured file (SVG)
-  const deptLogoSrc = () => (window.__deptPng === false ? CFG.logos.department : 'logos/department.png');
+  const deptLogoSrc = () => (/^data:/.test(CFG.logos.department || '') || window.__deptPng === false ? CFG.logos.department : 'logos/department.png');
 
   // ---------- shared header for printed documents ----------
   function headerHTML(lang) {
@@ -42,12 +44,21 @@
     </div>`;
   }
   function footerHTML(lang) {
-    const me = St.S.settings.lecturer;
+    const me = who(lang);
     return `<div class="doc-foot">
       <div><b>${tr('preparedBy', lang)}:</b> ${esc(me || '....................')}</div>
       <div><b>${tr('signature', lang)}:</b> ....................</div>
       <div><b>${tr('printedOn', lang)}:</b> ${dmy(St.todayStr())}</div>
     </div>`;
+  }
+  // Signature block of the absence follow-up committee (chair + two members), printed on final reports
+  function committeeHTML(lang) {
+    const c = CFG.committee || {}; const dots = '..............................';
+    const row = (k, n) => `<tr><td>${tr(k, lang)}</td><td class="name">${esc(n || dots)}</td><td>${dots}</td></tr>`;
+    return `<div class="committee"><h4>${esc(pick(c.title || ['لجنة متابعة غيابات الطلبة', 'Student Absence Follow-up Committee'], lang))}</h4>
+      <table class="rep"><thead><tr><th>${tr('cmRole', lang)}</th><th>${tr('name', lang)}</th><th>${tr('signature', lang)}</th></tr></thead>
+      <tbody>${row('cmChair', c.chair)}${row('cmMember', c.member1)}${row('cmMember', c.member2)}</tbody></table>
+      <div class="doc-foot"><div><b>${tr('date', lang)}:</b> ${dmy(St.todayStr())}</div></div></div>`;
   }
   const rangeText = (r, lang) => `${dmy(r.from)} – ${dmy(r.to)}`;
 
@@ -57,20 +68,22 @@
     let courses = St.coursesFor(opts.groupId).filter((c) => !opts.mine || St.isMine(c));
     if (opts.courseId) courses = courses.filter((c) => c.id === opts.courseId);
     const students = St.studentsOf(opts.groupId);
-    const rows = students.map((s) => ({ s, agg: St.studentAggregate(courses, s.id, opts.range) }));
+    let rows = students.map((s) => ({ s, agg: St.studentAggregate(courses, s.id, opts.range) }));
     const summary = { n: rows.length, ok: 0, w1: 0, w2: 0, f: 0 };
     for (const r of rows) summary[{ ok: 'ok', warn1: 'w1', warn2: 'w2', fail: 'f' }[r.agg.worst]]++;
+    // absences-only: keep students absent in the period, or already warned / failed
+    if (opts.absOnly) rows = rows.filter((r) => r.agg.periodAbsences > 0 || r.agg.worst !== 'ok');
     const lectures = [];
     for (const c of courses) for (const se of St.sessionsOf(c.id)) if ((!opts.range.from || se.date >= opts.range.from) && (!opts.range.to || se.date <= opts.range.to)) lectures.push({ c, se });
     lectures.sort((a, b) => a.se.date.localeCompare(b.se.date));
-    return { g, courses, rows, summary, lectures, range: opts.range, periodType: opts.periodType };
+    return { g, courses, rows, summary, lectures, range: opts.range, periodType: opts.periodType, absOnly: !!opts.absOnly, final: !!opts.final, fromLecturer: !!opts.fromLecturer };
   }
 
   function memoHTML(d, lang) {
-    const S = St.S.settings, dir = lang === 'ar' ? 'rtl' : 'ltr';
+    const S = St.rules(), dir = lang === 'ar' ? 'rtl' : 'ltr';
     const one = d.courses.length === 1 ? d.courses[0] : null;
     const courseTxt = one ? `${tr('inCourse', lang)} «${courseName(one, lang)}»` : tr('allCoursesOf', lang);
-    const body = tr('memoBody', lang, { group: groupName(d.g, lang), course: courseTxt, from: dmy(d.range.from), to: dmy(d.range.to), period: tr({ day: 'pDay', week: 'pWeek', month: 'pMonth', term: 'pTerm', custom: 'pCustom' }[d.periodType] || 'pCustom', lang), ref: pick(CFG.rules.regulationRef, lang), failU: S.failUnexcused, failT: S.failTotal, warn1: S.warn1, warn2: S.warn2 });
+    const body = tr('memoBody', lang, { group: groupName(d.g, lang), course: courseTxt, from: dmy(d.range.from), to: dmy(d.range.to), period: tr({ day: 'pDay', week: 'pWeek', month: 'pMonth', term: 'pTerm', year: 'pYear', custom: 'pCustom' }[d.periodType] || 'pCustom', lang), ref: pick(CFG.rules.regulationRef, lang), failU: S.failUnexcused, failT: S.failTotal, warn1: S.warn1, warn2: S.warn2 });
     let rowsHtml = d.rows.map((r, i) => {
       const a = r.agg; const wc = a.worstCourse;
       return `<tr class="st-${a.worst}"><td>${i + 1}</td><td class="name">${esc(r.s.name)}</td><td>${a.absentDays}</td><td>${fmtH(a.absentH)}</td><td>${fmtH(a.excusedH)}</td>
@@ -82,17 +95,19 @@
     const lect = d.lectures.map((l) => `<tr><td>${dmy(l.se.date)}</td><td>${dayName(l.se.date, lang)}</td><td>${esc(courseName(l.c, lang))}</td><td>${fmtH(l.se.hours)}</td><td>${Object.values(l.se.records || {}).filter((v) => v === 'A' || v === 'E').length}</td><td>${esc(l.se.topic || '')}</td></tr>`).join('');
     return `<div class="doc" dir="${dir}" lang="${lang}">${headerHTML(lang)}
       <div class="doc-meta"><span>${tr('year', lang)}: ${esc(St.year().name)}</span><span>${termName(St.S.currentTerm, lang)}</span><span>${tr('date', lang)}: ${dmy(St.todayStr())}</span></div>
-      <p class="to">${tr('memoTo', lang, { head: pick(CFG.institution.headTitle, lang) })}</p>
-      <p class="subj"><b>${tr('memoSubject', lang)}</b> — ${esc(groupName(d.g, lang))}${one ? ' — ' + esc(courseName(one, lang)) : ''} — ${rangeText(d.range, lang)}</p>
+      ${d.final ? `<h3>${tr('finalTitle', lang)}</h3>` : ''}
+      <p class="to">${d.fromLecturer ? tr('memoToCommittee', lang, { c: pick((CFG.committee && CFG.committee.title) || ['', ''], lang) }) : tr('memoTo', lang, { head: pick(CFG.institution.headTitle, lang) })}</p>
+      <p class="subj"><b>${tr(d.final ? 'finalSubject' : 'memoSubject', lang)}</b> — ${esc(groupName(d.g, lang))}${one ? ' — ' + esc(courseName(one, lang)) : ''} — ${rangeText(d.range, lang)}</p>
       <p>${tr('memoGreeting', lang)}</p>
       <p class="body">${body}</p>
       ${d.rows.length ? `<table class="rep"><thead><tr><th>${tr('n', lang)}</th><th>${tr('student', lang)}</th><th>${tr('absentDays', lang)}</th><th>${tr('absentH', lang)}</th><th>${tr('excusedH', lang)}</th><th>${tr('overall', lang)} (${tr('absentH', lang)} / ${tr('plannedHours', lang)})</th><th>${tr('pctU', lang)}</th><th>${tr('pctT', lang)}</th>${one ? '' : `<th>${tr('worstCourse', lang)}</th>`}<th>${tr('status', lang)}</th><th>${tr('action', lang)}</th></tr></thead><tbody>${rowsHtml}</tbody></table>` : `<p>${tr('nothingToShow', lang)}</p>`}
+      ${d.absOnly ? `<p class="small">${tr('absOnlyNote', lang)}</p>` : ''}
       <p class="sum"><b>${tr('memoSummary', lang, d.summary)}</b></p>
       <p class="small">${tr('legend', lang)}</p>
       ${detail.length ? `<h4>${tr('detailTitle', lang)} ${rangeText(d.range, lang)}</h4><table class="rep small"><thead><tr><th>${tr('student', lang)}</th><th>${tr('course', lang)}</th><th>${tr('absentDays', lang)}</th><th>${tr('absentH', lang)}</th><th>${tr('excusedH', lang)}</th><th>${tr('overall', lang)}</th><th>${tr('pctU', lang)}</th><th>${tr('pctT', lang)}</th><th>${tr('status', lang)}</th></tr></thead><tbody>${detail.join('')}</tbody></table>` : `<p class="small">${tr('noAbsenceInPeriod', lang)}</p>`}
       ${lect ? `<h4>${tr('lecturesInPeriod', lang)}</h4><table class="rep small"><thead><tr><th>${tr('date', lang)}</th><th>${tr('today', lang) === 'اليوم' ? 'اليوم' : 'Day'}</th><th>${tr('course', lang)}</th><th>${tr('hours', lang)}</th><th>${tr('absentCount', lang)}</th><th>${tr('topic', lang)}</th></tr></thead><tbody>${lect}</tbody></table>` : `<p class="small">${tr('memoNoLectures', lang)}</p>`}
       <p>${tr('memoClose', lang)}</p>
-      ${footerHTML(lang)}</div>`;
+      ${d.fromLecturer ? footerHTML(lang) : committeeHTML(lang)}</div>`;
   }
   function memoCSV(d, lang) {
     const one = d.courses.length === 1;
@@ -107,7 +122,7 @@
     const rows = students.map((s) => ({ s, st: St.courseStats(c, s.id) }));
     const t = St.termOf(c.termId) || {};
     const held = St.sessionsOf(c.id).reduce((a, s) => a + (Number(s.hours) || 0), 0);
-    const info = `<div class="doc-meta"><span>${tr('course', lang)}: <b>${esc(courseName(c, lang))}</b></span><span>${tr('group', lang)}: ${esc(groupName(St.group(c.groupId), lang))}</span><span>${tr('lecturer', lang)}: ${esc(c.lecturer || '')}</span><span>${termName(c.termId, lang)} ${esc(St.year().name)}</span><span>${tr('plannedHours', lang)}: ${c.weeklyHours} × ${t.weeks || CFG.rules.weeksPerTerm} = ${fmtH((c.weeklyHours || 0) * (t.weeks || CFG.rules.weeksPerTerm))}</span><span>${tr('heldHours', lang)}: ${fmtH(held)}</span></div>`;
+    const info = `<div class="doc-meta"><span>${tr('course', lang)}: <b>${esc(courseName(c, lang))}</b></span><span>${tr('group', lang)}: ${esc(groupName(St.group(c.groupId), lang))}</span><span>${tr('lecturer', lang)}: ${esc(c.lecturer || '')}</span><span>${termName(c.termId, lang)} ${esc(St.year().name)}</span><span>${tr('plannedHours', lang)}: ${c.weeklyHours} × ${St.weeksOf(c)} = ${fmtH((c.weeklyHours || 0) * St.weeksOf(c))}</span><span>${tr('heldHours', lang)}: ${fmtH(held)}</span></div>`;
     const body = rows.map((r, i) => `<tr class="st-${r.st.status}"><td>${i + 1}</td><td class="name">${esc(r.s.name)}</td><td>${r.st.absentDays}</td><td>${fmtH(r.st.absentH)}</td><td>${fmtH(r.st.excusedH)}</td><td>${r.st.late}</td><td>${fmt1(r.st.pctU)}%</td><td>${fmt1(r.st.pctT)}%</td><td><b>${statusLabel(r.st.status, lang)}</b></td><td>${actionLabel(r.st.status, lang)}</td></tr>`).join('');
     const html = `<div class="doc" dir="${lang === 'ar' ? 'rtl' : 'ltr'}">${headerHTML(lang)}<h3>${tr('repCourse', lang)}</h3>${info}
       <table class="rep"><thead><tr><th>${tr('n', lang)}</th><th>${tr('student', lang)}</th><th>${tr('absentDays', lang)}</th><th>${tr('absentH', lang)}</th><th>${tr('excusedH', lang)}</th><th>${tr('lateN', lang)}</th><th>${tr('pctU', lang)}</th><th>${tr('pctT', lang)}</th><th>${tr('status', lang)}</th><th>${tr('action', lang)}</th></tr></thead><tbody>${body}</tbody></table>
@@ -162,23 +177,25 @@
     const S = St.S.settings; const one = d.courses.length === 1 ? d.courses[0] : null;
     const lines = [tr('memoSubject', lang) + ' — ' + groupName(d.g, lang) + (one ? ' — ' + courseName(one, lang) : '') + ' — ' + rangeText(d.range, lang), tr('memoSummary', lang, d.summary), ''];
     for (const r of d.rows) if (r.agg.worst !== 'ok') lines.push(`• ${r.s.name}: ${fmt1(r.agg.pctU)}% (${statusLabel(r.agg.worst, lang)}) — ${actionLabel(r.agg.worst, lang)}`);
-    lines.push('', `${tr('preparedBy', lang)}: ${S.lecturer || ''}`, `${tr('date', lang)}: ${dmy(St.todayStr())}`);
+    lines.push('', `${tr('preparedBy', lang)}: ${who(lang)}`, `${tr('date', lang)}: ${dmy(St.todayStr())}`);
     return lines.join('\n');
   }
   // Send a report: share files through the device share sheet, else download + open mail
-  async function sendReport(name, html, csv, text, recipients) {
+  // attachments: [{ name, content, mime }] sent together with the report page (e.g. CSV, absence data file)
+  async function sendReport(name, html, attachments, text, recipients) {
     const emails = recipients.map((r) => r.email).filter(Boolean);
     const page = await fullPage(name, html);
-    const subject = text.split('\n')[0];
+    const subject = text.split(String.fromCharCode(10))[0];
+    const all = [{ name: name + '.html', content: page, mime: 'text/html' }].concat(attachments || []);
     if (isNative()) {
-      try { await nativeShare([{ name: name + '.html', blob: new Blob([page], { type: 'text/html' }) }, { name: name + '.csv', blob: new Blob([csv], { type: 'text/csv' }) }], subject, text); return 'shared'; }
+      try { await nativeShare(all.map((f) => ({ name: f.name, blob: new Blob([f.content], { type: f.mime }) })), subject, text); return 'shared'; }
       catch (e) { return 'cancelled'; }
     }
-    const files = [new File([page], name + '.html', { type: 'text/html' }), new File([csv], name + '.csv', { type: 'text/csv' })];
+    const files = all.map((f) => new File([f.content], f.name, { type: f.mime.split(';')[0] }));
     try {
       if (navigator.canShare && navigator.canShare({ files })) { await navigator.share({ files, title: subject, text }); return 'shared'; }
     } catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; }
-    await deliver(name + '.html', page, 'text/html'); await deliver(name + '.csv', csv, 'text/csv;charset=utf-8');
+    for (const f of all) await deliver(f.name, f.content, f.mime);
     window.location.href = `mailto:${encodeURIComponent(emails.join(','))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
     return 'mail';
   }
@@ -241,5 +258,5 @@
     setTimeout(() => { window.print(); setTimeout(done, 1500); }, 150);
   }
 
-  window.Reports = { isNative, deptLogoSrc, memoText, sendReport, tr, esc, fmt1, fmtH, dmy, courseName, groupName, termName, statusLabel, actionLabel, dayName, periodRange, addDays, memoData, memoHTML, memoCSV, courseTable, studentReport, overview, register, toCSV, deliver, printHTML, headerHTML };
+  window.Reports = { committeeHTML, isNative, deptLogoSrc, memoText, sendReport, tr, esc, fmt1, fmtH, dmy, courseName, groupName, termName, statusLabel, actionLabel, dayName, periodRange, addDays, memoData, memoHTML, memoCSV, courseTable, studentReport, overview, register, toCSV, deliver, printHTML, headerHTML };
 })();

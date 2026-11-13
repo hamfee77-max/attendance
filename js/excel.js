@@ -181,6 +181,7 @@
   // ---------- template ----------
   const DAYS = [['الاحد', 'sunday'], ['الاثنين', 'monday'], ['الثلاثاء', 'tuesday'], ['الاربعاء', 'wednesday'], ['الخميس', 'thursday'], ['الجمعه', 'friday'], ['السبت', 'saturday']];
   function lectureDates(course) {
+    if (course.termId === 'year') { const y = St.year(); return y ? [].concat(...y.terms.map((tm) => lectureDates(Object.assign({}, course, { termId: tm.id })))) : []; }
     const term = St.termOf(course.termId); if (!term || !term.start || !term.end) return [];
     const sch = norm(course.schedule || '');
     const days = DAYS.map((d, i) => (sch.includes(d[0]) || sch.includes(d[1]) ? i : -1)).filter((i) => i >= 0);
