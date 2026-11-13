@@ -1,8 +1,8 @@
 // Department file for the Student Attendance app — exported from Settings → Administration.
 // Replace js/department.js on the website with a newly exported file, then publish.
 window.DEPT = {
- "version": 1794586694164,
- "exportedAt": "2026-11-13T16:18:14.164Z",
+ "version": 1794587815008,
+ "exportedAt": "2026-11-13T16:36:55.008Z",
  "config": {
   "institution": {
    "university": [
@@ -32,11 +32,30 @@ window.DEPT = {
    "department": "logos/department.svg"
   },
   "rules": {
-   "warn1": 5,
-   "warn2": 8,
-   "failUnexcused": 10,
-   "failTotal": 15,
-   "weeksPerTerm": 15
+   "bologna": {
+    "warn1": 7,
+    "warn2": 14,
+    "failUnexcused": 14,
+    "failTotal": 21,
+    "weekEquivalent": true,
+    "regulationRef": [
+     "الفصل الرابع (ثانياً: متطلبات الدوام والامتحانات) من دليل اعتماد عملية بولونيا في الجامعات العراقية للسنة الدراسية 2025/2026",
+     "Chapter 4 (Attendance and examination requirements) of the Bologna Process Adoption Guide for Iraqi Universities 2025/2026"
+    ]
+   },
+   "annual": {
+    "warn1": 5,
+    "warn2": 8,
+    "failUnexcused": 10,
+    "failTotal": 15,
+    "regulationRef": [
+     "المادة (9) من التعليمات الامتحانية رقم 134 لسنة 2000 المعدلة بالقرار 157 لسنة 2004",
+     "Article 9 of Examination Instructions No. 134 of 2000, amended by decision 157 of 2004"
+    ]
+   },
+   "weeksPerTerm": 15,
+   "editWindowHours": 72,
+   "trackFrom": "2026-11-15"
   },
   "committee": {
    "title": [

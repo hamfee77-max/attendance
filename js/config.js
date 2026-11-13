@@ -7,7 +7,7 @@
 // ============================================================================
 window.APP_CONFIG = {
   appId: 'wre-attendance',              // storage key prefix; change when deploying for another department
-  version: '2.1.0',
+  version: '2.2.0',
 
   // Owner and designer of the app (shown in About, the lock screen and the guides)
   owner: {
@@ -39,20 +39,32 @@ window.APP_CONFIG = {
     department: 'logos/department.svg',
   },
 
-  // Absence rules (percent of the course's planned term hours).
-  // Defaults follow Article 9 of Examination Instructions No. 134 (2000), amended by decision 157 (2004).
+  // Absence rules (percent of the course's planned hours), one set per teaching system.
   rules: {
-    warn1: 5,          // first warning
-    warn2: 8,          // final warning
-    failUnexcused: 10, // fail when unexcused absence exceeds this
-    failTotal: 15,     // fail when total absence (excused + unexcused) exceeds this
+    // Bologna (semester courses): Bologna Process Adoption Guide for Iraqi Universities 2025/2026,
+    // chapter 4, "Attendance and examination requirements": alert at 7 % (= one study week),
+    // final warning at 14 % (two weeks), fail above 14 % without an official excuse, or above 21 %
+    // (three weeks) with an excuse approved by the college council; the course is repeated.
+    bologna: {
+      warn1: 7, warn2: 14, failUnexcused: 14, failTotal: 21,
+      weekEquivalent: true,   // a warning is also due once absence reaches 1 / 2 study weeks of the course
+      regulationRef: [
+        'الفصل الرابع (ثانياً: متطلبات الدوام والامتحانات) من دليل اعتماد عملية بولونيا في الجامعات العراقية للسنة الدراسية 2025/2026',
+        'Chapter 4 (Attendance and examination requirements) of the Bologna Process Adoption Guide for Iraqi Universities 2025/2026',
+      ],
+    },
+    // Annual system (year-long courses): Article 9 of Examination Instructions No. 134 of 2000,
+    // amended by decision 157 of 2004: fail above 10 % unexcused or 15 % with an approved excuse.
+    annual: {
+      warn1: 5, warn2: 8, failUnexcused: 10, failTotal: 15,
+      regulationRef: [
+        'المادة (9) من التعليمات الامتحانية رقم 134 لسنة 2000 المعدلة بالقرار 157 لسنة 2004',
+        'Article 9 of Examination Instructions No. 134 of 2000, amended by decision 157 of 2004',
+      ],
+    },
     weeksPerTerm: 15,  // Article 15: a unit = 1 weekly hour for 15 weeks
     editWindowHours: 72,       // lecturers may change a recorded lecture within this many hours
     trackFrom: '2026-11-15',   // alerts for lectures not recorded / not received start from this date
-    regulationRef: [
-      'المادة (9) من التعليمات الامتحانية رقم 134 لسنة 2000 المعدلة بالقرار 157 لسنة 2004',
-      'Article 9 of Examination Instructions No. 134 of 2000, amended by decision 157 of 2004',
-    ],
   },
 
   // Academic structure

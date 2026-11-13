@@ -14,8 +14,9 @@
   const groupName = (g, lang) => (g ? (lang === 'en' && g.nameEn ? g.nameEn : g.nameAr) : '');
   const termName = (id, lang) => { if (id === 'year') return tr('wholeYear', lang); const t = CFG.terms.find((x) => x[0] === id); return t ? (lang === 'ar' ? t[1] : t[2]) : id; };
   const who = (lang) => (window.Auth ? Auth.displayName(lang) : '');
-  const statusLabel = (st, lang) => tr({ ok: 'stOk', warn1: 'stWarn1', warn2: 'stWarn2', fail: 'stFail' }[st], lang);
-  const actionLabel = (st, lang) => tr({ ok: 'actOk', warn1: 'actWarn1', warn2: 'actWarn2', fail: 'actFail' }[st], lang);
+  // labels follow the system's own wording: Bologna uses "alert" (7 %) and "final warning" (14 %)
+  const statusLabel = (st, lang, sys) => tr(sys === 'bologna' && st === 'warn1' ? 'stWarn1B' : { ok: 'stOk', warn1: 'stWarn1', warn2: 'stWarn2', fail: 'stFail' }[st], lang);
+  const actionLabel = (st, lang, sys) => tr(sys === 'bologna' && st !== 'ok' ? { warn1: 'actWarn1B', warn2: 'actWarn2B', fail: 'actFailB' }[st] : { ok: 'actOk', warn1: 'actWarn1', warn2: 'actWarn2', fail: 'actFail' }[st], lang);
   const dayName = (iso, lang) => { const d = new Date(iso + 'T00:00:00'); return tr('dayNames', lang).split(',')[d.getDay()]; };
 
   function addDays(iso, n) { const d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + n); const p = (x) => String(x).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
@@ -80,18 +81,18 @@
   }
 
   function memoHTML(d, lang) {
-    const S = St.rules(), dir = lang === 'ar' ? 'rtl' : 'ltr';
+    const gs = St.systemOfGroup(d.g), S = St.rules(gs), dir = lang === 'ar' ? 'rtl' : 'ltr';
     const one = d.courses.length === 1 ? d.courses[0] : null;
     const courseTxt = one ? `${tr('inCourse', lang)} «${courseName(one, lang)}»` : tr('allCoursesOf', lang);
-    const body = tr('memoBody', lang, { group: groupName(d.g, lang), course: courseTxt, from: dmy(d.range.from), to: dmy(d.range.to), period: tr({ day: 'pDay', week: 'pWeek', month: 'pMonth', term: 'pTerm', year: 'pYear', custom: 'pCustom' }[d.periodType] || 'pCustom', lang), ref: pick(CFG.rules.regulationRef, lang), failU: S.failUnexcused, failT: S.failTotal, warn1: S.warn1, warn2: S.warn2 });
+    const body = tr('memoBody', lang, { group: groupName(d.g, lang), course: courseTxt, from: dmy(d.range.from), to: dmy(d.range.to), period: tr({ day: 'pDay', week: 'pWeek', month: 'pMonth', term: 'pTerm', year: 'pYear', custom: 'pCustom' }[d.periodType] || 'pCustom', lang), ref: pick(S.regulationRef, lang), failU: S.failUnexcused, failT: S.failTotal, warn1: S.warn1, warn2: S.warn2 });
     let rowsHtml = d.rows.map((r, i) => {
       const a = r.agg; const wc = a.worstCourse;
       return `<tr class="st-${a.worst}"><td>${i + 1}</td><td class="name">${esc(r.s.name)}</td><td>${a.absentDays}</td><td>${fmtH(a.absentH)}</td><td>${fmtH(a.excusedH)}</td>
         <td>${fmtH(a.cumAbsentH)} / ${fmtH(a.planned)}</td><td>${fmt1(a.pctU)}%</td><td>${fmt1(a.pctT)}%</td>
-        ${one ? '' : `<td>${wc ? esc(courseName(wc, lang)) : ''}</td>`}<td><b>${statusLabel(a.worst, lang)}</b></td><td>${actionLabel(a.worst, lang)}</td></tr>`;
+        ${one ? '' : `<td>${wc ? esc(courseName(wc, lang)) : ''}</td>`}<td><b>${statusLabel(a.worst, lang, gs)}</b></td><td>${actionLabel(a.worst, lang, gs)}</td></tr>`;
     }).join('');
     const detail = [];
-    for (const r of d.rows) for (const { course: c, st } of r.agg.rows) if (st.absentSessions > 0) detail.push(`<tr class="st-${st.status}"><td class="name">${esc(r.s.name)}</td><td>${esc(courseName(c, lang))}</td><td>${st.absentDays + st.excusedDays}</td><td>${fmtH(st.absentH)}</td><td>${fmtH(st.excusedH)}</td><td>${fmtH(st.cumAbsentH)} / ${fmtH(st.planned)}</td><td>${fmt1(st.pctU)}%</td><td>${fmt1(st.pctT)}%</td><td>${statusLabel(st.status, lang)}</td></tr>`);
+    for (const r of d.rows) for (const { course: c, st } of r.agg.rows) if (st.absentSessions > 0) detail.push(`<tr class="st-${st.status}"><td class="name">${esc(r.s.name)}</td><td>${esc(courseName(c, lang))}</td><td>${st.absentDays + st.excusedDays}</td><td>${fmtH(st.absentH)}</td><td>${fmtH(st.excusedH)}</td><td>${fmtH(st.cumAbsentH)} / ${fmtH(st.planned)}</td><td>${fmt1(st.pctU)}%</td><td>${fmt1(st.pctT)}%</td><td>${statusLabel(st.status, lang, St.systemOf(c))}</td></tr>`);
     const lect = d.lectures.map((l) => `<tr><td>${dmy(l.se.date)}</td><td>${dayName(l.se.date, lang)}</td><td>${esc(courseName(l.c, lang))}</td><td>${fmtH(l.se.hours)}</td><td>${Object.values(l.se.records || {}).filter((v) => v === 'A' || v === 'E').length}</td><td>${esc(l.se.topic || '')}</td></tr>`).join('');
     return `<div class="doc" dir="${dir}" lang="${lang}">${headerHTML(lang)}
       <div class="doc-meta"><span>${tr('year', lang)}: ${esc(St.year().name)}</span><span>${termName(St.S.currentTerm, lang)}</span><span>${tr('date', lang)}: ${dmy(St.todayStr())}</span></div>
@@ -110,9 +111,9 @@
       ${d.fromLecturer ? footerHTML(lang) : committeeHTML(lang)}</div>`;
   }
   function memoCSV(d, lang) {
-    const one = d.courses.length === 1;
+    const one = d.courses.length === 1; const gs = St.systemOfGroup(d.g);
     const head = [tr('n', lang), tr('student', lang), tr('absentDays', lang), tr('absentH', lang), tr('excusedH', lang), tr('absentH', lang) + ' (' + tr('overall', lang) + ')', tr('plannedHours', lang), tr('pctU', lang), tr('pctT', lang)].concat(one ? [] : [tr('worstCourse', lang)]).concat([tr('status', lang), tr('action', lang)]);
-    const rows = d.rows.map((r, i) => { const a = r.agg; return [i + 1, r.s.name, a.absentDays, a.absentH, a.excusedH, a.cumAbsentH, a.planned, fmt1(a.pctU), fmt1(a.pctT)].concat(one ? [] : [a.worstCourse ? courseName(a.worstCourse, lang) : '']).concat([statusLabel(a.worst, lang), actionLabel(a.worst, lang)]); });
+    const rows = d.rows.map((r, i) => { const a = r.agg; return [i + 1, r.s.name, a.absentDays, a.absentH, a.excusedH, a.cumAbsentH, a.planned, fmt1(a.pctU), fmt1(a.pctT)].concat(one ? [] : [a.worstCourse ? courseName(a.worstCourse, lang) : '']).concat([statusLabel(a.worst, lang, gs), actionLabel(a.worst, lang, gs)]); });
     return toCSV([head].concat(rows));
   }
 
@@ -123,11 +124,11 @@
     const t = St.termOf(c.termId) || {};
     const held = St.sessionsOf(c.id).reduce((a, s) => a + (Number(s.hours) || 0), 0);
     const info = `<div class="doc-meta"><span>${tr('course', lang)}: <b>${esc(courseName(c, lang))}</b></span><span>${tr('group', lang)}: ${esc(groupName(St.group(c.groupId), lang))}</span><span>${tr('lecturer', lang)}: ${esc(c.lecturer || '')}</span><span>${termName(c.termId, lang)} ${esc(St.year().name)}</span><span>${tr('plannedHours', lang)}: ${c.weeklyHours} × ${St.weeksOf(c)} = ${fmtH((c.weeklyHours || 0) * St.weeksOf(c))}</span><span>${tr('heldHours', lang)}: ${fmtH(held)}</span></div>`;
-    const body = rows.map((r, i) => `<tr class="st-${r.st.status}"><td>${i + 1}</td><td class="name">${esc(r.s.name)}</td><td>${r.st.absentDays}</td><td>${fmtH(r.st.absentH)}</td><td>${fmtH(r.st.excusedH)}</td><td>${r.st.late}</td><td>${fmt1(r.st.pctU)}%</td><td>${fmt1(r.st.pctT)}%</td><td><b>${statusLabel(r.st.status, lang)}</b></td><td>${actionLabel(r.st.status, lang)}</td></tr>`).join('');
+    const body = rows.map((r, i) => `<tr class="st-${r.st.status}"><td>${i + 1}</td><td class="name">${esc(r.s.name)}</td><td>${r.st.absentDays}</td><td>${fmtH(r.st.absentH)}</td><td>${fmtH(r.st.excusedH)}</td><td>${r.st.late}</td><td>${fmt1(r.st.pctU)}%</td><td>${fmt1(r.st.pctT)}%</td><td><b>${statusLabel(r.st.status, lang, St.systemOf(c))}</b></td><td>${actionLabel(r.st.status, lang, St.systemOf(c))}</td></tr>`).join('');
     const html = `<div class="doc" dir="${lang === 'ar' ? 'rtl' : 'ltr'}">${headerHTML(lang)}<h3>${tr('repCourse', lang)}</h3>${info}
       <table class="rep"><thead><tr><th>${tr('n', lang)}</th><th>${tr('student', lang)}</th><th>${tr('absentDays', lang)}</th><th>${tr('absentH', lang)}</th><th>${tr('excusedH', lang)}</th><th>${tr('lateN', lang)}</th><th>${tr('pctU', lang)}</th><th>${tr('pctT', lang)}</th><th>${tr('status', lang)}</th><th>${tr('action', lang)}</th></tr></thead><tbody>${body}</tbody></table>
       <p class="small">${tr('legend', lang)}</p>${footerHTML(lang)}</div>`;
-    const csv = toCSV([[tr('n', lang), tr('student', lang), tr('absentDays', lang), tr('absentH', lang), tr('excusedH', lang), tr('lateN', lang), tr('plannedHours', lang), tr('pctU', lang), tr('pctT', lang), tr('status', lang)]].concat(rows.map((r, i) => [i + 1, r.s.name, r.st.absentDays, r.st.absentH, r.st.excusedH, r.st.late, r.st.planned, fmt1(r.st.pctU), fmt1(r.st.pctT), statusLabel(r.st.status, lang)])));
+    const csv = toCSV([[tr('n', lang), tr('student', lang), tr('absentDays', lang), tr('absentH', lang), tr('excusedH', lang), tr('lateN', lang), tr('plannedHours', lang), tr('pctU', lang), tr('pctT', lang), tr('status', lang)]].concat(rows.map((r, i) => [i + 1, r.s.name, r.st.absentDays, r.st.absentH, r.st.excusedH, r.st.late, r.st.planned, fmt1(r.st.pctU), fmt1(r.st.pctT), statusLabel(r.st.status, lang, St.systemOf(c))])));
     return { html, csv, rows };
   }
 
@@ -136,13 +137,13 @@
     const s = St.student(sid); const g = St.group(s.groupId);
     const courses = St.coursesFor(s.groupId);
     const agg = St.studentAggregate(courses, sid);
-    const body = agg.rows.map(({ course: c, st }, i) => `<tr class="st-${st.status}"><td>${i + 1}</td><td class="name">${esc(courseName(c, lang))}</td><td>${esc(c.lecturer || '')}</td><td>${fmtH(st.planned)}</td><td>${fmtH(st.cumHeld)}</td><td>${st.absentDays}</td><td>${fmtH(st.absentH)}</td><td>${fmtH(st.excusedH)}</td><td>${fmt1(st.pctU)}%</td><td>${fmt1(st.pctT)}%</td><td><b>${statusLabel(st.status, lang)}</b></td></tr>`).join('');
+    const body = agg.rows.map(({ course: c, st }, i) => `<tr class="st-${st.status}"><td>${i + 1}</td><td class="name">${esc(courseName(c, lang))}</td><td>${esc(c.lecturer || '')}</td><td>${fmtH(st.planned)}</td><td>${fmtH(st.cumHeld)}</td><td>${st.absentDays}</td><td>${fmtH(st.absentH)}</td><td>${fmtH(st.excusedH)}</td><td>${fmt1(st.pctU)}%</td><td>${fmt1(st.pctT)}%</td><td><b>${statusLabel(st.status, lang, St.systemOf(c))}</b></td></tr>`).join('');
     const html = `<div class="doc" dir="${lang === 'ar' ? 'rtl' : 'ltr'}">${headerHTML(lang)}<h3>${tr('repStudent', lang)}</h3>
       <div class="doc-meta"><span>${tr('student', lang)}: <b>${esc(s.name)}</b></span>${s.sid ? `<span>${tr('studentId', lang)}: ${esc(s.sid)}</span>` : ''}<span>${tr('group', lang)}: ${esc(groupName(g, lang))}</span><span>${termName(St.S.currentTerm, lang)} ${esc(St.year().name)}</span></div>
       <table class="rep"><thead><tr><th>${tr('n', lang)}</th><th>${tr('course', lang)}</th><th>${tr('lecturer', lang)}</th><th>${tr('plannedHours', lang)}</th><th>${tr('held', lang)}</th><th>${tr('absentDays', lang)}</th><th>${tr('absentH', lang)}</th><th>${tr('excusedH', lang)}</th><th>${tr('pctU', lang)}</th><th>${tr('pctT', lang)}</th><th>${tr('status', lang)}</th></tr></thead>
-      <tbody>${body}</tbody><tfoot><tr><td></td><td><b>${tr('total', lang)}</b></td><td></td><td>${fmtH(agg.planned)}</td><td>${fmtH(agg.cumHeld)}</td><td>${agg.absentDays}</td><td>${fmtH(agg.cumAbsentH)}</td><td>${fmtH(agg.cumExcusedH)}</td><td>${fmt1(agg.pctU)}%</td><td>${fmt1(agg.pctT)}%</td><td><b>${statusLabel(agg.worst, lang)}</b></td></tr></tfoot></table>
+      <tbody>${body}</tbody><tfoot><tr><td></td><td><b>${tr('total', lang)}</b></td><td></td><td>${fmtH(agg.planned)}</td><td>${fmtH(agg.cumHeld)}</td><td>${agg.absentDays}</td><td>${fmtH(agg.cumAbsentH)}</td><td>${fmtH(agg.cumExcusedH)}</td><td>${fmt1(agg.pctU)}%</td><td>${fmt1(agg.pctT)}%</td><td><b>${statusLabel(agg.worst, lang, St.systemOfGroup(g))}</b></td></tr></tfoot></table>
       <p class="small">${tr('legend', lang)}</p>${footerHTML(lang)}</div>`;
-    const csv = toCSV([[tr('course', lang), tr('lecturer', lang), tr('plannedHours', lang), tr('held', lang), tr('absentDays', lang), tr('absentH', lang), tr('excusedH', lang), tr('pctU', lang), tr('pctT', lang), tr('status', lang)]].concat(agg.rows.map(({ course: c, st }) => [courseName(c, lang), c.lecturer || '', st.planned, st.cumHeld, st.absentDays, st.absentH, st.excusedH, fmt1(st.pctU), fmt1(st.pctT), statusLabel(st.status, lang)])));
+    const csv = toCSV([[tr('course', lang), tr('lecturer', lang), tr('plannedHours', lang), tr('held', lang), tr('absentDays', lang), tr('absentH', lang), tr('excusedH', lang), tr('pctU', lang), tr('pctT', lang), tr('status', lang)]].concat(agg.rows.map(({ course: c, st }) => [courseName(c, lang), c.lecturer || '', st.planned, st.cumHeld, st.absentDays, st.absentH, st.excusedH, fmt1(st.pctU), fmt1(st.pctT), statusLabel(st.status, lang, St.systemOf(c))])));
     return { html, csv, agg };
   }
 
@@ -151,10 +152,10 @@
     const g = St.group(gid); const courses = St.coursesFor(gid).filter((c) => !mine || St.isMine(c));
     const students = St.studentsOf(gid);
     const head = courses.map((c) => `<th class="rot"><div>${esc(courseName(c, lang))}</div></th>`).join('');
-    const body = students.map((s, i) => { const agg = St.studentAggregate(courses, s.id); return `<tr><td>${i + 1}</td><td class="name">${esc(s.name)}</td>${agg.rows.map(({ st }) => `<td class="st-${st.status}">${st.cumAbsentH ? fmt1(st.pctU) : ''}</td>`).join('')}<td class="st-${agg.worst}"><b>${statusLabel(agg.worst, lang)}</b></td></tr>`; }).join('');
+    const body = students.map((s, i) => { const agg = St.studentAggregate(courses, s.id); return `<tr><td>${i + 1}</td><td class="name">${esc(s.name)}</td>${agg.rows.map(({ st }) => `<td class="st-${st.status}">${st.cumAbsentH ? fmt1(st.pctU) : ''}</td>`).join('')}<td class="st-${agg.worst}"><b>${statusLabel(agg.worst, lang, St.systemOfGroup(g))}</b></td></tr>`; }).join('');
     const html = `<div class="doc wide" dir="${lang === 'ar' ? 'rtl' : 'ltr'}">${headerHTML(lang)}<h3>${tr('repGroup', lang)} — ${esc(groupName(g, lang))} — ${termName(St.S.currentTerm, lang)} ${esc(St.year().name)}</h3>
       <table class="rep small"><thead><tr><th>${tr('n', lang)}</th><th>${tr('student', lang)}</th>${head}<th>${tr('status', lang)}</th></tr></thead><tbody>${body}</tbody></table><p class="small">${tr('overviewHint', lang)}</p>${footerHTML(lang)}</div>`;
-    const csv = toCSV([[tr('n', lang), tr('student', lang)].concat(courses.map((c) => courseName(c, lang))).concat([tr('status', lang)])].concat(students.map((s, i) => { const agg = St.studentAggregate(courses, s.id); return [i + 1, s.name].concat(agg.rows.map(({ st }) => fmt1(st.pctU))).concat([statusLabel(agg.worst, lang)]); })));
+    const csv = toCSV([[tr('n', lang), tr('student', lang)].concat(courses.map((c) => courseName(c, lang))).concat([tr('status', lang)])].concat(students.map((s, i) => { const agg = St.studentAggregate(courses, s.id); return [i + 1, s.name].concat(agg.rows.map(({ st }) => fmt1(st.pctU))).concat([statusLabel(agg.worst, lang, St.systemOfGroup(g))]); })));
     return { html, csv };
   }
 
@@ -176,7 +177,7 @@
   function memoText(d, lang) {
     const S = St.S.settings; const one = d.courses.length === 1 ? d.courses[0] : null;
     const lines = [tr('memoSubject', lang) + ' — ' + groupName(d.g, lang) + (one ? ' — ' + courseName(one, lang) : '') + ' — ' + rangeText(d.range, lang), tr('memoSummary', lang, d.summary), ''];
-    for (const r of d.rows) if (r.agg.worst !== 'ok') lines.push(`• ${r.s.name}: ${fmt1(r.agg.pctU)}% (${statusLabel(r.agg.worst, lang)}) — ${actionLabel(r.agg.worst, lang)}`);
+    for (const r of d.rows) if (r.agg.worst !== 'ok') lines.push(`• ${r.s.name}: ${fmt1(r.agg.pctU)}% (${statusLabel(r.agg.worst, lang, St.systemOfGroup(d.g))}) — ${actionLabel(r.agg.worst, lang, St.systemOfGroup(d.g))}`);
     lines.push('', `${tr('preparedBy', lang)}: ${who(lang)}`, `${tr('date', lang)}: ${dmy(St.todayStr())}`);
     return lines.join('\n');
   }

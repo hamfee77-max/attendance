@@ -113,12 +113,18 @@
   const sessionsOf = (cid) => S.sessions.filter((s) => s.courseId === cid).sort((a, b) => a.date.localeCompare(b.date) || (a.createdAt || 0) - (b.createdAt || 0));
 
   // ---------- statistics ----------
-  const rules = () => CFG.rules;
-  function statusOf(pctU, pctT) {
-    const r = rules();
-    if (pctU > r.failUnexcused || pctT > r.failTotal) return 'fail';
-    if (pctU >= r.warn2) return 'warn2';
-    if (pctU >= r.warn1) return 'warn1';
+  // Teaching system of a course: annual stages / year-long courses follow the annual rules, others Bologna
+  const systemOfGroup = (g) => (g && g.system === 'annual' ? 'annual' : 'bologna');
+  const systemOf = (c) => (c && (c.termId === 'year' || systemOfGroup(group(c.groupId)) === 'annual') ? 'annual' : 'bologna');
+  const rules = (sys) => { const R = CFG.rules; return Object.assign({ weeksPerTerm: R.weeksPerTerm, editWindowHours: R.editWindowHours, trackFrom: R.trackFrom }, R[sys || 'annual'] || R.annual || {}); };
+  function statusOf(pctU, pctT, sys, weeks) {
+    const r = rules(sys); let w1 = r.warn1, w2 = r.warn2;
+    // Bologna: the alert is due at 7 % "or one study week", the final warning at 14 % "or two weeks"
+    if (r.weekEquivalent && weeks) { w1 = Math.min(w1, 100 / weeks); w2 = Math.min(w2, 200 / weeks); }
+    const e = 1e-9;
+    if (pctU > r.failUnexcused + e || pctT > r.failTotal + e) return 'fail';
+    if (pctU >= w2 - e) return 'warn2';
+    if (pctU >= w1 - e) return 'warn1';
     return 'ok';
   }
   const STATUS_RANK = { ok: 0, warn1: 1, warn2: 2, fail: 3 };
@@ -146,7 +152,7 @@
       planned, held: acc.held, sessions: acc.sessions, absentH: acc.absentH, excusedH: acc.excusedH, late: acc.late,
       absentDays: acc.absentDays.size, excusedDays: acc.excusedDays.size, absentSessions: acc.absentSessions,
       cumHeld: cum.held, cumAbsentH: cum.absentH, cumExcusedH: cum.excusedH,
-      pctU, pctT, status: statusOf(pctU, pctT),
+      pctU, pctT, sys: systemOf(c), status: statusOf(pctU, pctT, systemOf(c), weeksOf(c)),
     };
   }
 
@@ -266,7 +272,7 @@
     get S() { return S; }, get UI() { return UI; }, CFG, DEPT, uid, clone, todayStr, save, saveUI, deepMerge,
     saveDraft, accounts, hasDraft, setScope, inScope, isMine,
     year, term, termOf, isYearCourse, weeksOf, groupsOfYear, group, course, student, studentsOf, coursesFor, sessionsOf,
-    rules, courseStats, studentAggregate, statusOf, STATUS_RANK,
+    rules, systemOf, systemOfGroup, courseStats, studentAggregate, statusOf, STATUS_RANK,
     upsert, deleteGroup, deleteCourse, deleteStudent, deleteYear, copyCoursesToTerm, addYear,
     exportJSON, exportAbsences, importAny, resetToSeed, departmentFile,
   };

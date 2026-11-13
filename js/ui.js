@@ -308,7 +308,7 @@
   // ================= SETTINGS =================
   function viewSettings() {
     if (UI.adminView === 'accounts' && A.can('accounts')) return viewAccounts();
-    const s = St.S.settings, acc = A.current, r = St.rules();
+    const s = St.S.settings, acc = A.current, rb = St.rules('bologna'), ra = St.rules('annual');
     const myCourses = isLecturer() ? (acc.courses || []).map((id) => St.course(id)).filter(Boolean) : [];
     let html = '';
     if (A.can('exportDept') && St.hasDraft()) html += `<div class="card warnbox">⚠️ ${A.can('admin') ? t('draftBanner') : t('draftBannerHead')} <button class="btn sm" data-act="export-dept">⬇ ${t('exportDept')}</button></div>`;
@@ -318,7 +318,9 @@
       <label class="f">${t('language')}</label><select data-set="settings.lang">${opt('ar', 'العربية', s.lang === 'ar')}${opt('en', 'English', s.lang === 'en')}</select>
       <div class="toolbar"><a class="btn" href="help.html?lang=${lang()}">📖 ${t('userGuide')}</a><button class="btn" data-act="lock-now">🔒 ${t('signOut')}</button></div></div>`;
     if (isLecturer()) html += `<div class="card"><h3>📤 ${t('sendMyData')}</h3><p class="muted small">${t('sendMyDataHint')}</p><button class="btn primary block" data-act="send-my-data">📤 ${t('sendMyData')}</button></div>`;
-    html += `<div class="card"><h3>${t('thresholds')}</h3><div class="tbl"><table class="rep"><tr><th>${t('warn1')}</th><th>${t('warn2')}</th><th>${t('failU')}</th><th>${t('failT')}</th></tr><tr><td>${r.warn1}%</td><td>${r.warn2}%</td><td>${r.failUnexcused}%</td><td>${r.failTotal}%</td></tr></table></div><p class="muted small">${t('regulation')}</p></div>`;
+    html += `<div class="card"><h3>${t('thresholds')}</h3><div class="tbl"><table class="rep"><tr><th>${t('system')}</th><th>${t('warn1')}</th><th>${t('warn2')}</th><th>${t('failU')}</th><th>${t('failT')}</th></tr>
+      <tr><td><b>${t('sysBologna')}</b></td><td>${rb.warn1}%</td><td>${rb.warn2}%</td><td>&gt; ${rb.failUnexcused}%</td><td>&gt; ${rb.failTotal}%</td></tr>
+      <tr><td><b>${t('sysAnnual')}</b></td><td>${ra.warn1}%</td><td>${ra.warn2}%</td><td>&gt; ${ra.failUnexcused}%</td><td>&gt; ${ra.failTotal}%</td></tr></table></div><p class="muted small">${t('regulation')}</p></div>`;
     if (A.can('accounts')) html += adminCard();
     if (A.can('years')) html += yearsCard();
     if (A.can('backup')) html += `<div class="card"><h3>${t('backup')}</h3><p class="muted small">${t('backupHint')}</p>
@@ -395,12 +397,16 @@
     const pair = (k, label) => `<div class="grid2"><div><label class="f">${label} (AR)</label><input type="text" id="f-${k}-ar" value="${esc(ins[k][0])}" dir="rtl"></div><div><label class="f">${label} (EN)</label><input type="text" id="f-${k}-en" value="${esc(ins[k][1])}" dir="ltr"></div></div>`;
     const logo = (k, label) => `<div class="logo-pick"><img id="prev-${k}" src="${esc(lg[k] || '')}" alt=""><label class="btn sm">${label}<input type="file" accept="image/*" data-logo="${k}" style="display:none"></label></div>`;
     const num = (k, label, step) => `<div><label class="f">${label}</label><input type="number" id="f-r-${k}" min="0" step="${step || 0.5}" value="${r[k]}"></div>`;
+    const sysNum = (sy, k, label) => `<div><label class="f">${label}</label><input type="number" id="f-r-${sy}-${k}" min="0" step="0.5" value="${(r[sy] || {})[k]}"></div>`;
+    const sysBlock = (sy, label) => `<h4>${label}</h4><div class="grid2">${sysNum(sy, 'warn1', t('warn1'))}${sysNum(sy, 'warn2', t('warn2'))}${sysNum(sy, 'failUnexcused', t('failU'))}${sysNum(sy, 'failTotal', t('failT'))}</div>`;
     modal(t('deptSetup'), `${pair('university', t('universityL'))}${pair('college', t('collegeL'))}${pair('department', t('departmentL'))}${pair('headTitle', t('headTitleL'))}
       <h4>${t('logosL')}</h4><div class="logo-row">${logo('university', t('logoUni'))}${logo('college', t('logoCol'))}${logo('department', t('logoDept'))}</div>
-      <h4>${t('rulesTitle')}</h4><div class="grid2">${num('warn1', t('warn1'))}${num('warn2', t('warn2'))}${num('failUnexcused', t('failU'))}${num('failTotal', t('failT'))}${num('weeksPerTerm', t('weeksPerTerm'), 1)}${num('editWindowHours', t('editWindowL'), 1)}<div><label class="f">${t('trackFromL')}</label><input type="date" id="f-trackFrom" value="${esc(r.trackFrom || '')}"></div><div><label class="f">${t('stagesCount')}</label><input type="number" id="f-stages" min="1" max="8" value="${CFG.stages}"></div></div>`,
+      <h4>${t('rulesTitle')}</h4>${sysBlock('bologna', t('sysBologna'))}${sysBlock('annual', t('sysAnnual'))}<div class="grid2">${num('weeksPerTerm', t('weeksPerTerm'), 1)}${num('editWindowHours', t('editWindowL'), 1)}<div><label class="f">${t('trackFromL')}</label><input type="date" id="f-trackFrom" value="${esc(r.trackFrom || '')}"></div><div><label class="f">${t('stagesCount')}</label><input type="number" id="f-stages" min="1" max="8" value="${CFG.stages}"></div></div>`,
       () => {
         const institution = {}; for (const k of ['university', 'college', 'department', 'headTitle']) institution[k] = [$(`#f-${k}-ar`).value.trim(), $(`#f-${k}-en`).value.trim()];
-        const rules = {}; for (const k of ['warn1', 'warn2', 'failUnexcused', 'failTotal', 'weeksPerTerm', 'editWindowHours']) rules[k] = Number($(`#f-r-${k}`).value) || CFG.rules[k];
+        const rules = { bologna: {}, annual: {} };
+        for (const sy of ['bologna', 'annual']) for (const k of ['warn1', 'warn2', 'failUnexcused', 'failTotal']) rules[sy][k] = Number($(`#f-r-${sy}-${k}`).value) || CFG.rules[sy][k];
+        for (const k of ['weeksPerTerm', 'editWindowHours']) rules[k] = Number($(`#f-r-${k}`).value) || CFG.rules[k];
         rules.trackFrom = $('#f-trackFrom').value || CFG.rules.trackFrom;
         applyCfg({ institution, rules, stages: Number($('#f-stages').value) || CFG.stages, logos: Object.assign({}, pendingLogos) });
         toast(t('saved')); setTimeout(() => location.reload(), 400); return true;

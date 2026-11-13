@@ -1,4 +1,4 @@
-# Student Attendance App — نظام تسجيل غيابات الطلبة (v2.1)
+# Student Attendance App — نظام تسجيل غيابات الطلبة (v2.2)
 
 Attendance and absence-reporting app for an undergraduate department, prepared for the Department of Water
 Resources Engineering, College of Engineering, Mustansiriyah University. Every department-specific value
@@ -21,13 +21,16 @@ and the head gets a "Not received" report of lectures whose absences did not arr
    to the absence follow-up committee.
 2. **The committee** imports the lecturers' files and issues the **final report**, which ends with the names
    and signatures of the committee chair and two members, addressed to the Head of Department.
-3. **The head of department** (or a delegate) manages lecturers' accounts and passwords, the committee and
-   report recipients; **the system administrator** also manages department names/logos/rules, years, stages,
-   students, courses and administrator accounts, and publishes `js/department.js` so every device updates.
+3. **The head of department** (or a delegate) manages everything within the department: lecturers' accounts and
+   passwords, stages, students, courses, years, the committee and report recipients. Only **the system
+   administrator** changes the app's own details (names, logos, rules, settings) to fit another department and
+   manages administrator accounts, and publishes `js/department.js` so every device updates.
 
 Courses are either **Bologna (semester)** — one term, planned hours = weekly hours × 15 — or
-**annual (whole year)** — both terms, planned hours = weekly hours × 30. Absence rules follow Article 9 of
-Examination Instructions No. 134 of 2000 (fail above 10 % unexcused or 15 % total).
+**annual (whole year)** — both terms, planned hours = weekly hours × 30. Each system has its own absence rules:
+Bologna follows chapter 4 of the Bologna Process Adoption Guide 2025/2026 (alert at 7 % = one week, final warning
+at 14 %, fail above 14 % unexcused or 21 % with an approved excuse); annual follows Article 9 of Examination
+Instructions No. 134 of 2000 (fail above 10 % unexcused or 15 % with an excuse).
 
 ## Files
 
