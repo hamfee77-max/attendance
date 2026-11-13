@@ -1,4 +1,4 @@
-# Student Attendance App — نظام تسجيل غيابات الطلبة (v2.2)
+# Student Attendance App — نظام تسجيل غيابات الطلبة (v2.3)
 
 Attendance and absence-reporting app for an undergraduate department, prepared for the Department of Water
 Resources Engineering, College of Engineering, Mustansiriyah University. Every department-specific value

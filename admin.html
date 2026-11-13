@@ -22,7 +22,7 @@
   <div class="cover">
     <div class="logos"><img data-logo="university" alt=""><img data-logo="department" alt=""><img data-logo="college" alt=""></div>
     <h1>دليل المدير وتخصيص القسم</h1>
-    <p>لمدير النظام ولرئيس القسم ومن يخوّله — الإصدار 2.2</p>
+    <p>لمدير النظام ولرئيس القسم ومن يخوّله — الإصدار 2.3</p>
   </div>
   <nav class="toc"><h2>المحتويات</h2><ol>
     <li><a href="#a1">كيف يعمل النظام</a></li><li><a href="#a2">الدخول بالحساب الرئيسي</a></li><li><a href="#a3">حسابات المستخدمين وكلمات المرور</a></li>
@@ -51,7 +51,7 @@
     <ol class="steps"><li>افتح <span class="ui">حسابات المستخدمين وكلمات المرور</span>.</li>
       <li><span class="ui">⚡ إنشاء حسابات التدريسيين من الجدول</span>: ينشئ حساباً لكل تدريسي يرد اسمه في المواد ولم يكن له حساب، ويسند إليه مواده تلقائياً ويولّد له كلمة مرور.</li>
       <li><span class="ui">＋ إضافة حساب</span>: الاسم، الصلاحية، والمواد المسندة (مجمّعة حسب المرحلة، مع زر «إسناد تلقائي حسب الاسم»). تُعرض كلمة المرور فور الإنشاء.</li>
-      <li>🔑 بجانب أي حساب: كلمة مرور جديدة (عند النسيان أو التسريب). كلمة المرور القديمة تتوقف فوراً بعد النشر.</li>
+      <li>🔑 بجانب أي حساب: كلمة مرور جديدة (عند النسيان أو التسريب). يقترح التطبيق كلمة عشوائية، ويمكنك تركها أو <b>كتابة كلمة تختارها</b> (6 أحرف على الأقل). كلمة المرور القديمة تتوقف فوراً بعد النشر.</li>
       <li><span class="ui">🖨 طباعة ورقة كلمات المرور الجديدة</span>: ورقة بأسماء من أُنشئت لهم كلمات مرور في هذه الجلسة، لتسليمها شخصياً.</li>
       <li>انشر التغييرات (القسم 9) لتصل الحسابات إلى الأجهزة.</li></ol>
     <div class="warn">كلمات المرور تُعرض مرة واحدة فقط عند إنشائها، ولا يحفظ التطبيق إلا صيغتها المشفّرة. احتفظ بالورقة في مكان آمن وسلّم كل كلمة لصاحبها.</div>
@@ -115,6 +115,7 @@
 
   <section id="a12"><h2 class="s">12. الأمان</h2>
     <ul><li>كلمات المرور محفوظة بصيغة PBKDF2-SHA256 مع ملح عشوائي (120000 دورة)، ولا تُحفظ نصاً.</li>
+      <li>مدير النظام ورئيس القسم والمخوّلون تُطلب كلمة مرورهم عند كل فتح؛ التدريسي وحده يستطيع تذكّر جهازه 7 أيام؛ ويُقفل التطبيق بعد 15 دقيقة دون استخدام. تُضبط هذه القيم في <code>js/config.js → access</code>.</li>
       <li>الحماية من جهة الجهاز: تمنع الاستخدام غير المخوّل للتطبيق، ولا تشفّر بيانات الهاتف؛ ليحمِ كل مستخدم هاتفه برمز قفل.</li>
       <li>استخدم كلمات المرور المولَّدة تلقائياً، وغيّر أي كلمة تسرّبت ثم انشر.</li></ul>
   </section>
@@ -125,7 +126,7 @@
   <div class="cover">
     <div class="logos"><img data-logo="university" alt=""><img data-logo="department" alt=""><img data-logo="college" alt=""></div>
     <h1>Administrator & Customization Guide</h1>
-    <p>For the system administrator, the Head of Department and delegates — version 2.2</p>
+    <p>For the system administrator, the Head of Department and delegates — version 2.3</p>
   </div>
   <nav class="toc"><h2>Contents</h2><ol>
     <li><a href="#e1">How the system works</a></li><li><a href="#e2">Signing in with the master account</a></li><li><a href="#e3">User accounts and passwords</a></li>
@@ -154,7 +155,7 @@
     <ol class="steps"><li>Open <span class="ui">User accounts and passwords</span>.</li>
       <li><span class="ui">⚡ Create lecturer accounts from the timetable</span> creates an account for every lecturer named in the courses who has none, assigns their courses automatically and generates a password.</li>
       <li><span class="ui">＋ Add account</span>: name, role and assigned courses (grouped by stage, with “Auto-assign by name”). The password is shown right after creation.</li>
-      <li>🔑 next to an account issues a new password (forgotten or leaked). The old password stops working once published.</li>
+      <li>🔑 next to an account issues a new password (forgotten or leaked). The app proposes a random one; keep it or <b>type one of your choice</b> (at least 6 characters). The old password stops working once published.</li>
       <li><span class="ui">🖨 Print sheet of new passwords</span> lists everyone who received a password in this session, to hand over in person.</li>
       <li>Publish the changes (section 9) so accounts reach the devices.</li></ol>
     <div class="warn">Passwords are shown only once, when created; the app keeps only their hashes. Keep the sheet safe and hand each password to its owner.</div>
@@ -218,6 +219,7 @@
 
   <section id="e12"><h2 class="s">12. Security</h2>
     <ul><li>Passwords are stored as PBKDF2-SHA256 with a random salt (120,000 iterations), never as text.</li>
+      <li>The administrator, the head and delegates are asked for their password at every opening; only lecturers may remember their device for 7 days; the app locks after 15 minutes without use. These values are set in <code>js/config.js → access</code>.</li>
       <li>Protection is on the device side: it prevents unauthorized use of the app but does not encrypt the phone's data; every user should protect their phone with a screen lock.</li>
       <li>Use the generated passwords, and replace any leaked password, then publish.</li></ul>
   </section>

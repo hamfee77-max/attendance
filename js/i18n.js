@@ -109,7 +109,7 @@ window.I18N = {
   lockHint: ['اختر اسمك وأدخل كلمة المرور الخاصة بك. يصدر رئيس القسم كلمة مرور خاصة لكل تدريسي.', 'Choose your name and enter your personal password. The Head of Department issues a personal password to each lecturer.'],
   accessCode: ['رمز الدخول', 'Access code'], unlock: ['دخول', 'Enter'],
   wrongCode: ['رمز الدخول غير صحيح', 'Incorrect access code'],
-  rememberDevice: ['تذكّر هذا الجهاز لمدة {n} يوماً', 'Remember this device for {n} days'],
+  rememberDevice: ['تذكّر هذا الجهاز لمدة {n} أيام (على هاتفك الشخصي فقط)', 'Remember this device for {n} days (your own phone only)'],
   lockNow: ['قفل التطبيق الآن', 'Lock the app now'],
   accessInfo: ['التطبيق محمي برمز دخول. لتغيير الرمز عدّل القيمة access.codeHash في الملف js/config.js (انظر README).', 'The app is protected by an access code. To change it, edit access.codeHash in js/config.js (see README).'],
   security: ['الحماية', 'Security'],
@@ -248,4 +248,9 @@ window.I18N = {
   actWarn1B: ['توجيه تنبيه للطالب تحريرياً وإلكترونياً', 'Alert the student in writing and electronically'],
   actWarn2B: ['توجيه إنذار نهائي للطالب', 'Issue a final warning to the student'],
   actFailB: ['يُعيد دراسة المادة دواماً وامتحاناً، ويُكمل بقية المواد (دليل بولونيا)', 'Repeats the course, attendance and exam, and continues other courses (Bologna guide)'],
+  // ---- v2.3: sign-in policy ----
+  signOutShort: ['خروج', 'Sign out'],
+  idleLocked: ['أُقفل التطبيق تلقائياً بعد {n} دقيقة دون استخدام. أدخل كلمة المرور للمتابعة.', 'The app locked itself after {n} minutes without use. Enter your password to continue.'],
+  pwChooseHint: ['هذه كلمة مرور مقترحة. يمكنك تركها أو كتابة كلمة مرور تختارها (6 أحرف على الأقل).', 'This is a suggested password. Keep it or type one of your choice (at least 6 characters).'],
+  pwTooShort: ['كلمة المرور قصيرة؛ 6 أحرف على الأقل.', 'Password too short; at least 6 characters.'],
 };

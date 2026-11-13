@@ -7,7 +7,7 @@
 // ============================================================================
 window.APP_CONFIG = {
   appId: 'wre-attendance',              // storage key prefix; change when deploying for another department
-  version: '2.2.0',
+  version: '2.3.0',
 
   // Owner and designer of the app (shown in About, the lock screen and the guides)
   owner: {
@@ -83,7 +83,9 @@ window.APP_CONFIG = {
     enabled: true,
     bootstrapMasterHash: '95714c52531b6e66d8ac0f78fb5e0b2a4c061c3eb56461116d353c097e8c6820',
     pbkdf2Iterations: 120000,
-    rememberDays: 30,   // 0 = ask at every launch; otherwise the device stays signed in this many days
+    rememberDays: 7,              // lecturers may keep their own phone signed in this many days (0 = never)
+    rememberRoles: ['lecturer'],  // administrators and heads are asked for their password at every opening
+    idleLockMinutes: 15,          // sessions that are not remembered lock after this many minutes without use
   },
 
   // Default report recipients (the master account can edit this list inside the app).

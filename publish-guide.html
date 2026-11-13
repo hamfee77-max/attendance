@@ -43,11 +43,11 @@
   <section id="a2"><h2 class="s">2. الملفات الجاهزة</h2>
     <p>في المجلد <code>F:\My claud works\wre-attendance-android</code>:</p>
     <div class="tbl"><table><tr><th>الملف</th><th>الاستخدام</th></tr>
-      <tr><td><code>dist\WRE-Attendance-2.2.0.aab</code></td><td>الرفع إلى Google Play وHuawei AppGallery.</td></tr>
-      <tr><td><code>dist\WRE-Attendance-2.2.0.apk</code></td><td>التثبيت المباشر على هواتف أندرويد، أو الرفع إلى Huawei.</td></tr>
+      <tr><td><code>dist\WRE-Attendance-2.3.0.aab</code></td><td>الرفع إلى Google Play وHuawei AppGallery.</td></tr>
+      <tr><td><code>dist\WRE-Attendance-2.3.0.apk</code></td><td>التثبيت المباشر على هواتف أندرويد، أو الرفع إلى Huawei.</td></tr>
       <tr><td><code>ios\</code></td><td>مشروع Xcode الكامل للآيفون والآيباد (يُفتح على Mac).</td></tr>
       <tr><td><code>keys\</code></td><td>مفتاح التوقيع وكلمة مروره. <b>احتفظ بنسخة آمنة منه؛ لا يمكن تحديث التطبيق بدونه.</b></td></tr></table></div>
-    <p>مواصفات النسخة: المعرّف <code>iq.edu.uomustansiriyah.wre.attendance</code>، الإصدار 2.2.0 (رمز 220)، يستهدف Android 16 (API 36) كما يشترط Google Play منذ 31 آب 2026، ويعمل من Android 7.0 فأحدث.</p>
+    <p>مواصفات النسخة: المعرّف <code>iq.edu.uomustansiriyah.wre.attendance</code>، الإصدار 2.3.0 (رمز 230)، يستهدف Android 16 (API 36) كما يشترط Google Play منذ 31 آب 2026، ويعمل من Android 7.0 فأحدث.</p>
     <p>لإعادة البناء بعد أي تعديل: <code>powershell -ExecutionPolicy Bypass -File scripts\build-apk.ps1</code> (ارفع رقم الإصدار أولاً في <code>package.json</code> و<code>android\app\build.gradle</code>).</p>
   </section>
 
@@ -67,7 +67,7 @@
     <h3>إنشاء التطبيق ورفعه</h3>
     <ol class="steps"><li><b>Create app</b>: الاسم «غيابات الموارد المائية — WRE Attendance»، اللغة الافتراضية العربية، النوع App، مجاني.</li>
       <li>فعّل <b>Play App Signing</b> (افتراضي)، فيصبح مفتاحنا «مفتاح الرفع».</li>
-      <li><b>Testing → Closed testing</b>: أنشئ مساراً، أضف بريد المختبرين، وارفع <code>WRE-Attendance-2.2.0.aab</code>.</li>
+      <li><b>Testing → Closed testing</b>: أنشئ مساراً، أضف بريد المختبرين، وارفع <code>WRE-Attendance-2.3.0.aab</code>.</li>
       <li>أكمل <b>App content</b>:
         <ul><li>Privacy policy: الرابط أعلاه.</li>
           <li>App access: «All or some functionality is restricted» مع اسم حساب المراجع وكلمة مروره.</li>
@@ -84,7 +84,7 @@
   <section id="a5"><h2 class="s">5. Huawei AppGallery</h2>
     <ol class="steps"><li>سجّل في <code>developer.huawei.com</code> واختر <b>Individual</b>، وأكمل التحقق: صورة وجهي الهوية، والاسم ورقمها كما في الوثيقة تماماً، وبطاقة مصرفية (عادة يوم إلى يومين).</li>
       <li>ادخل <b>AppGallery Connect → My apps → New app</b>: النوع App، اللغة العربية، الاسم، الفئة Education أو Business.</li>
-      <li>في <b>Version information</b>: ارفع <code>WRE-Attendance-2.2.0.aab</code> (أو APK)، واختر الدول (العراق ودول أخرى)، وأضف رابط الخصوصية والأيقونة (216×216) واللقطات.</li>
+      <li>في <b>Version information</b>: ارفع <code>WRE-Attendance-2.3.0.aab</code> (أو APK)، واختر الدول (العراق ودول أخرى)، وأضف رابط الخصوصية والأيقونة (216×216) واللقطات.</li>
       <li>في <b>App review information</b>: اسم حساب المراجع وكلمة مروره.</li>
       <li><b>Submit</b>. تصل نتيجة المراجعة بالبريد.</li></ol>
     <div class="note">التطبيق لا يعتمد على خدمات Google، فيعمل على هواتف Huawei الحديثة دون تعديل.</div>
@@ -162,11 +162,11 @@
   <section id="e2"><h2 class="s">2. Ready files</h2>
     <p>In <code>F:\My claud works\wre-attendance-android</code>:</p>
     <div class="tbl"><table><tr><th>File</th><th>Use</th></tr>
-      <tr><td><code>dist\WRE-Attendance-2.2.0.aab</code></td><td>Upload to Google Play and Huawei AppGallery.</td></tr>
-      <tr><td><code>dist\WRE-Attendance-2.2.0.apk</code></td><td>Direct install on Android phones, or upload to Huawei.</td></tr>
+      <tr><td><code>dist\WRE-Attendance-2.3.0.aab</code></td><td>Upload to Google Play and Huawei AppGallery.</td></tr>
+      <tr><td><code>dist\WRE-Attendance-2.3.0.apk</code></td><td>Direct install on Android phones, or upload to Huawei.</td></tr>
       <tr><td><code>ios\</code></td><td>The complete Xcode project for iPhone and iPad (opened on a Mac).</td></tr>
       <tr><td><code>keys\</code></td><td>The signing key and its password. <b>Keep a safe copy; the app cannot be updated without it.</b></td></tr></table></div>
-    <p>Build details: id <code>iq.edu.uomustansiriyah.wre.attendance</code>, version 2.2.0 (code 220), targets Android 16 (API 36) as Google Play has required since 31 August 2026, runs on Android 7.0 and newer.</p>
+    <p>Build details: id <code>iq.edu.uomustansiriyah.wre.attendance</code>, version 2.3.0 (code 230), targets Android 16 (API 36) as Google Play has required since 31 August 2026, runs on Android 7.0 and newer.</p>
     <p>To rebuild after changes: <code>powershell -ExecutionPolicy Bypass -File scripts\build-apk.ps1</code> (first raise the version in <code>package.json</code> and <code>android\app\build.gradle</code>).</p>
   </section>
 
@@ -186,7 +186,7 @@
     <h3>Create and upload the app</h3>
     <ol class="steps"><li><b>Create app</b>: name “WRE Attendance — غيابات الموارد المائية”, default language Arabic, type App, free.</li>
       <li>Keep <b>Play App Signing</b> on (default); our key becomes the upload key.</li>
-      <li><b>Testing → Closed testing</b>: create a track, add the testers' emails, upload <code>WRE-Attendance-2.2.0.aab</code>.</li>
+      <li><b>Testing → Closed testing</b>: create a track, add the testers' emails, upload <code>WRE-Attendance-2.3.0.aab</code>.</li>
       <li>Complete <b>App content</b>:
         <ul><li>Privacy policy: the URL above.</li>
           <li>App access: “All or some functionality is restricted”, with the reviewer account name and password.</li>
@@ -203,7 +203,7 @@
   <section id="e5"><h2 class="s">5. Huawei AppGallery</h2>
     <ol class="steps"><li>Register at <code>developer.huawei.com</code> as <b>Individual</b> and complete verification: both sides of your ID card, the name and number exactly as on the document, and a bank card (usually one to two days).</li>
       <li>Open <b>AppGallery Connect → My apps → New app</b>: type App, language Arabic, name, category Education or Business.</li>
-      <li>In <b>Version information</b> upload <code>WRE-Attendance-2.2.0.aab</code> (or the APK), choose the countries (Iraq and others), add the privacy URL, the 216×216 icon and screenshots.</li>
+      <li>In <b>Version information</b> upload <code>WRE-Attendance-2.3.0.aab</code> (or the APK), choose the countries (Iraq and others), add the privacy URL, the 216×216 icon and screenshots.</li>
       <li>In <b>App review information</b> give the reviewer account name and password.</li>
       <li><b>Submit</b>. The review result arrives by email.</li></ol>
     <div class="note">The app does not depend on Google services, so it runs on recent Huawei phones without changes.</div>

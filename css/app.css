@@ -224,3 +224,7 @@ details summary { cursor: pointer; }
 .seg button[disabled] { cursor: default; opacity: .9; }
 table.rep td.dates { text-align: start; white-space: normal !important; font-size: 11.5px; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .card.alert { background: #3a2f12; color: #f3dfa8; } :root:not([data-theme="light"]) .card.alert.info { background: #14304d; color: #cfe4f8; } }
+
+/* ---------- v2.3: sign-out button, password input ---------- */
+#top .lang.out { background: rgba(198, 40, 40, .35); border-color: rgba(255, 255, 255, .45); }
+.pw-input { font: 700 22px Consolas, "Courier New", monospace; letter-spacing: 1px; text-align: center; }

@@ -82,7 +82,8 @@
     $('#top').innerHTML = `<div class="brand">
       <div class="logos">${logosHTML()}</div>
       <div class="title"><h1>${esc(ins.department[L()])}</h1><small>👤 ${esc(A.displayName(lang()))} · ${esc(accRoleText(A.current))}</small></div>
-      <button class="lang" data-act="toggle-lang">${lang() === 'ar' ? 'EN' : 'عربي'}</button></div>
+      <button class="lang" data-act="toggle-lang">${lang() === 'ar' ? 'EN' : 'عربي'}</button>
+      <button class="lang out" data-act="lock-now" title="${esc(t('signOut'))}">⎋ ${t('signOutShort')}</button></div>
       <div class="ctx">
         <select data-set="currentYear">${St.S.years.map((x) => opt(x.id, x.name, x.id === St.S.currentYear)).join('')}</select>
         <select data-set="currentTerm">${CFG.terms.map((x) => opt(x[0], lang() === 'ar' ? x[1] : x[2], x[0] === St.S.currentTerm)).join('')}</select>
@@ -454,12 +455,22 @@
         toast(t('saved')); return true;
       });
   }
-  async function newPasswordFor(id) {
-    const list = St.clone(St.accounts()); const a = list.find((x) => x.id === id); if (!a || !canManage(a)) return;
-    const pw = A.newPassword(); Object.assign(a, await A.makeCredential(pw));
+  // Issue a password: a generated one is proposed, and the master/head may type their own instead
+  function newPasswordFor(id) {
+    const a = St.accounts().find((x) => x.id === id); if (!a || !canManage(a)) return;
+    modal(t('newPasswordIs', { n: accName(a) }), `<p class="muted small">${t('pwChooseHint')}</p>
+      <input type="text" id="f-newpw" class="pw-input" value="${esc(A.newPassword())}" dir="ltr" autocomplete="off" autocapitalize="none" spellcheck="false">
+      <p class="muted small">${t('passwordOnce')}</p>`, () => {
+      const pw = $('#f-newpw').value.trim();
+      if (pw.length < 6) { toast(t('pwTooShort')); return false; }
+      setPassword(id, pw); return true;
+    });
+  }
+  async function setPassword(id, pw) {
+    const list = St.clone(St.accounts()); const a = list.find((x) => x.id === id); if (!a) return;
+    Object.assign(a, await A.makeCredential(pw));
     St.saveDraft({ accounts: list }); newPasswords[id] = { name: a.name, nameEn: a.nameEn, role: a.role, pw };
-    render();
-    infoModal(t('newPasswordIs', { n: accName(a) }), `<p class="pw-show" dir="ltr">${esc(pw)}</p><p class="muted small">${t('passwordOnce')}</p>`);
+    toast(t('saved')); render();
   }
   async function autoAccounts() {
     const list = St.clone(St.accounts()); const courses = yearCourses();
@@ -589,6 +600,7 @@
     if (el.dataset.draft && draft) { draft[el.dataset.draft] = el.value; if (el.dataset.draft === 'date') render(); return; }
     if (el.dataset.logo && el.files[0]) { readLogo(el.files[0], el.dataset.logo); return; }
     if (el.id === 'f-csys') { $('#f-term-wrap').style.display = el.value === 'year' ? 'none' : ''; return; }
+    if (el.id === 'f-acc') { const w = $('#f-rem-wrap'); if (w) { const ok = A.canRemember(A.byId(el.value)); w.style.display = ok ? '' : 'none'; if (!ok) $('#f-remember').checked = false; } return; }
     if (el.id === 'f-xls' && el.files[0] && imp) {
       const box = $('#xls-preview'); if (box) box.innerHTML = `<p class="muted small">${t('xlsReading')}</p>`;
       Excel.readFile(el.files[0]).then((wb) => {
@@ -706,8 +718,8 @@
       ${A.secure() ? '' : `<p class="small" style="color:var(--fail)">${t('needSecure')}</p>`}
       <form id="lock-form"><label class="f">${t('selectAccount')}</label><select id="f-acc">${optg(t('groupAdmin'), admins)}${optg(t('groupLecturers'), lects)}</select>
       <label class="f">${t('password')}</label><input type="password" id="f-code" autocomplete="current-password" autocapitalize="none" dir="ltr">
-      ${CFG.access.rememberDays > 0 ? `<label class="row" style="gap:8px;margin-top:8px"><input type="checkbox" id="f-remember" class="fix" checked><span class="small">${t('rememberDevice', { n: CFG.access.rememberDays })}</span></label>` : ''}
-      ${error ? `<p class="small" style="color:var(--fail)">${t('wrongPassword')}</p>` : ''}
+      <label class="row" id="f-rem-wrap" style="gap:8px;margin-top:8px;${A.canRemember(A.byId(UI.lastAccount) || accs[0]) ? '' : 'display:none'}"><input type="checkbox" id="f-remember" class="fix"><span class="small">${t('rememberDevice', { n: CFG.access.rememberDays })}</span></label>
+      ${error === 'idle' ? `<p class="small" style="color:var(--warn2)">🔒 ${t('idleLocked', { n: CFG.access.idleLockMinutes })}</p>` : error ? `<p class="small" style="color:var(--fail)">${t('wrongPassword')}</p>` : ''}
       <div class="toolbar"><button class="btn primary block" type="submit">${t('signIn')}</button></div></form>
       <div class="center"><button class="btn sm ghost" data-act="toggle-lang-lock">${lang() === 'ar' ? 'English' : 'عربي'}</button> <a class="btn sm ghost" href="help.html?lang=${lang()}">📖 ${t('userGuide')}</a></div>
       <p class="credit">${esc(o.role[L()])}: ${esc(o.name[L()])} · <a href="mailto:${esc(o.email)}" dir="ltr">${esc(o.email)}</a> · <span dir="ltr">${esc(o.phone)}</span></p></div></div>`;
@@ -720,6 +732,14 @@
     const ok = await A.signIn(id, pw, !!(rem && rem.checked));
     if (ok) { UI.lastAccount = id; UI.tab = 'attend'; UI.groupId = ''; UI.courseId = ''; St.saveUI(); render(); } else renderLock(true);
   });
+
+  // Auto-lock: sessions that are not remembered lock after idleLockMinutes without use
+  let lastTouch = 0;
+  const activity = () => { if (!A.current) return; const n = Date.now(); if (n - lastTouch > 15000) { lastTouch = n; A.touch(); } };
+  ['click', 'keydown', 'touchstart', 'scroll', 'input'].forEach((ev) => document.addEventListener(ev, activity, { passive: true }));
+  const idleCheck = () => { if (A.current && A.idleExpired()) { A.signOut(); draft = null; UI.adminView = ''; closeModal(); renderLock('idle'); } };
+  setInterval(idleCheck, 30000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') idleCheck(); });
 
   window.UI = { render, toast, t, lock: () => { A.signOut(); renderLock(); } };
   A.restore(); render();

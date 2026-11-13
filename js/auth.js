@@ -45,6 +45,21 @@
   function list() { const a = St.accounts().map((x) => (x.role === normRole(x.role) ? x : Object.assign({}, x, { role: normRole(x.role) }))); return a.length ? a : [BOOT]; }
   const byId = (id) => list().find((a) => a.id === id);
 
+  // Sign-in policy: administrators and heads are asked for their password at every opening;
+  // only lecturers may keep a device remembered (rememberDays). Sessions that are not remembered
+  // lock after idleLockMinutes without use. SESS_V rejects sign-ins saved under older rules.
+  const SESS_V = 2;
+  const canRemember = (acc) => !!acc && (CFG.access.rememberRoles || ['lecturer']).includes(normRole(acc.role)) && (Number(CFG.access.rememberDays) || 0) > 0;
+  const idleMs = () => (Number(CFG.access.idleLockMinutes) || 0) * 60000;
+  const ACTKEY = SESSKEY + ':active';
+  let remembered = false;
+  function touch() { try { sessionStorage.setItem(ACTKEY, String(Date.now())); } catch (e) { /* ignore */ } }
+  function idleExpired() {
+    if (!current || remembered || !idleMs()) return false;
+    let last = 0; try { last = Number(sessionStorage.getItem(ACTKEY) || 0); } catch (e) { /* ignore */ }
+    return !last || Date.now() - last > idleMs();
+  }
+
   let current = null;
   async function signIn(accountId, password, remember) {
     const acc = byId(accountId); if (!acc || !secure()) return false;
@@ -52,24 +67,33 @@
     if (acc.id === BOOT.id) { token = await sha256(password); ok = token === CFG.access.bootstrapMasterHash; }
     else { token = await pbkdf2(password, acc.salt, acc.iter || CFG.access.pbkdf2Iterations); ok = token === acc.hash; }
     if (!ok) return false;
-    const sess = { id: acc.id, token, until: remember ? Date.now() + (CFG.access.rememberDays || 0) * 86400000 : 0 };
-    try { sessionStorage.setItem(SESSKEY, JSON.stringify(sess)); if (remember && CFG.access.rememberDays > 0) localStorage.setItem(SESSKEY, JSON.stringify(sess)); else localStorage.removeItem(SESSKEY); } catch (e) { /* ignore */ }
+    remember = !!remember && canRemember(acc);
+    const sess = { v: SESS_V, id: acc.id, token, remember, until: remember ? Date.now() + Number(CFG.access.rememberDays) * 86400000 : 0 };
+    try { sessionStorage.setItem(SESSKEY, JSON.stringify(sess)); if (remember) localStorage.setItem(SESSKEY, JSON.stringify(sess)); else localStorage.removeItem(SESSKEY); } catch (e) { /* ignore */ }
+    remembered = remember; touch();
     activate(acc);
     return true;
   }
   function restore() {
     if (!CFG.access || !CFG.access.enabled) { activate(BOOT); return true; }
     const read = (store) => { try { return JSON.parse(store.getItem(SESSKEY)); } catch (e) { return null; } };
-    for (const s of [read(sessionStorage), read(localStorage)]) {
-      if (!s || !s.id) continue;
+    const fromSession = read(sessionStorage), fromLocal = read(localStorage);
+    for (const s of [fromSession, fromLocal]) {
+      if (!s || !s.id || s.v !== SESS_V) continue;                       // sign-ins saved under older rules are not accepted
       if (s.until && Date.now() > s.until) continue;
       const acc = byId(s.id); if (!acc) continue;
+      if (s.remember && !canRemember(acc)) continue;                      // only lecturers may stay remembered
+      if (s === fromLocal && !s.remember) continue;
       const valid = acc.id === BOOT.id ? s.token === CFG.access.bootstrapMasterHash : s.token === acc.hash;   // password changed => signed out
-      if (valid) { activate(acc); return true; }
+      if (!valid) continue;
+      remembered = !!s.remember;
+      if (!remembered) { let last = 0; try { last = Number(sessionStorage.getItem(ACTKEY) || 0); } catch (e) { /* ignore */ } if (idleMs() && (!last || Date.now() - last > idleMs())) continue; }
+      activate(acc); touch(); return true;
     }
+    try { localStorage.removeItem(SESSKEY); } catch (e) { /* ignore */ }
     return false;
   }
-  function signOut() { try { sessionStorage.removeItem(SESSKEY); localStorage.removeItem(SESSKEY); } catch (e) { /* ignore */ } current = null; St.setScope([], []); }
+  function signOut() { try { sessionStorage.removeItem(SESSKEY); sessionStorage.removeItem(ACTKEY); localStorage.removeItem(SESSKEY); } catch (e) { /* ignore */ } current = null; remembered = false; St.setScope([], []); }
   function activate(acc) {
     current = acc.role === normRole(acc.role) ? acc : Object.assign({}, acc, { role: normRole(acc.role) });
     acc = current;
@@ -95,5 +119,5 @@
   const role = () => (current ? current.role : null);
   const displayName = (lang) => (current ? (lang === 'en' && current.nameEn ? current.nameEn : current.name) : '');
 
-  window.Auth = { list, byId, signIn, restore, signOut, can, role, displayName, normRole, canEditSession, editDeadline, windowMs, get current() { return current; }, makeCredential, newPassword, normPw, secure, BOOT };
+  window.Auth = { list, byId, signIn, restore, signOut, can, role, displayName, normRole, canEditSession, editDeadline, windowMs, canRemember, touch, idleExpired, get current() { return current; }, makeCredential, newPassword, normPw, secure, BOOT };
 })();
