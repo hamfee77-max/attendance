@@ -7,7 +7,7 @@
 // ============================================================================
 window.APP_CONFIG = {
   appId: 'wre-attendance',              // storage key prefix; change when deploying for another department
-  version: '2.5.1',
+  version: '2.6.0',
 
   // Owner and designer of the app (shown in About, the lock screen and the guides)
   owner: {

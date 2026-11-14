@@ -4,7 +4,7 @@
       <stop offset="0" stop-color="#19c88a"/><stop offset="0.5" stop-color="#2fd0a3"/><stop offset="1" stop-color="#20b5c9"/>
     </linearGradient>
     <path id="arcTop" d="M 92 330 A 238 238 0 0 1 568 330"/>
-    <path id="arcBottom" d="M 568 330 A 238 238 0 0 1 92 330"/>
+    <path id="arcBottom" d="M 50 330 A 280 280 0 0 0 610 330"/>
   </defs>
   <!-- outer ring -->
   <circle cx="330" cy="330" r="322" fill="url(#ring)"/>

@@ -267,6 +267,7 @@ window.I18N = {
   cloudSendBtn: ['إرسال إلى {d}', 'Send to {d}'], shareBtn: ['مشاركة', 'Share'],
   cloudSending: ['جارٍ الإرسال…', 'Sending…'],
   cloudSendNow: ['إرسال الآن', 'Send now'],
+  showPassword: ['إظهار كلمة المرور', 'Show password'], hidePassword: ['إخفاء كلمة المرور', 'Hide password'],
   cloudSignIn: ['سجّل الخروج ثم الدخول مجدداً لتفعيل الإرسال.', 'Sign out and sign in again to enable sending.'],
   cloudReportHintLect: ['غياباتك تُرسل تلقائياً إلى {d} عند كل حفظ، وتصل إلى رئيس القسم مباشرة. زر الإرسال يحفظ هذه المذكرة نفسها هناك أيضاً.', 'Your absences are sent automatically to {d} each time you save, and reach the Head of Department directly. The send button also stores this memo there.'],
   cloudReportHintHead: ['التقرير يُحفظ في {d} ضمن «التقارير الرسمية». للطباعة أو حفظه PDF استخدم زر الطباعة.', 'The report is stored in {d} under “official reports”. To print it or save it as PDF use the Print button.'],

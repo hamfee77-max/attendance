@@ -228,6 +228,13 @@ table.rep td.dates { text-align: start; white-space: normal !important; font-siz
 /* ---------- v2.3: sign-out button, password input ---------- */
 #top .lang.out { background: rgba(198, 40, 40, .35); border-color: rgba(255, 255, 255, .45); }
 .pw-input { font: 700 22px Consolas, "Courier New", monospace; letter-spacing: 1px; text-align: center; }
+/* v2.6: show-password eye */
+.pw-wrap { position: relative; }
+.pw-wrap input { width: 100%; min-height: var(--tap); border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: inherit; padding: 8px 48px 8px 10px; font-size: 16px; }
+.pw-eye { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; padding: 0; }
+.pw-eye:hover, .pw-eye:focus-visible { background: rgba(11, 61, 112, .08); color: var(--accent); }
+.pw-eye.on { color: var(--accent); }
+.pw-eye.on .slash { display: none; }
 
 /* ---------- v2.4: storage status ---------- */
 .card.cloud { background: #eef7ee; border-color: #b9dcb9; gap: 8px; align-items: center; justify-content: space-between; }

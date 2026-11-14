@@ -661,6 +661,7 @@
     const admin = A.can('admin'), edit = A.can('editLists');
     switch (act) {
       case 'toggle-lang': St.S.settings.lang = lang() === 'ar' ? 'en' : 'ar'; UI.reportLang = St.S.settings.lang; St.save(); render(); break;
+      case 'toggle-pw': { const i = $('#f-code'); if (!i) break; const show = i.type === 'password'; i.type = show ? 'text' : 'password'; el.setAttribute('aria-pressed', String(show)); el.classList.toggle('on', show); el.title = t(show ? 'hidePassword' : 'showPassword'); el.setAttribute('aria-label', el.title); i.focus(); break; }
       case 'toggle-lang-lock': St.S.settings.lang = lang() === 'ar' ? 'en' : 'ar'; St.save(); renderLock(); break;
       case 'tab': if (draft && UI.tab === 'attend' && id !== 'attend' && !confirm(t('unsaved'))) return; if (id !== 'attend') draft = null; UI.tab = id; UI.adminView = ''; render(); break;
       case 'pick-course': UI.groupId = el.dataset.g; UI.courseId = id; render(); break;
@@ -744,7 +745,7 @@
       <p class="muted small center">${t('lockHint')}</p>
       ${A.secure() ? '' : `<p class="small" style="color:var(--fail)">${t('needSecure')}</p>`}
       <form id="lock-form"><label class="f">${t('selectAccount')}</label><select id="f-acc">${optg(t('groupAdmin'), admins)}${optg(t('groupLecturers'), lects)}</select>
-      <label class="f">${t('password')}</label><input type="password" id="f-code" autocomplete="current-password" autocapitalize="none" dir="ltr">
+      <label class="f" for="f-code">${t('password')}</label><div class="pw-wrap" dir="ltr"><input type="password" id="f-code" autocomplete="current-password" autocapitalize="none" spellcheck="false" dir="ltr"><button type="button" class="pw-eye" data-act="toggle-pw" aria-pressed="false" aria-label="${t('showPassword')}" title="${t('showPassword')}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 5C6.5 5 2.7 9.1 1.5 12c1.2 2.9 5 7 10.5 7s9.3-4.1 10.5-7C21.3 9.1 17.5 5 12 5zm0 11.5A4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 0 1 0 9zm0-2.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" fill="currentColor"/><path class="slash" d="M3 3l18 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button></div>
       <label class="row" id="f-rem-wrap" style="gap:8px;margin-top:8px;${A.canRemember(A.byId(UI.lastAccount) || accs[0]) ? '' : 'display:none'}"><input type="checkbox" id="f-remember" class="fix"><span class="small">${t('rememberDevice', { n: CFG.access.rememberDays })}</span></label>
       ${error === 'idle' ? `<p class="small" style="color:var(--warn2)">🔒 ${t('idleLocked', { n: CFG.access.idleLockMinutes })}</p>` : error ? `<p class="small" style="color:var(--fail)">${t('wrongPassword')}</p>` : ''}
       <div class="toolbar"><button class="btn primary block" type="submit">${t('signIn')}</button></div></form>
