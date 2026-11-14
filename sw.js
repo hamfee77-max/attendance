@@ -1,7 +1,7 @@
 // Service worker: lets the installed app open offline.
 // Strategy: network-first (fresh files whenever online, 4 s timeout), cache as offline fallback.
 // Bump CACHE_VERSION whenever any file changes.
-const CACHE_VERSION = 'wre-attendance-v2.4.1';
+const CACHE_VERSION = 'wre-attendance-v2.5.0';
 const SHELL = [
   './', './index.html', './help.html', './admin.html', './publish-guide.html', './privacy.html', './manifest.webmanifest', './css/app.css',
   './js/config.js', './js/i18n.js', './js/department.js', './js/store.js', './js/names.js', './js/auth.js', './js/reports.js', './js/excel.js', './js/cloud.js', './js/ui.js', './js/guide.js',

@@ -34,7 +34,7 @@
     const today = St.todayStr();
     if (isLecturer()) {
       const due = R.missingData({ upTo: today }).items;
-      const unsent = Cloud.enabled() ? Cloud.pending() > 0 : St.S.sessions.some((s) => { const c = St.course(s.courseId); return c && St.inScope(c) && (s.updatedAt || 0) > (UI.lastSentAt || 0); });
+      const unsent = Cloud.configured() ? Cloud.pending() > 0 : St.S.sessions.some((s) => { const c = St.course(s.courseId); return c && St.inScope(c) && (s.updatedAt || 0) > (UI.lastSentAt || 0); });
       let h = '';
       if (due.length) {
         const todayN = due.filter((d) => d.date === today).length;
@@ -42,7 +42,9 @@
           <div class="chips">${due.slice(-14).reverse().map((d) => `<button class="chip-btn ${d.date === today ? 'today' : ''}" data-act="record-missing" data-id="${d.course.id}" data-date="${d.date}">${d.date === today ? '📅 ' : ''}${esc(cname(d.course))} · ${R.dmy(d.date)}</button>`).join('')}${due.length > 14 ? `<span class="muted small">+${due.length - 14}</span>` : ''}</div>
           <p class="muted small">${t('missingLectHint')}</p></div>`;
       }
-      if (unsent) h += `<div class="card alert info"><span>📤 ${t('unsentReminder')}</span> <button class="btn sm primary" data-act="send-my-data">📤 ${t('sendMyData')}</button></div>`;
+      if (unsent) h += Cloud.configured()
+        ? `<div class="card alert info"><span>☁️ ${t('cloudPending', { n: Cloud.pending() })} — ${esc(storeName())}</span> <button class="btn sm primary" data-act="send-my-data">☁️ ${t('cloudSendNow')}</button></div>`
+        : `<div class="card alert info"><span>📤 ${t('unsentReminder')}</span> <button class="btn sm primary" data-act="send-my-data">📤 ${t('sendMyData')}</button></div>`;
       return h;
     }
     const m = R.missingData({ upTo: R.addDays(today, -1) });
@@ -300,8 +302,8 @@
       const r = R.overview(UI.groupId, rl, UI.mine); out = { html: r.html, csv: r.csv, name: `overview_${gname(St.group(UI.groupId))}` };
     }
     const recs = authorizedRecipients();
-    html += `<div class="toolbar"><button class="btn primary" data-act="print" ${out ? '' : 'disabled'}>🖨 ${t('print')}</button><button class="btn" data-act="csv" ${out ? '' : 'disabled'}>⬇ ${t('exportCsv')}</button>${Cloud.enabled() ? `<button class="btn" data-act="send" ${out ? '' : 'disabled'}>☁️ ${t('cloudSendBtn', { d: storeName() })}</button><button class="btn" data-act="share" ${out ? '' : 'disabled'}>📤 ${t('shareBtn')}</button>` : `<button class="btn" data-act="send" ${out ? '' : 'disabled'}>📤 ${t('sendReport')}</button>`}</div>
-      <p class="muted small">${recs.length ? `${t('sendTo')}: ${recs.map((r) => `${recTitle(r)}${r.name ? ' ' + esc(r.name) : ''}`).join('، ')}` : t('noRecipients')} · ${t('sendHint')}</p></div>`;
+    html += `<div class="toolbar"><button class="btn primary" data-act="print" ${out ? '' : 'disabled'}>🖨 ${t('print')}</button><button class="btn" data-act="csv" ${out ? '' : 'disabled'}>⬇ ${t('exportCsv')}</button>${Cloud.configured() ? `<button class="btn" data-act="send" ${out ? '' : 'disabled'}>☁️ ${t('cloudSendBtn', { d: storeName() })}</button>` : `<button class="btn" data-act="send" ${out ? '' : 'disabled'}>📤 ${t('sendReport')}</button>`}</div>
+      <p class="muted small">${Cloud.configured() ? t(isLecturer() ? 'cloudReportHintLect' : 'cloudReportHintHead', { d: esc(storeName()) }) : `${recs.length ? `${t('sendTo')}: ${recs.map((r) => `${recTitle(r)}${r.name ? ' ' + esc(r.name) : ''}`).join('، ')}` : t('noRecipients')} · ${t('sendHint')}`}</p></div>`;
     lastReport = out || { html: '', csv: '', name: 'report' };
     html += out ? `<div class="tbl-wrap">${out.html}</div>` : `<div class="card empty">${t('nothingToShow')}</div>`;
     return html;
@@ -319,7 +321,7 @@
       ${myCourses.length ? `<details><summary>${t('myCoursesList')} (${myCourses.length})</summary><ul class="small">${myCourses.map((c) => `<li>${esc(cname(c))} — ${esc(gname(St.group(c.groupId)))}${St.isYearCourse(c) ? ' (' + t('annualChip') + ')' : ''}</li>`).join('')}</ul></details>` : ''}
       <label class="f">${t('language')}</label><select data-set="settings.lang">${opt('ar', 'العربية', s.lang === 'ar')}${opt('en', 'English', s.lang === 'en')}</select>
       <div class="toolbar"><a class="btn" href="help.html?lang=${lang()}">📖 ${t('userGuide')}</a><button class="btn" data-act="lock-now">🔒 ${t('signOut')}</button></div></div>`;
-    if (isLecturer()) html += `<div class="card"><h3>📤 ${t('sendMyData')}</h3><p class="muted small">${t('sendMyDataHint')}</p><button class="btn primary block" data-act="send-my-data">📤 ${t('sendMyData')}</button></div>`;
+    if (isLecturer() && !Cloud.configured()) html += `<div class="card"><h3>📤 ${t('sendMyData')}</h3><p class="muted small">${t('sendMyDataHint')}</p><button class="btn primary block" data-act="send-my-data">📤 ${t('sendMyData')}</button></div>`;
     html += `<div class="card"><h3>${t('thresholds')}</h3><div class="tbl"><table class="rep"><tr><th>${t('system')}</th><th>${t('warn1')}</th><th>${t('warn2')}</th><th>${t('failU')}</th><th>${t('failT')}</th></tr>
       <tr><td><b>${t('sysBologna')}</b></td><td>${rb.warn1}%</td><td>${rb.warn2}%</td><td>&gt; ${rb.failUnexcused}%</td><td>&gt; ${rb.failTotal}%</td></tr>
       <tr><td><b>${t('sysAnnual')}</b></td><td>${ra.warn1}%</td><td>${ra.warn2}%</td><td>&gt; ${ra.failUnexcused}%</td><td>&gt; ${ra.failTotal}%</td></tr></table></div><p class="muted small">${t('regulation')}</p></div>`;
@@ -343,7 +345,7 @@
       <p><b>${esc(t('appName'))}</b> — ${t('version')} ${CFG.version}</p>
       <p>${esc(o.role[L()])}: <b>${esc(o.name[L()])}</b></p>
       <p class="small">${t('contact')}: <a href="mailto:${esc(o.email)}" dir="ltr">${esc(o.email)}</a> · <a href="tel:${esc(o.phone)}" dir="ltr">${esc(o.phone)}</a> · <a href="https://wa.me/${esc(o.phone.replace(/\D/g, ''))}" target="_blank" rel="noopener">${t('whatsapp')}</a></p>
-      <p class="small muted">© 2026 ${esc(o.name[L()])} — ${t('rights')} · <a href="privacy.html?lang=${lang()}">${t('privacy')}</a></p></div>`;
+      <p class="small muted">© 2026 — ${t('rights')} · <a href="privacy.html?lang=${lang()}">${t('privacy')}</a></p></div>`;
   }
   function yearsCard() {
     const years = St.S.years.map((y) => `<div class="item"><div class="main"><div class="t">${esc(y.name)} ${y.id === St.S.currentYear ? '<span class="chip ok">✓</span>' : ''}</div><div class="s">${R.dmy(y.start)} – ${R.dmy(y.end)} · ${y.terms.map((tm) => `${termLabel(tm.id)}: ${R.dmy(tm.start)} – ${R.dmy(tm.end)} (${tm.weeks} ${t('weeks')})`).join(' · ')}</div>${(y.events || []).length ? `<div class="s">${y.events.map((e) => `${lang() === 'ar' ? e.nameAr : e.nameEn}: ${R.dmy(e.start)}${e.end && e.end !== e.start ? ' – ' + R.dmy(e.end) : ''}`).join(' · ')}</div>` : ''}</div><div class="acts"><button class="icon" data-act="edit-year" data-id="${y.id}">✎</button><button class="icon" data-act="del-year" data-id="${y.id}">🗑</button></div></div>`).join('');
@@ -534,7 +536,8 @@
     const base = lastReport.name.replace(/[\\/:*?"<>|]+/g, '_');
     const att = [{ name: base + '.csv', content: lastReport.csv, mime: 'text/csv;charset=utf-8' }];
     if (isLecturer()) att.push({ name: `absences_data_${St.todayStr()}.json`, content: St.exportAbsences(A.current.courses || [], A.current.name), mime: 'application/json' });
-    if (Cloud.enabled()) {
+    if (Cloud.configured()) {
+      if (!Cloud.enabled()) { toast(t('cloudSignIn')); return; }
       // the storage chosen by the administrator (Google Drive / data centre) receives the data and an archived copy
       toast(t('cloudSending'));
       const f = await Cloud.flush();
@@ -546,13 +549,6 @@
     }
     const res = await R.sendReport(base, lastReport.html, att, text, recs);
     if (res === 'shared' || res === 'mail') { toast(t('saved')); if (isLecturer()) { UI.lastSentAt = Date.now(); St.saveUI(); } }
-  }
-  async function shareCurrentReport() {
-    if (!lastReport.html) return;
-    const recs = authorizedRecipients(); const base = lastReport.name.replace(/[\\/:*?"<>|]+/g, '_');
-    const att = [{ name: base + '.csv', content: lastReport.csv, mime: 'text/csv;charset=utf-8' }];
-    if (isLecturer()) att.push({ name: `absences_data_${St.todayStr()}.json`, content: St.exportAbsences(A.current.courses || [], A.current.name), mime: 'application/json' });
-    await R.sendReport(base, lastReport.html, att, lastReport.text || lastReport.name, recs);
   }
 
   // ================= EXCEL IMPORT =================
@@ -695,11 +691,10 @@
       case 'print': if (lastReport.html) { R.printHTML(lastReport.html); if (R.isNative()) toast(t('printNative')); } break;
       case 'csv': if (lastReport.csv) R.deliver(lastReport.name.replace(/[\\/:*?"<>|]+/g, '_') + '.csv', lastReport.csv, 'text/csv;charset=utf-8'); break;
       case 'send': sendCurrentReport(); break;
-      case 'share': shareCurrentReport(); break;
       case 'cloud-sync': { toast(t('cloudSending')); const r = await Cloud.sync(); const p = r.pull || {}; toast(r.flush && r.flush.error ? t('cloudError', { e: r.flush.error }) : p.error ? t('cloudError', { e: p.error }) : t('cloudSynced', { a: p.added || 0, u: p.updated || 0 })); render(); break; }
       case 'cloud-full': { if (!confirm(t('cloudFullConfirm'))) break; Cloud.resetPull(); const p = await Cloud.pull(true); toast(p && p.error ? t('cloudError', { e: p.error }) : t('cloudSynced', { a: (p && p.added) || 0, u: (p && p.updated) || 0 })); render(); break; }
       case 'cloud-test': { const r = await Cloud.ping(); toast(r.ok ? t('cloudOk', { n: r.name, d: storeName() }) : t('cloudError', { e: r.error })); break; }
-      case 'send-my-data': if (A.current && Cloud.enabled()) { const f = await Cloud.flush(); toast(f && f.error ? t('cloudError', { e: f.error }) : t('cloudSaved', { d: storeName() })); render(); break; }
+      case 'send-my-data': if (A.current && Cloud.configured()) { const f = await Cloud.flush(); toast(f && f.error ? t('cloudError', { e: f.error }) : t('cloudSaved', { d: storeName() })); render(); break; }
       if (A.current) { await R.deliver(`absences_data_${St.todayStr()}.json`, St.exportAbsences(A.current.courses || [], A.current.name), 'application/json'); UI.lastSentAt = Date.now(); St.saveUI(); render(); } break;
       case 'open-missing': UI.tab = 'reports'; UI.reportTab = 'missing'; render(); break;
       case 'xls-import': { const c = St.course(UI.courseId); if (c && St.inScope(c)) xlsImportForm(c); break; }
@@ -736,7 +731,7 @@
 
   // ================= SIGN-IN SCREEN =================
   function renderLock(error) {
-    applyDir(); const ins = CFG.institution, o = CFG.owner;
+    applyDir(); const ins = CFG.institution;
     const accs = A.list();
     const admins = accs.filter((a) => a.role !== 'lecturer').sort((a, b) => accName(a).localeCompare(accName(b), 'ar'));
     const lects = accs.filter((a) => a.role === 'lecturer').sort((a, b) => accName(a).localeCompare(accName(b), 'ar'));
@@ -753,8 +748,7 @@
       <label class="row" id="f-rem-wrap" style="gap:8px;margin-top:8px;${A.canRemember(A.byId(UI.lastAccount) || accs[0]) ? '' : 'display:none'}"><input type="checkbox" id="f-remember" class="fix"><span class="small">${t('rememberDevice', { n: CFG.access.rememberDays })}</span></label>
       ${error === 'idle' ? `<p class="small" style="color:var(--warn2)">🔒 ${t('idleLocked', { n: CFG.access.idleLockMinutes })}</p>` : error ? `<p class="small" style="color:var(--fail)">${t('wrongPassword')}</p>` : ''}
       <div class="toolbar"><button class="btn primary block" type="submit">${t('signIn')}</button></div></form>
-      <div class="center"><button class="btn sm ghost" data-act="toggle-lang-lock">${lang() === 'ar' ? 'English' : 'عربي'}</button> <a class="btn sm ghost" href="help.html?lang=${lang()}">📖 ${t('userGuide')}</a></div>
-      <p class="credit">${esc(o.role[L()])}: ${esc(o.name[L()])} · <a href="mailto:${esc(o.email)}" dir="ltr">${esc(o.email)}</a> · <span dir="ltr">${esc(o.phone)}</span></p></div></div>`;
+      <div class="center"><button class="btn sm ghost" data-act="toggle-lang-lock">${lang() === 'ar' ? 'English' : 'عربي'}</button> <a class="btn sm ghost" href="help.html?lang=${lang()}">📖 ${t('userGuide')}</a></div></div></div>`;
     setTimeout(() => { const i = $('#f-code'); if (i) i.focus(); }, 50);
   }
   document.addEventListener('submit', async (e) => {
