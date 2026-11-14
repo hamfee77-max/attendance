@@ -1,8 +1,8 @@
 // Department file for the Student Attendance app — exported from Settings → Administration.
 // Replace js/department.js on the website with a newly exported file, then publish.
 window.DEPT = {
- "version": 1794590349951,
- "exportedAt": "2026-11-13T17:19:09.951Z",
+ "version": 1794642157919,
+ "exportedAt": "2026-11-14T07:42:37.919Z",
  "config": {
   "institution": {
    "university": [
@@ -882,7 +882,7 @@ window.DEPT = {
    {
     "id": "s_g2A_13",
     "groupId": "g2A",
-    "name": "شهد محمد احمد جايم",
+    "name": "شهد محمد احمد جاسم",
     "sid": "",
     "note": ""
    },
@@ -1128,6 +1128,69 @@ window.DEPT = {
     "id": "s_g3B_23",
     "groupId": "g3B",
     "name": "يحيى طارق بدر اسماعيل الزبيدي",
+    "sid": "",
+    "note": ""
+   },
+   {
+    "id": "s_g3Y_1",
+    "groupId": "g3Y",
+    "name": "احمد جواد كاظم رضا",
+    "sid": "",
+    "note": ""
+   },
+   {
+    "id": "s_g3Y_2",
+    "groupId": "g3Y",
+    "name": "حمزة احمد حمزة موح",
+    "sid": "",
+    "note": ""
+   },
+   {
+    "id": "s_g3Y_3",
+    "groupId": "g3Y",
+    "name": "زين العابدين صباح بلاسم جبر",
+    "sid": "",
+    "note": ""
+   },
+   {
+    "id": "s_g3Y_4",
+    "groupId": "g3Y",
+    "name": "سهام رياض سعد بهار",
+    "sid": "",
+    "note": ""
+   },
+   {
+    "id": "s_g3Y_5",
+    "groupId": "g3Y",
+    "name": "طه ساطع هاشم عباس",
+    "sid": "",
+    "note": ""
+   },
+   {
+    "id": "s_g3Y_6",
+    "groupId": "g3Y",
+    "name": "علي احمد محمد عبد",
+    "sid": "",
+    "note": ""
+   },
+   {
+    "id": "s_g3Y_7",
+    "groupId": "g3Y",
+    "name": "علي إسماعيل كاظم صالح",
+    "sid": "",
+    "note": ""
+   },
+   {
+    "id": "s_g3Y_8",
+    "groupId": "g3Y",
+    "name": "ملاك مهند هادي كريم",
+    "sid": "",
+    "note": "موازي"
+   },
+   {
+    "id": "s_g3Y_9",
+    "groupId": "g3Y",
+    "name": "ناصر عمر صبار حمد",
     "sid": "",
     "note": ""
    },
